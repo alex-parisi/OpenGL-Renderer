@@ -3,7 +3,7 @@
 // Default constructor:
 Shader::Shader()
 {
-	// Prepare variables for initialization
+    // Prepare variables for initialization
     vertexShaderSource = NULL;
     fragmentShaderSource = NULL;
     vertexShader = NULL;
@@ -11,7 +11,6 @@ Shader::Shader()
     shaderProgram = NULL;
     VBO = NULL;
     VAO = NULL;
-    EBO = NULL;
     wireFrameOn = false;
 }
 
@@ -22,23 +21,13 @@ Shader::~Shader()
 }
 
 // Public Functions:
-bool Shader::Initialize()
+bool Shader::Initialize(const char* vertexPath, const char* fragmentPath)
 {
-    if (Compile() && Link() && BindVertices())
+    if (LoadGLSLCode(vertexPath, fragmentPath) && Compile() && Link() && BindVertices())
     {
         return true;
     }
     return false;
-}
-
-void Shader::SetVertexShaderSource(const char* newVertexShaderSource)
-{
-    vertexShaderSource = newVertexShaderSource;
-}
-
-void Shader::SetFragmentShaderSource(const char* newFragmentShaderSource)
-{
-    fragmentShaderSource = newFragmentShaderSource;
 }
 
 void Shader::Delete()
@@ -51,8 +40,15 @@ void Shader::Delete()
 void Shader::Draw()
 {
     glUseProgram(shaderProgram);
+
+    // update the uniform color
+    float timeValue = glfwGetTime();
+    float greenValue = sin(timeValue) / 2.0f + 0.5f;
+    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+    glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void Shader::EnableWireframeMode()
@@ -63,6 +59,39 @@ void Shader::EnableWireframeMode()
 void Shader::DisableWireframeMode()
 {
     wireFrameOn = false;
+}
+
+bool Shader::LoadGLSLCode(const char* vertexPath, const char* fragmentPath)
+{
+
+    // Ensure the file loaders can throw exceptions
+    vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    // Load the vertex and fragment shader files
+    try
+    {
+        // Open the files
+        vertexShaderFile.open(vertexPath);
+        fragmentShaderFile.open(fragmentPath);
+        // Read the files into streams
+        vertexShaderStream << vertexShaderFile.rdbuf();
+        fragmentShaderStream << fragmentShaderFile.rdbuf();
+        // Close the file handlers
+        vertexShaderFile.close();
+        fragmentShaderFile.close();
+        // Convert stream into string
+        vertexGLSLCode = vertexShaderStream.str();
+        fragmentGLSLCode = fragmentShaderStream.str();
+        // Convert string into char array
+        vertexShaderSource = vertexGLSLCode.c_str();
+        fragmentShaderSource = fragmentGLSLCode.c_str();
+    }
+    catch (std::ifstream::failure e)
+    {
+        std::cout << "ERROR | SHADER: Could not read GLSL file." << std::endl;
+        return false;
+    }
+    return true;
 }
 
 // Private Functions:
@@ -122,41 +151,35 @@ bool Shader::BindVertices()
 {
     // <TEST>
     float vertices[] = {
-     0.5f,  0.5f, 0.0f,  // top right
-     0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left 
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
+        // positions         // colors
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
+         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
+
     };
 
     // </TEST>
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
     // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
     // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
+    // glBindVertexArray(0);
+
+    // as we only have a single shader, we could also just activate our shader once beforehand if we want to 
+    glUseProgram(shaderProgram);
 
     if (wireFrameOn)
     {
@@ -166,6 +189,5 @@ bool Shader::BindVertices()
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
-
     return true;
 }

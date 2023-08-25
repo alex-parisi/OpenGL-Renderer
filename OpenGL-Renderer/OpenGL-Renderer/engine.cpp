@@ -1,25 +1,10 @@
 #include "engine.h"
 
-const char* vertexShaderSource =    "#version 330 core\n"
-                                    "layout (location = 0) in vec3 aPos;\n"
-                                    "void main()\n"
-                                    "{\n"
-                                    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                                    "}\0";
-
-const char* fragmentShaderSource =  "#version 330 core\n"
-                                    "out vec4 FragColor;\n"
-                                    "void main()\n"
-                                    "{\n"
-                                    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                                    "}\n\0";
-
 // Default Constructor:
 Engine::Engine()
 {
     // Prepare variables for initialization
     window = NULL;
-    shader = Shader();
 }
 
 // Default Destructor:
@@ -32,7 +17,7 @@ Engine::~Engine()
 bool Engine::Initialize()
 {
     InitializeGLFW();
-    if (CreateWindow() && InitializeGLAD() && CreateShader(vertexShaderSource, fragmentShaderSource))
+    if (CreateWindow() && InitializeGLAD() && CreateShader())
     {
         // Create a new viewport
         glViewport(0, 0, 800, 600);
@@ -147,11 +132,9 @@ bool Engine::CreateWindow()
     return true;
 }
 
-bool Engine::CreateShader(const char* vertexShaderSource, const char* fragmentShaderSource)
+bool Engine::CreateShader()
 {
-    shader.SetVertexShaderSource(vertexShaderSource);
-    shader.SetFragmentShaderSource(fragmentShaderSource);
-    if (!shader.Initialize())
+    if (!shader.Initialize("shaders/shader.vs", "shaders/shader.fs"))
     {
         std::cout << "Failed to initialize the shader" << std::endl;
         return false;

@@ -30,7 +30,7 @@ class Engine
 		void InitializeGLFW();
 		bool InitializeGLAD();
 		bool CreateWindow();
-		bool CreateShader(const char* vertexShaderSource, const char* fragmentShaderSource);
+		bool CreateShader();
 		// Callback functions (need to be static to work with GLFW)
 		static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 		// Internal attributes
