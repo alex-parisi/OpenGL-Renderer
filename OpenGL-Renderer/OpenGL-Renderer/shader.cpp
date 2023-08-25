@@ -41,11 +41,7 @@ void Shader::Draw()
 {
     glUseProgram(shaderProgram);
 
-    // update the uniform color
-    float timeValue = glfwGetTime();
-    float greenValue = sin(timeValue) / 2.0f + 0.5f;
-    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-    glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+    // Update shader info:
 
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -88,7 +84,7 @@ bool Shader::LoadGLSLCode(const char* vertexPath, const char* fragmentPath)
     }
     catch (std::ifstream::failure e)
     {
-        std::cout << "ERROR | SHADER: Could not read GLSL file." << std::endl;
+        std::cout << "ERROR | SHADER: Could not read GLSL file.\n" << std::endl;
         return false;
     }
     return true;
@@ -108,7 +104,7 @@ bool Shader::Compile()
     if (!success)
     {
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR | SHADER | VERTEX: Could not compile GLSL code.\n" << infoLog << std::endl;
         return false;
     }
     // Fragment shader
@@ -120,7 +116,7 @@ bool Shader::Compile()
     if (!success)
     {
         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR | SHADER | FRAGMENT: Could not compile GLSL code.\n" << infoLog << std::endl;
         return false;
     }
     return true;
@@ -139,7 +135,7 @@ bool Shader::Link()
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+        std::cout << "ERROR | SHADER | PROGRAM | Linking failed.\n" << infoLog << std::endl;
         return false;
     }
     glDeleteShader(vertexShader);
@@ -155,32 +151,25 @@ bool Shader::BindVertices()
          0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
          0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
-
     };
-
     // </TEST>
+    // Initialize Vertex Array and Vertex Buffer Objects
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    // Bind the Vertex Array Object first, then bind and set vertex buffers.
     glBindVertexArray(VAO);
-
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // position attribute
+    // Then configure vertex attributes(s).
+    // Position:
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // color attribute
+    // Color:
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    // glBindVertexArray(0);
-
-    // as we only have a single shader, we could also just activate our shader once beforehand if we want to 
+    // As we only have a single shader, we could also just activate our shader once beforehand if we want to 
     glUseProgram(shaderProgram);
-
+    // Set the wireframe mode to be on or off
     if (wireFrameOn)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

@@ -111,7 +111,7 @@ bool Engine::InitializeGLAD()
     // GLAD manages the way that drivers access OpenGL functions and their locations
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Failed to initialize GLAD" << std::endl;
+        std::cout << "ERROR | ENGINE | GLAD: Failed to initialize.\n" << std::endl;
         return false;
     }
     return true;
@@ -123,7 +123,7 @@ bool Engine::CreateWindow()
     window = glfwCreateWindow(800, 600, "OpenGL + GLFW Renderer - Alex Parisi", NULL, NULL);
     if (window == NULL)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        std::cout << "ERROR | ENGINE | GLFW: Failed to create window.\n" << std::endl;
         glfwTerminate();
         return false;
     }
@@ -136,7 +136,7 @@ bool Engine::CreateShader()
 {
     if (!shader.Initialize("shaders/shader.vs", "shaders/shader.fs"))
     {
-        std::cout << "Failed to initialize the shader" << std::endl;
+        std::cout << "ERROR | ENGINE | SHADER: Failed to initialize.\n" << std::endl;
         return false;
     }
     return true;
