@@ -19,6 +19,8 @@ class Engine
 		void ProcessInput(GLFWwindow* window);
 		void Render();
 		void HandleEvents();
+		void EnableWireFrameMode();
+		void DisableWireFrameMode();
 		// Exposed attributes
 		GLFWwindow* window;
 		Shader shader;
@@ -31,4 +33,5 @@ class Engine
 		bool CreateShader(const char* vertexShaderSource, const char* fragmentShaderSource);
 		// Callback functions (need to be static to work with GLFW)
 		static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
+		// Internal attributes
 };

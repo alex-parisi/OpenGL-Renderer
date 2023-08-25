@@ -95,6 +95,16 @@ void Engine::HandleEvents()
     glfwPollEvents();
 }
 
+void Engine::EnableWireFrameMode()
+{
+    shader.EnableWireframeMode();
+}
+
+void Engine::DisableWireFrameMode()
+{
+    shader.DisableWireframeMode();
+}
+
 // Private Functions:
 void Engine::InitializeGLFW()
 {

@@ -16,6 +16,8 @@ public:
 	void SetFragmentShaderSource(const char* fragmentShaderSource);
 	void Delete();
 	void Draw();
+	void EnableWireframeMode();
+	void DisableWireframeMode();
 
 private:
 	// Internal initialization functions
@@ -28,5 +30,6 @@ private:
 	unsigned int vertexShader;
 	unsigned int fragmentShader;
 	unsigned int shaderProgram;
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO, EBO;
+	bool wireFrameOn;
 };
