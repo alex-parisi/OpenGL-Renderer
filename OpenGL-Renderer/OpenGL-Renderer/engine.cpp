@@ -1,22 +1,38 @@
 #include "engine.h"
 
-// Default Constructor:
-App::App()
-{
+const char* vertexShaderSource =    "#version 330 core\n"
+                                    "layout (location = 0) in vec3 aPos;\n"
+                                    "void main()\n"
+                                    "{\n"
+                                    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                                    "}\0";
 
+const char* fragmentShaderSource =  "#version 330 core\n"
+                                    "out vec4 FragColor;\n"
+                                    "void main()\n"
+                                    "{\n"
+                                    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                                    "}\n\0";
+
+// Default Constructor:
+Engine::Engine()
+{
+    // Prepare variables for initialization
+    window = NULL;
+    shader = Shader();
 }
 
 // Default Destructor:
-App::~App()
+Engine::~Engine()
 {
-
+    // All cleanup code should be in App::Terminate(), only use this if absolutely needed
 }
 
 // Public Functions:
-bool App::Initialize()
+bool Engine::Initialize()
 {
     InitializeGLFW();
-    if (CreateWindow() && InitializeGLAD())
+    if (CreateWindow() && InitializeGLAD() && CreateShader(vertexShaderSource, fragmentShaderSource))
     {
         // Create a new viewport
         glViewport(0, 0, 800, 600);
@@ -27,13 +43,13 @@ bool App::Initialize()
     return false;
 }
 
-void App::MapCallbacks()
+void Engine::MapCallbacks()
 {
     // Callback function called when the window is resized:
     glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
 }
 
-void App::Execute()
+void Engine::Execute()
 {
     if (Initialize())
     {
@@ -49,35 +65,38 @@ void App::Execute()
     Terminate();
 }
 
-void App::Terminate()
+void Engine::Terminate()
 {
+    shader.Delete();
     glfwTerminate();
 }
 
-void App::ProcessInput(GLFWwindow* window)
+void Engine::ProcessInput(GLFWwindow* window)
 {
     // Close the window if the escape key is pressed
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
-void App::Render()
+void Engine::Render()
 {
     // Test code: display simple color
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    // draw our first triangle
+    shader.Draw();
     // Copy the buffer to the screen
     glfwSwapBuffers(window);
 }
 
-void App::HandleEvents()
+void Engine::HandleEvents()
 {
     // Check for events, updates the window state, and calls any corresponding callback functions
     glfwPollEvents();
 }
 
 // Private Functions:
-void App::InitializeGLFW()
+void Engine::InitializeGLFW()
 {
     // Init GLFW
     glfwInit();
@@ -86,9 +105,13 @@ void App::InitializeGLFW()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     // Use 'core' profile
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    // Define need for Apple devices
+    #ifdef __APPLE__
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    #endif
 }
 
-bool App::InitializeGLAD()
+bool Engine::InitializeGLAD()
 {
     // GLAD manages the way that drivers access OpenGL functions and their locations
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -99,7 +122,7 @@ bool App::InitializeGLAD()
     return true;
 }
 
-bool App::CreateWindow()
+bool Engine::CreateWindow()
 {
     // Create a new window instance
     window = glfwCreateWindow(800, 600, "OpenGL + GLFW Renderer - Alex Parisi", NULL, NULL);
@@ -114,8 +137,20 @@ bool App::CreateWindow()
     return true;
 }
 
-// Misc functions:
-void FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
+bool Engine::CreateShader(const char* vertexShaderSource, const char* fragmentShaderSource)
+{
+    shader.SetVertexShaderSource(vertexShaderSource);
+    shader.SetFragmentShaderSource(fragmentShaderSource);
+    if (!shader.Initialize())
+    {
+        std::cout << "Failed to initialize the shader" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+// Callback functions:
+void Engine::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     // Resize the size of the viewport
     glViewport(0, 0, width, height);

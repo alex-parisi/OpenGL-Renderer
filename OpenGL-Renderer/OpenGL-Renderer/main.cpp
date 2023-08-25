@@ -2,7 +2,7 @@
 
 int main(int argc, char* argv[])
 {
-	App app;
-	app.Execute();
+	Engine engine;
+	engine.Execute();
 	return 0;
 }
