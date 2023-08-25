@@ -57,6 +57,20 @@ void Shader::DisableWireframeMode()
     wireFrameOn = false;
 }
 
+void Shader::setBool(const std::string& name, bool value) const
+{
+    glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), (int)value);
+}
+void Shader::setInt(const std::string& name, int value) const
+{
+    glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value);
+}
+void Shader::setFloat(const std::string& name, float value) const
+{
+    glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value);
+}
+
+// Private functions:
 bool Shader::LoadGLSLCode(const char* vertexPath, const char* fragmentPath)
 {
 

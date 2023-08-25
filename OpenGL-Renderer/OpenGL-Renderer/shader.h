@@ -18,6 +18,10 @@ public:
 	void Draw();
 	void EnableWireframeMode();
 	void DisableWireframeMode();
+	// Utility uniform functions
+	void setBool(const std::string& name, bool value) const;
+	void setInt(const std::string& name, int value) const;
+	void setFloat(const std::string& name, float value) const;
 
 private:
 	// Internal initialization functions
