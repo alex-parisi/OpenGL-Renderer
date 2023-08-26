@@ -20,7 +20,7 @@ bool Engine::Initialize()
     if (CreateWindow() && InitializeGLAD() && CreateShader())
     {
         // Create a new viewport
-        glViewport(0, 0, 800, 600);
+        glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         // Map Callback functions 
         MapCallbacks();
         return true;
@@ -67,7 +67,7 @@ void Engine::Render()
 {
     // Test code: display simple color
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // draw our first triangle
     shader.Draw();
     // Copy the buffer to the screen
@@ -120,7 +120,7 @@ bool Engine::InitializeGLAD()
 bool Engine::CreateWindow()
 {
     // Create a new window instance
-    window = glfwCreateWindow(800, 600, "OpenGL + GLFW Renderer - Alex Parisi", NULL, NULL);
+    window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL + GLFW Renderer - Alex Parisi", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "ERROR | ENGINE | GLFW: Failed to create window.\n" << std::endl;
@@ -134,6 +134,7 @@ bool Engine::CreateWindow()
 
 bool Engine::CreateShader()
 {
+    glEnable(GL_DEPTH_TEST);
     if (!shader.Initialize("shaders/shader.vs", "shaders/shader.fs"))
     {
         std::cout << "ERROR | ENGINE | SHADER: Failed to initialize.\n" << std::endl;

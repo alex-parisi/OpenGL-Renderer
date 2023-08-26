@@ -1,9 +1,10 @@
 #pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
 #include "shader.h"
+#include "settings.h"
 #include <vector>
+#include <iostream>
 
 class Engine
 {
