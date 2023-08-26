@@ -22,6 +22,28 @@ public:
 	void Draw();
 	void EnableWireframeMode();
 	void DisableWireframeMode();
+	// Functions to get/set camera settings
+	void SetCameraPos(glm::vec3 newCameraPos);
+	void SetCameraFront(glm::vec3 newCameraFront);
+	void SetCameraUp(glm::vec3 newCameraUp);
+	glm::vec3 GetCameraPos();
+	glm::vec3 GetCameraFront();
+	glm::vec3 GetCameraUp();
+	// Functions to get the time delta
+	float GetDeltaTime();
+	// Functions to get/set the look settings
+	void SetFirstMouse(bool newFirstMouse);
+	void SetYaw(float newYaw);
+	void SetPitch(float newPitch);
+	void SetLastX(float newLastX);
+	void SetLastY(float newLastY);
+	void SetFov(float newFov);
+	bool GetFirstMouse();
+	float GetYaw();
+	float GetPitch();
+	float GetLastX();
+	float GetLastY();
+	float GetFov();
 	// Utility uniform functions
 	void setBool(const std::string& name, bool value) const;
 	void setInt(const std::string& name, int value) const;
@@ -44,6 +66,20 @@ private:
 	unsigned int VBO, VAO, EBO;
 	unsigned int texture1, texture2;
 	bool wireFrameOn;
+	// Timing attributes:
+	float deltaTime;
+	float lastFrame;
+	// Camera attributes:
+	glm::vec3 cameraPos;
+	glm::vec3 cameraFront;
+	glm::vec3 cameraUp;
+	// Look attributes:
+	bool firstMouse;
+	float yaw;
+	float pitch;
+	float lastX;
+	float lastY;
+	float fov;
 	// Attributes used in loading GLSL code
 	std::string vertexGLSLCode, fragmentGLSLCode;
 	std::ifstream vertexShaderFile, fragmentShaderFile;

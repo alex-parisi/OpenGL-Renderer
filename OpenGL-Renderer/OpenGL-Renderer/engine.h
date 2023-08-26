@@ -3,6 +3,9 @@
 #include <GLFW/glfw3.h>
 #include "shader.h"
 #include "settings.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <vector>
 #include <iostream>
 
@@ -34,5 +37,7 @@ class Engine
 		bool CreateShader();
 		// Callback functions (need to be static to work with GLFW)
 		static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
+		static void MouseCallback(GLFWwindow* window, double xposIn, double yposIn);
+		static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 		// Internal attributes
 };

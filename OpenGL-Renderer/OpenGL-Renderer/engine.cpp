@@ -32,6 +32,10 @@ void Engine::MapCallbacks()
 {
     // Callback function called when the window is resized:
     glfwSetFramebufferSizeCallback(window, FrameBufferSizeCallback);
+    // Callback function called when the mouse is moved:
+    glfwSetCursorPosCallback(window, MouseCallback);
+    // Callback function called when the scroll wheel is moved:
+    glfwSetScrollCallback(window, ScrollCallback);
 }
 
 void Engine::Execute()
@@ -61,6 +65,19 @@ void Engine::ProcessInput(GLFWwindow* window)
     // Close the window if the escape key is pressed
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    // Move the camera around when pressing the WASD keys
+    float cameraSpeed = static_cast<float>(2.5 * shader.GetDeltaTime());
+    glm::vec3 cameraPos = shader.GetCameraPos();
+    glm::vec3 cameraFront = shader.GetCameraFront();
+    glm::vec3 cameraUp = shader.GetCameraUp();
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        shader.SetCameraPos(cameraPos + (cameraSpeed * cameraFront));
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        shader.SetCameraPos(cameraPos - (cameraSpeed * cameraFront));
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        shader.SetCameraPos(cameraPos - (glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed));
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        shader.SetCameraPos(cameraPos + (glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed));
 }
 
 void Engine::Render()
@@ -148,4 +165,14 @@ void Engine::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     // Resize the size of the viewport
     glViewport(0, 0, width, height);
+}
+
+void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
+{
+
+}
+
+void Engine::ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+
 }
