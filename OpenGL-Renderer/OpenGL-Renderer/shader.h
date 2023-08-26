@@ -1,6 +1,10 @@
 #pragma once
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "stb_image.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -29,13 +33,15 @@ private:
 	bool Compile();
 	bool Link();
 	bool BindVertices();
+	bool LoadTexture();
 	// Internal attributes
 	const char* vertexShaderSource;
 	const char* fragmentShaderSource;
 	unsigned int vertexShader;
 	unsigned int fragmentShader;
 	unsigned int shaderProgram;
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO, EBO;
+	unsigned int texture1, texture2;
 	bool wireFrameOn;
 	// Attributes used in loading GLSL code
 	std::string vertexGLSLCode, fragmentGLSLCode;
