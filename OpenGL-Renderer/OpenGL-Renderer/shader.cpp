@@ -59,6 +59,7 @@ void Shader::Draw()
     glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     transform = glm::translate(transform, glm::vec3(0.2 * sin(2 * time), 0.0f, 0.0f));
     transform = glm::rotate(transform, 2 * sin(time), glm::vec3(0.0f, 0.0f, 1.0f));
+    transform = glm::scale(transform, glm::vec3(0.1 * sin(3 * time) + 0.9, 0.1 * sin(3 * time) + 0.9, 0.1 * sin(3 * time) + 0.9));
     // Get matrix's uniform location and set matrix
     glUseProgram(shaderProgram);
     unsigned int transformLoc = glGetUniformLocation(shaderProgram, "transform");
