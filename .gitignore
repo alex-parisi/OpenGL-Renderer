@@ -1,9 +1,5 @@
 OpenGL-Renderer/OpenGL-Renderer/x64/*
 .vs
 
-*.sln
-*.vcxproj
-*.filters
-*.user
 *.exe
 *.pdb
