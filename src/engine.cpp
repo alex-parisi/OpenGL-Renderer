@@ -83,6 +83,10 @@ void Engine::ProcessInput(GLFWwindow* window)
         camera.SetCameraPos(cameraPos - (glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed));
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.SetCameraPos(cameraPos + (glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed));
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.SetCameraPos(cameraPos + (cameraSpeed * cameraUp));
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.SetCameraPos(cameraPos - (cameraSpeed * cameraUp));
     // Unlock/Lock the camera when the Mouse Left is pressed/released
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         camera.locked = false;
