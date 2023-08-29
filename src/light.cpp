@@ -11,7 +11,7 @@ Light::Light(Shader& shader, float* vertices, int N)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) * N, vertices, GL_STATIC_DRAW);
     // Then configure vertex attributes(s).
     // Position:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // As we only have a single shader, we could also just activate our shader once beforehand if we want to 
     glUseProgram(shader.ID);

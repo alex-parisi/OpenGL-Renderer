@@ -11,11 +11,11 @@ Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) * N, vertices, GL_STATIC_DRAW);
     // Then configure vertex attributes(s).
     // Position:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // Texture Coordinates:
-    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    // glEnableVertexAttribArray(1);
+    // Normal Attribute:
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
     // As we only have a single shader, we could also just activate our shader once beforehand if we want to 
     glUseProgram(material.GetShader()->ID);
     // Set the wireframe mode to be on or off
@@ -68,6 +68,8 @@ void Object::Render(float deltaTime, Camera& camera)
     m_material.GetShader()->Use();
     m_material.GetShader()->SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
     m_material.GetShader()->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
+    m_material.GetShader()->SetVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
+    m_material.GetShader()->SetVec3("viewPos", camera.GetCameraPos());
     // Pass the projection matrix to the shader
     glm::mat4 projection = camera.GetProjectionMatrix();
     m_material.GetShader()->SetMat4("projection", projection);
