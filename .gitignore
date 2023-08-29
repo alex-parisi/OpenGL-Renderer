@@ -1,5 +1,10 @@
 x64/*
+OpenGL-Renderer/x64/*
 .vs
-
+*.obj
+*.log
+*.ilk
+*.tlog
 *.exe
 *.pdb
+*.idb

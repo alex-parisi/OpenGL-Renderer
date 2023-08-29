@@ -95,10 +95,7 @@ void Engine::ProcessInput(GLFWwindow* window)
 
 void Engine::Render()
 {
-    // Test code: display simple color
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // draw our first triangle
+    // Render the scene
     scene.Render(deltaTime, camera);
     // Copy the buffer to the screen
     glfwSwapBuffers(window);

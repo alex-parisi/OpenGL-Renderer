@@ -8,6 +8,7 @@
 #include <iostream>
 #include "scene.hpp"
 #include "camera.hpp"
+#include "light.hpp"
 
 class Engine
 {

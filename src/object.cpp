@@ -11,11 +11,11 @@ Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) * N, vertices, GL_STATIC_DRAW);
     // Then configure vertex attributes(s).
     // Position:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // Texture Coordinates:
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // glEnableVertexAttribArray(1);
     // As we only have a single shader, we could also just activate our shader once beforehand if we want to 
     glUseProgram(material.GetShader()->ID);
     // Set the wireframe mode to be on or off
@@ -58,16 +58,21 @@ void Object::Scale(glm::vec3 scale)
 // Inherited Render function:
 void Object::Render(float deltaTime, Camera& camera)
 {
-    // Bind material's texture onto texture unit
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_material.GetTexture()->texture);
+    // Bind material's texture onto texture unit (if there is a texture)
+    if (m_material.GetTexture())
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_material.GetTexture()->texture);
+    }
     // Activate the shader
     m_material.GetShader()->Use();
+    m_material.GetShader()->SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
+    m_material.GetShader()->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
     // Pass the projection matrix to the shader
-    glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), 800.0f / 600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = camera.GetProjectionMatrix();
     m_material.GetShader()->SetMat4("projection", projection);
     // Camera/View Transformation
-    glm::mat4 view = glm::lookAt(camera.GetCameraPos(), camera.GetCameraPos() + camera.GetCameraFront(), camera.GetCameraUp());
+    glm::mat4 view = camera.GetViewMatrix();
     m_material.GetShader()->SetMat4("view", view);
     // Do time transformations here:
     // <TEMP>
@@ -75,6 +80,7 @@ void Object::Render(float deltaTime, Camera& camera)
     // </TEMP>
     // Render the object:
     m_material.GetShader()->SetMat4("model", model);
+    glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 

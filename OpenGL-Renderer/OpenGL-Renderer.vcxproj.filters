@@ -45,6 +45,9 @@
     <ClCompile Include="..\src\stb_image.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp">
@@ -71,5 +74,22 @@
     <ClInclude Include="..\src\texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\light.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\shaders\colors.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\shaders\colors.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\shaders\light_cube.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\shaders\light_cube.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

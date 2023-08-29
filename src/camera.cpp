@@ -108,3 +108,13 @@ float Camera::GetFov()
 {
     return fov;
 }
+
+glm::mat4 Camera::GetProjectionMatrix()
+{
+    return glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+}
+
+glm::mat4 Camera::GetViewMatrix()
+{
+    return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+}

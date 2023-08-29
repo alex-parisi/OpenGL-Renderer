@@ -36,6 +36,9 @@ class Camera
         float GetLastX();
         float GetLastY();
         float GetFov();
+        // Get the view and projections matrices
+        glm::mat4 GetProjectionMatrix();
+        glm::mat4 GetViewMatrix();
         // Lock
         bool locked;
 

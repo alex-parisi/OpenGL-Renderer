@@ -3,6 +3,7 @@
 Scene::Scene()
 {
     objects.clear();
+    lights.clear();
 }
 
 Scene::~Scene()
@@ -20,9 +21,19 @@ void Scene::Render(float deltaTime, Camera& camera)
     {
         o.Render(deltaTime, camera);
     }
+    // Also render the lights:
+    for (auto& l : lights)
+    {
+        l.Render(deltaTime, camera);
+    }
 }
 
 void Scene::AddObject(Object& object)
 {
     objects.push_back(object);
+}
+
+void Scene::AddLight(Light& light)
+{
+    lights.push_back(light);
 }
