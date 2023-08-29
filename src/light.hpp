@@ -14,6 +14,7 @@ class Light
         // Get/Set
         glm::vec3 GetPosition();
         void SetPosition(glm::vec3 newPosition);
+        void SetDraw(bool newDraw);
 
     private:
         // Private Attributes
@@ -21,4 +22,5 @@ class Light
         unsigned int m_VAO, m_VBO;
         Shader* m_shader;
         glm::mat4 model;
+        bool draw;
 };

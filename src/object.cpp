@@ -66,10 +66,20 @@ void Object::Render(float deltaTime, Camera& camera)
     }
     // Activate the shader
     m_material.GetShader()->Use();
-    m_material.GetShader()->SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
-    m_material.GetShader()->SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    m_material.GetShader()->SetVec3("lightPos", glm::vec3(1.2f, 1.0f, 2.0f));
+    // Set Light Properties:
     m_material.GetShader()->SetVec3("viewPos", camera.GetCameraPos());
+    m_material.GetShader()->SetVec3("light.position", glm::vec3(1.2f, 1.0f, 2.0f));
+    glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
+    glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+    glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+    m_material.GetShader()->SetVec3("light.ambient", ambientColor);
+    m_material.GetShader()->SetVec3("light.diffuse", diffuseColor);
+    m_material.GetShader()->SetVec3("light.specular", 1.0f, 1.0f, 1.0f);
+    // Set Material Properties
+    m_material.GetShader()->SetVec3("material.ambient", m_material.GetAmbient());
+    m_material.GetShader()->SetVec3("material.diffuse", m_material.GetDiffuse());
+    m_material.GetShader()->SetVec3("material.specular", m_material.GetSpecular());
+    m_material.GetShader()->SetFloat("material.shininess", m_material.GetShininess());
     // Pass the projection matrix to the shader
     glm::mat4 projection = camera.GetProjectionMatrix();
     m_material.GetShader()->SetMat4("projection", projection);
