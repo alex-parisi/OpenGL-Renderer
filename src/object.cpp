@@ -11,11 +11,14 @@ Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices) * N, vertices, GL_STATIC_DRAW);
     // Then configure vertex attributes(s).
     // Position:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // Normal Attribute:
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    // Texture Attribute:
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
     // As we only have a single shader, we could also just activate our shader once beforehand if we want to 
     glUseProgram(material.GetShader()->ID);
     // Set the wireframe mode to be on or off
@@ -58,12 +61,6 @@ void Object::Scale(glm::vec3 scale)
 // Inherited Render function:
 void Object::Render(float deltaTime, Camera& camera)
 {
-    // Bind material's texture onto texture unit (if there is a texture)
-    if (m_material.GetTexture())
-    {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, m_material.GetTexture()->texture);
-    }
     // Activate the shader
     m_material.GetShader()->Use();
     // Set Light Properties:
@@ -88,8 +85,17 @@ void Object::Render(float deltaTime, Camera& camera)
     m_material.GetShader()->SetMat4("view", view);
     // Do time transformations here:
     // <TEMP>
-    Rotate(deltaTime * 100.0f, glm::vec3(0.5f, 1.0f, 0.0f));
+    // model = glm::mat4(1.0f);
+    // float t = static_cast<float>(glfwGetTime());
+    // Rotate(t * 100, glm::vec3(0.5f, 1.0f, 0.0f));
+    // Scale(glm::vec3((0.1 * sin(5 * t)) + 0.9));
     // </TEMP>
+    // Bind material's texture onto texture unit (if there is a texture)
+    if (m_material.GetTexture())
+    {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_material.GetTexture()->texture);
+    }
     // Render the object:
     m_material.GetShader()->SetMat4("model", model);
     glBindVertexArray(VAO);
