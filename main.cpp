@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 
         // And create a point light
         Light testLight1(lightShader, vertices, 288);
-        testLight1.SetPosition(glm::vec3(1.2f, 1.0f, 2.0f));
+        testLight1.SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
         testLight1.SetAmbient(glm::vec3(0.05f, 0.05f, 0.05f));
         testLight1.SetDiffuse(glm::vec3(0.8f, 0.8f, 0.8f));
         testLight1.SetSpecular(glm::vec3(1.0f, 1.0f, 1.0f));

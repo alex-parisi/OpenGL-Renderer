@@ -91,10 +91,10 @@ void Object::Render(float deltaTime, Camera& camera, DirectionalLight& direction
     m_material.GetShader()->SetMat4("view", view);
     // Do time transformations here:
     // <TEMP>
-    // model = glm::mat4(1.0f);
-    // float t = static_cast<float>(glfwGetTime());
-    // Rotate(t * 100, glm::vec3(0.5f, 1.0f, 0.0f));
-    // Scale(glm::vec3((0.1 * sin(5 * t)) + 0.9));
+    model = glm::mat4(1.0f);
+    float t = static_cast<float>(glfwGetTime());
+    Rotate(t * 25, glm::vec3(0.5f, 1.0f, 0.0f));
+    Scale(glm::vec3((0.1 * sin(2 * t)) + 0.9));
     // </TEMP>
     // Bind material's texture onto texture unit (if there is a texture)
     glActiveTexture(GL_TEXTURE0);

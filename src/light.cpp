@@ -33,8 +33,10 @@ void Light::Render(float deltaTime, Camera& camera)
         m_shader->SetMat4("projection", camera.GetProjectionMatrix());
         m_shader->SetMat4("view", camera.GetViewMatrix());
         model = glm::mat4(1.0f);
+        model = glm::rotate(model, deltaTime / 5, glm::vec3(0.0f, -1.0f, 0.0f));
         model = glm::translate(model, position);
-        model = glm::scale(model, glm::vec3(0.2f));
+        position = glm::vec3(model[3]);
+        model = glm::scale(model, glm::vec3(0.1f));
         m_shader->SetMat4("model", model);
         glBindVertexArray(m_VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
