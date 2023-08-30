@@ -1,6 +1,9 @@
 #pragma once
+#include <vector>
 #include "material.hpp"
 #include "camera.hpp"
+#include "light.hpp"
+#include "directional_light.hpp"
 
 class Object
 {
@@ -13,7 +16,7 @@ class Object
         void Rotate(float angle, glm::vec3 axis);
         void Scale(glm::vec3 scale);
         // Inherited Functions:
-        void Render(float deltaTime, Camera& camera);
+        void Render(float deltaTime, Camera& camera, DirectionalLight& directionalLight, std::vector<Light> pointLights);
         // Get/Set
         glm::vec3 GetPosition();
         void SetWireframeMode(bool newWireframeMode);

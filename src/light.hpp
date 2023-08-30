@@ -1,7 +1,6 @@
 #pragma once
 #include "camera.hpp"
 #include "shader.hpp"
-#include "object.hpp"
 
 class Light
 {
@@ -15,6 +14,18 @@ class Light
         glm::vec3 GetPosition();
         void SetPosition(glm::vec3 newPosition);
         void SetDraw(bool newDraw);
+        glm::vec3 GetAmbient();
+        glm::vec3 GetDiffuse();
+        glm::vec3 GetSpecular();
+        float GetConstant();
+        float GetLinear();
+        float GetQuadratic();
+        void SetAmbient(glm::vec3 newAmbient);
+        void SetDiffuse(glm::vec3 newDiffuse);
+        void SetSpecular(glm::vec3 newSpecular);
+        void SetConstant(float newConstant);
+        void SetLinear(float newLinear);
+        void SetQuadratic(float newQuadratic);
 
     private:
         // Private Attributes
@@ -23,4 +34,10 @@ class Light
         Shader* m_shader;
         glm::mat4 model;
         bool draw;
+        glm::vec3 ambient;
+        glm::vec3 diffuse;
+        glm::vec3 specular;
+        float constant;
+        float linear;
+        float quadratic;
 };

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
     <ClCompile Include="..\src\camera.cpp" />
+    <ClCompile Include="..\src\directional_light.cpp" />
     <ClCompile Include="..\src\engine.cpp" />
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\light.cpp" />
@@ -33,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp" />
+    <ClInclude Include="..\src\directional_light.hpp" />
     <ClInclude Include="..\src\engine.hpp" />
     <ClInclude Include="..\src\light.hpp" />
     <ClInclude Include="..\src\material.hpp" />

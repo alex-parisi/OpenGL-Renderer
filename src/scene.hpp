@@ -3,6 +3,7 @@
 #include "object.hpp"
 #include "camera.hpp"
 #include "light.hpp"
+#include "directional_light.hpp"
 
 class Scene
 {
@@ -14,10 +15,14 @@ class Scene
         void Render(float deltaTime, Camera &camera);
         // Add object to scene:
         void AddObject(Object &object);
-        void AddLight(Light& light);
+        void AddLight(Light& pointLight);
+        void SetDirectionalLight(DirectionalLight& newDirectionalLight);
 
     private:
         // List of objects in the scene:
         std::vector<Object> objects;
-        std::vector<Light> lights;
+        // Lighting: can have unlimited point sources, but only one directional source
+        std::vector<Light> pointLights;
+        DirectionalLight directionalLight;
+
 };

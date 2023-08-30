@@ -3,7 +3,8 @@
 // Default Constructor:
 Material::Material()
 {
-    texture = NULL;
+    diffuseTexture = NULL;
+    specularTexture = NULL;
     shader = NULL;
 }
 
@@ -13,9 +14,14 @@ Material::~Material()
 
 }
 
-void Material::SetTexture(Texture &newTexture)
+void Material::SetDiffuseTexture(Texture &newDiffuseTexture)
 {
-    texture = &newTexture;
+    diffuseTexture = &newDiffuseTexture;
+}
+
+void Material::SetSpecularTexture(Texture &newSpecularTexture)
+{
+    specularTexture = &newSpecularTexture;
 }
 
 void Material::SetShader(Shader &newShader)
@@ -23,9 +29,14 @@ void Material::SetShader(Shader &newShader)
     shader = &newShader;
 }
 
-Texture* Material::GetTexture()
+Texture* Material::GetDiffuseTexture()
 {
-    return texture;
+    return diffuseTexture;
+}
+
+Texture* Material::GetSpecularTexture()
+{
+    return specularTexture;
 }
 
 Shader* Material::GetShader()

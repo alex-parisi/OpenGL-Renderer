@@ -3,7 +3,7 @@
 Scene::Scene()
 {
     objects.clear();
-    lights.clear();
+    pointLights.clear();
 }
 
 Scene::~Scene()
@@ -19,10 +19,10 @@ void Scene::Render(float deltaTime, Camera& camera)
     // Render each object in the scene:
     for (auto& o : objects)
     {
-        o.Render(deltaTime, camera);
+        o.Render(deltaTime, camera, directionalLight, pointLights);
     }
-    // Also render the lights:
-    for (auto& l : lights)
+    // Also render the point lights:
+    for (auto& l : pointLights)
     {
         l.Render(deltaTime, camera);
     }
@@ -33,7 +33,12 @@ void Scene::AddObject(Object& object)
     objects.push_back(object);
 }
 
-void Scene::AddLight(Light& light)
+void Scene::AddLight(Light& pointLight)
 {
-    lights.push_back(light);
+    pointLights.push_back(pointLight);
+}
+
+void Scene::SetDirectionalLight(DirectionalLight& newDirectionalLight)
+{
+    directionalLight = newDirectionalLight;
 }

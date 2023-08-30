@@ -55,3 +55,63 @@ void Light::SetDraw(bool newDraw)
 {
     draw = newDraw;
 }
+
+glm::vec3 Light::GetAmbient()
+{
+    return ambient;
+}
+
+glm::vec3 Light::GetDiffuse()
+{
+    return diffuse;
+}
+
+glm::vec3 Light::GetSpecular()
+{
+    return specular;
+}
+
+float Light::GetConstant()
+{
+    return constant;
+}
+
+float Light::GetLinear()
+{
+    return linear;
+}
+
+float Light::GetQuadratic()
+{
+    return quadratic;
+}
+
+void Light::SetAmbient(glm::vec3 newAmbient)
+{
+    ambient = newAmbient;
+}
+
+void Light::SetDiffuse(glm::vec3 newDiffuse)
+{
+    diffuse = newDiffuse;
+}
+
+void Light::SetSpecular(glm::vec3 newSpecular)
+{
+    specular = newSpecular;
+}
+
+void Light::SetConstant(float newConstant)
+{
+    constant = newConstant;
+}
+
+void Light::SetLinear(float newLinear)
+{
+    linear = newLinear;
+}
+
+void Light::SetQuadratic(float newQuadratic)
+{
+    quadratic = newQuadratic;
+}
