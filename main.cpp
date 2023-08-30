@@ -6,6 +6,7 @@ int main(int argc, char* argv[])
     if (engine.Initialize())
     {
         // <TEST>
+
         float vertices[] = {
             // positions          // normals           // texture coords
             -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
@@ -99,7 +100,9 @@ int main(int argc, char* argv[])
         engine.scene.AddObject(testObject);
         engine.scene.AddLight(testLight1);
         engine.scene.SetDirectionalLight(testLight2);
+
         // </TEST>
+
         engine.Execute();
     }
 	return 0;

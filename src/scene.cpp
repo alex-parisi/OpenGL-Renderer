@@ -11,7 +11,7 @@ Scene::~Scene()
 
 }
 
-void Scene::Render(float deltaTime, Camera& camera)
+void Scene::Render(float deltaTime, Camera* camera)
 {
     // Set the background color
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -19,26 +19,26 @@ void Scene::Render(float deltaTime, Camera& camera)
     // Render each object in the scene:
     for (auto& o : objects)
     {
-        o.Render(deltaTime, camera, directionalLight, pointLights);
+        o->Render(deltaTime, camera, directionalLight, pointLights);
     }
     // Also render the point lights:
     for (auto& l : pointLights)
     {
-        l.Render(deltaTime, camera);
+        l->Render(deltaTime, camera);
     }
 }
 
 void Scene::AddObject(Object& object)
 {
-    objects.push_back(object);
+    objects.push_back(&object);
 }
 
 void Scene::AddLight(Light& pointLight)
 {
-    pointLights.push_back(pointLight);
+    pointLights.push_back(&pointLight);
 }
 
 void Scene::SetDirectionalLight(DirectionalLight& newDirectionalLight)
 {
-    directionalLight = newDirectionalLight;
+    directionalLight = &newDirectionalLight;
 }

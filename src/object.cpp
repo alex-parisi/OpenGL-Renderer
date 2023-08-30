@@ -2,6 +2,10 @@
 
 Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
 {
+    // Initialize the object model
+    model = glm::mat4(1.0f);
+    // Set the material
+    m_material = &material;
     // Initialize Vertex Array and Vertex Buffer Objects
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -20,7 +24,7 @@ Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
     // As we only have a single shader, we could also just activate our shader once beforehand if we want to 
-    glUseProgram(material.GetShader()->ID);
+    glUseProgram(m_material->GetShader()->ID);
     // Set the wireframe mode to be on or off
     if (wireframeOn)
     {
@@ -32,10 +36,6 @@ Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
         wireframeMode = false;
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
-    // Initialize the object model
-    model = glm::mat4(1.0f);
-    // Set the material
-    m_material = material;
 }
 
 Object::~Object()
@@ -59,36 +59,36 @@ void Object::Scale(glm::vec3 scale)
 }
 
 // Inherited Render function:
-void Object::Render(float deltaTime, Camera& camera, DirectionalLight& directionalLight, std::vector<Light> pointLights)
+void Object::Render(float deltaTime, Camera* camera, DirectionalLight* directionalLight, std::vector<Light *> pointLights)
 {
     // Activate the shader
-    m_material.GetShader()->Use();
-    m_material.GetShader()->SetVec3("viewPos", camera.GetCameraPos());
+    m_material->GetShader()->Use();
+    m_material->GetShader()->SetVec3("viewPos", camera->GetCameraPos());
     // Set Shininess:
-    m_material.GetShader()->SetFloat("material.shininess", m_material.GetShininess());
+    m_material->GetShader()->SetFloat("material.shininess", m_material->GetShininess());
     // Set Light Properties:
     // Start with directional light:
-    m_material.GetShader()->SetVec3("dirLight.direction", directionalLight.GetDirection());
-    m_material.GetShader()->SetVec3("dirLight.ambient", directionalLight.GetAmbient());
-    m_material.GetShader()->SetVec3("dirLight.diffuse", directionalLight.GetDiffuse());
-    m_material.GetShader()->SetVec3("dirLight.specular", directionalLight.GetSpecular());
+    m_material->GetShader()->SetVec3("dirLight.direction", directionalLight->GetDirection());
+    m_material->GetShader()->SetVec3("dirLight.ambient", directionalLight->GetAmbient());
+    m_material->GetShader()->SetVec3("dirLight.diffuse", directionalLight->GetDiffuse());
+    m_material->GetShader()->SetVec3("dirLight.specular", directionalLight->GetSpecular());
     // Then do all of the point lights: (right now limited to one)
     for (auto& p : pointLights)
     {
-        m_material.GetShader()->SetVec3("pointLights[0].position", p.GetPosition());
-        m_material.GetShader()->SetVec3("pointLights[0].ambient", p.GetAmbient());
-        m_material.GetShader()->SetVec3("pointLights[0].diffuse", p.GetDiffuse());
-        m_material.GetShader()->SetVec3("pointLights[0].specular", p.GetSpecular());
-        m_material.GetShader()->SetFloat("pointLights[0].constant", p.GetConstant());
-        m_material.GetShader()->SetFloat("pointLights[0].linear", p.GetLinear());
-        m_material.GetShader()->SetFloat("pointLights[0].quadratic", p.GetQuadratic());
+        m_material->GetShader()->SetVec3("pointLights[0].position", p->GetPosition());
+        m_material->GetShader()->SetVec3("pointLights[0].ambient", p->GetAmbient());
+        m_material->GetShader()->SetVec3("pointLights[0].diffuse", p->GetDiffuse());
+        m_material->GetShader()->SetVec3("pointLights[0].specular", p->GetSpecular());
+        m_material->GetShader()->SetFloat("pointLights[0].constant", p->GetConstant());
+        m_material->GetShader()->SetFloat("pointLights[0].linear", p->GetLinear());
+        m_material->GetShader()->SetFloat("pointLights[0].quadratic", p->GetQuadratic());
     }
     // Pass the projection matrix to the shader
-    glm::mat4 projection = camera.GetProjectionMatrix();
-    m_material.GetShader()->SetMat4("projection", projection);
+    glm::mat4 projection = camera->GetProjectionMatrix();
+    m_material->GetShader()->SetMat4("projection", projection);
     // Camera/View Transformation
-    glm::mat4 view = camera.GetViewMatrix();
-    m_material.GetShader()->SetMat4("view", view);
+    glm::mat4 view = camera->GetViewMatrix();
+    m_material->GetShader()->SetMat4("view", view);
     // Do time transformations here:
     // <TEMP>
     model = glm::mat4(1.0f);
@@ -98,11 +98,11 @@ void Object::Render(float deltaTime, Camera& camera, DirectionalLight& direction
     // </TEMP>
     // Bind material's texture onto texture unit (if there is a texture)
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_material.GetDiffuseTexture()->texture);
+    glBindTexture(GL_TEXTURE_2D, m_material->GetDiffuseTexture()->texture);
     glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, m_material.GetSpecularTexture()->texture);
+    glBindTexture(GL_TEXTURE_2D, m_material->GetSpecularTexture()->texture);
     // Render the object:
-    m_material.GetShader()->SetMat4("model", model);
+    m_material->GetShader()->SetMat4("model", model);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }

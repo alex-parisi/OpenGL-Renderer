@@ -100,7 +100,7 @@ void Engine::ProcessInput(GLFWwindow* window)
 void Engine::Render()
 {
     // Render the scene
-    scene.Render(deltaTime, camera);
+    scene.Render(deltaTime, &camera);
     // Copy the buffer to the screen
     glfwSwapBuffers(window);
 }
