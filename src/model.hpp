@@ -11,6 +11,7 @@
 #include "camera.hpp"
 #include "light.hpp"
 #include "directional_light.hpp"
+#include "input.hpp"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -28,8 +29,9 @@ class Model
         {
             m_shader = &shader;
             LoadModel(path);
+            m_model = glm::mat4(1.0f);
         }
-        void Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights);
+        void Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager);
         // Public Attributes
         std::vector<MeshTexture> texturesLoaded;
         std::vector<Mesh> meshes;
@@ -42,4 +44,5 @@ class Model
         Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
         std::vector<MeshTexture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
         Shader* m_shader;
+        glm::mat4 m_model;
 };

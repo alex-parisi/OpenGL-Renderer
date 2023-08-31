@@ -1,10 +1,11 @@
 #include "mesh.hpp"
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<MeshTexture> textures)
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<MeshTexture> textures, float shininess)
 {
     m_vertices = vertices;
     m_indices = indices;
     m_textures = textures;
+    m_shininess = shininess;
     SetupMesh();
 }
 
@@ -17,14 +18,16 @@ void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<
 {
     // Bind material properties
     shader.Use();
-    shader.SetFloat("material.shininess", 32.0f);
+    shader.SetFloat("material.shininess", m_shininess / 4);
+    // shader.SetFloat("material.shininess", m_shininess / 4000.0f);
     // Set Light Properties:
     // Directional light:
     shader.SetVec3("dirLight.direction", directionalLight.GetDirection());
     shader.SetVec3("dirLight.ambient", directionalLight.GetAmbient());
     shader.SetVec3("dirLight.diffuse", directionalLight.GetDiffuse());
     shader.SetVec3("dirLight.specular", directionalLight.GetSpecular());
-    // Point light:
+    // Point light(s):
+    shader.SetInt("numLights", static_cast<int>(pointLights.size()));
     for (auto& p : pointLights)
     {
         shader.SetVec3("pointLights[0].position", p->GetPosition());

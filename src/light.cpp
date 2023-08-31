@@ -34,7 +34,7 @@ void Light::Render(float deltaTime, Camera* camera)
         m_shader->SetMat4("projection", camera->GetProjectionMatrix());
         m_shader->SetMat4("view", camera->GetViewMatrix());
         model = glm::mat4(1.0f);
-        model = glm::rotate(model, deltaTime / 2, glm::vec3(0.0f, -1.0f, 0.0f));
+        // model = glm::rotate(model, deltaTime / 2, glm::vec3(0.0f, -1.0f, 0.0f));
         model = glm::translate(model, position);
         position = glm::vec3(model[3]);
         model = glm::scale(model, glm::vec3(0.1f));

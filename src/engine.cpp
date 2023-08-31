@@ -6,6 +6,7 @@ Engine::Engine()
     // Prepare variables for initialization
     deltaTime = 0.0f;
     lastFrame = 0.0f;
+    window = NULL;
 }
 
 // Default Destructor:
@@ -20,8 +21,12 @@ bool Engine::Initialize()
     InitializeGLFW();
     if (CreateWindow() && InitializeGLAD())
     {
-        // Associate the camera pointer to the window
-        glfwSetWindowUserPointer(window, &camera);
+        // Create the callback object, linking the camera and input manager
+        callbackObj.camera = &camera;
+        callbackObj.inputManager = &inputManager;
+        // Associate the callback object pointer to the window
+        glfwSetWindowUserPointer(window, &callbackObj);
+        // Enable depth testing
         glEnable(GL_DEPTH_TEST);
         // Create a new viewport
         glViewport(0, 0, 800, 600);
@@ -40,6 +45,8 @@ void Engine::MapCallbacks()
     glfwSetCursorPosCallback(window, MouseCallback);
     // Callback function called when the scroll wheel is moved:
     glfwSetScrollCallback(window, ScrollCallback);
+    // Callback function called when a key is pressed, released, or repeated:
+    glfwSetKeyCallback(window, KeyCallback);
 }
 
 void Engine::Execute()
@@ -75,18 +82,20 @@ void Engine::ProcessInput(GLFWwindow* window)
     glm::vec3 cameraPos = camera.GetCameraPos();
     glm::vec3 cameraFront = camera.GetCameraFront();
     glm::vec3 cameraUp = camera.GetCameraUp();
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.SetCameraPos(cameraPos + (cameraSpeed * cameraFront));
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.SetCameraPos(cameraPos - (cameraSpeed * cameraFront));
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.SetCameraPos(cameraPos - (glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed));
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.SetCameraPos(cameraPos + (glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed));
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-        camera.SetCameraPos(cameraPos - (cameraSpeed * cameraUp));
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-        camera.SetCameraPos(cameraPos + (cameraSpeed * cameraUp));
+    glm::vec3 newPos = cameraPos;
+    if (inputManager.keyboard.GetKeyState(GLFW_KEY_W))
+        newPos += cameraSpeed * cameraFront;
+    if (inputManager.keyboard.GetKeyState(GLFW_KEY_S))
+        newPos -= cameraSpeed * cameraFront;
+    if (inputManager.keyboard.GetKeyState(GLFW_KEY_A))
+        newPos -= cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+    if (inputManager.keyboard.GetKeyState(GLFW_KEY_D))
+        newPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+    if (inputManager.keyboard.GetKeyState(GLFW_KEY_Q))
+        newPos += cameraSpeed * cameraUp;
+    if (inputManager.keyboard.GetKeyState(GLFW_KEY_E))
+        newPos -= cameraSpeed * cameraUp;
+    camera.SetCameraPos(newPos);
     // Unlock/Lock the camera when the Mouse Left is pressed/released
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         camera.locked = false;
@@ -100,7 +109,7 @@ void Engine::ProcessInput(GLFWwindow* window)
 void Engine::Render()
 {
     // Render the scene
-    scene.Render(deltaTime, &camera);
+    scene.Render(deltaTime, &camera, &inputManager);
     // Copy the buffer to the screen
     glfwSwapBuffers(window);
 }
@@ -162,47 +171,56 @@ void Engine::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 
 void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
 {
-    Camera *cam = (Camera *)glfwGetWindowUserPointer(window);
+    CallbackObj* obj = (CallbackObj*)glfwGetWindowUserPointer(window);
     float xPos = static_cast<float>(xPosIn);
     float yPos = static_cast<float>(yPosIn);
 
-    if (cam->GetFirstMouse())
+    if (obj->camera->GetFirstMouse())
     {
-        cam->SetLastX(xPos);
-        cam->SetLastY(yPos);
-        cam->SetFirstMouse(false);
+        obj->camera->SetLastX(xPos);
+        obj->camera->SetLastY(yPos);
+        obj->camera->SetFirstMouse(false);
     }
 
-    if (!cam->locked)
+    if (!obj->camera->locked)
     {
-        float xOffset = xPos - cam->GetLastX();
-        float yOffset = cam->GetLastY() - yPos; // reversed since y-coordinates go from bottom to top
-        cam->SetLastX(xPos);
-        cam->SetLastY(yPos);
+        float xOffset = xPos - obj->camera->GetLastX();
+        float yOffset = obj->camera->GetLastY() - yPos; // reversed since y-coordinates go from bottom to top
+        obj->camera->SetLastX(xPos);
+        obj->camera->SetLastY(yPos);
         float sensitivity = 0.1f; // change this value to your liking
         xOffset *= sensitivity;
         yOffset *= sensitivity;
-        cam->SetYaw(cam->GetYaw() + xOffset);
-        cam->SetPitch(cam->GetPitch() + yOffset);
+        obj->camera->SetYaw(obj->camera->GetYaw() + xOffset);
+        obj->camera->SetPitch(obj->camera->GetPitch() + yOffset);
         // make sure that when pitch is out of bounds, screen doesn't get flipped
-        if (cam->GetPitch() > 89.0f)
-            cam->SetPitch(89.0f);
-        if (cam->GetPitch() < -89.0f)
-            cam->SetPitch(-89.0f);
+        if (obj->camera->GetPitch() > 89.0f)
+            obj->camera->SetPitch(89.0f);
+        if (obj->camera->GetPitch() < -89.0f)
+            obj->camera->SetPitch(-89.0f);
         glm::vec3 front;
-        front.x = cos(glm::radians(cam->GetYaw())) * cos(glm::radians(cam->GetPitch()));
-        front.y = sin(glm::radians(cam->GetPitch()));
-        front.z = sin(glm::radians(cam->GetYaw())) * cos(glm::radians(cam->GetPitch()));
-        cam->SetCameraFront(glm::normalize(front));
+        front.x = cos(glm::radians(obj->camera->GetYaw())) * cos(glm::radians(obj->camera->GetPitch()));
+        front.y = sin(glm::radians(obj->camera->GetPitch()));
+        front.z = sin(glm::radians(obj->camera->GetYaw())) * cos(glm::radians(obj->camera->GetPitch()));
+        obj->camera->SetCameraFront(glm::normalize(front));
     }
 }
 
 void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 {
-    Camera* cam = (Camera*)glfwGetWindowUserPointer(window);
-    cam->SetFov(cam->GetFov() - (float)yOffset);
-    if (cam->GetFov() < 1.0f)
-        cam->SetFov(1.0f);
-    if (cam->GetFov() > 45.0f)
-        cam->SetFov(45.0f);
+    CallbackObj* obj = (CallbackObj*)glfwGetWindowUserPointer(window);
+    obj->camera->SetFov(obj->camera->GetFov() - (float)yOffset);
+    if (obj->camera->GetFov() < 1.0f)
+        obj->camera->SetFov(1.0f);
+    if (obj->camera->GetFov() > 45.0f)
+        obj->camera->SetFov(45.0f);
+}
+
+void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    CallbackObj* obj = (CallbackObj*)glfwGetWindowUserPointer(window);
+    if (obj->inputManager->keyboard.CheckKey(key))
+        obj->inputManager->keyboard.SetKeyState(key, action);
+    if (obj->inputManager->mouse.CheckKey(key))
+        obj->inputManager->mouse.SetKeyState(key, action);
 }

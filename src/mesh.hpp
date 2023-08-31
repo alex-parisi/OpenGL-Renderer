@@ -31,7 +31,7 @@ struct MeshTexture {
 class Mesh {
     public:
         // Constructor & Destructor
-        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<MeshTexture> textures);
+        Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<MeshTexture> textures, float shininess);
         ~Mesh();
         // Public Functions:
         void Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<Light*> pointLights);
@@ -39,6 +39,7 @@ class Mesh {
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
         std::vector<MeshTexture> m_textures;
+        float m_shininess;
         unsigned int VAO;
 
     private:

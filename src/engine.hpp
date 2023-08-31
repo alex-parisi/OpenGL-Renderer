@@ -10,6 +10,14 @@
 #include "camera.hpp"
 #include "light.hpp"
 #include "model.hpp"
+#include "input.hpp"
+
+// Structure that gets passed to each callback function. Add pointers to relevant things here.
+struct CallbackObj
+{
+	Camera* camera;
+	InputManager* inputManager;
+};
 
 class Engine
 {
@@ -29,9 +37,12 @@ class Engine
 		GLFWwindow* window;
         Scene scene;
         Camera camera;
+		InputManager inputManager;
         // Timing attributes:
         float deltaTime;
         float lastFrame;
+		// Callback Object
+		CallbackObj callbackObj;
 
 	private:
 		// Internal initialization functions
@@ -40,6 +51,7 @@ class Engine
 		bool CreateWindow();
 		// Callback functions (need to be static to work with GLFW)
 		static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
-		static void MouseCallback(GLFWwindow* window, double xposIn, double yposIn);
-		static void ScrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+		static void MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn);
+		static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
+		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

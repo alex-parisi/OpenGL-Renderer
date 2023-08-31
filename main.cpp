@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 
         // 4. Create a directional light source
         DirectionalLight directionalLightSource;
-        directionalLightSource.SetDirection(glm::vec3(-0.2f, -1.0f, -0.3f));
+        directionalLightSource.SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
         directionalLightSource.SetAmbient(glm::vec3(0.05f, 0.05f, 0.05f));
         directionalLightSource.SetDiffuse(glm::vec3(0.4f, 0.4f, 0.4f));
         directionalLightSource.SetSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
         Shader lightShader("../src/shaders/light_cube.vs", "../src/shaders/light_cube.fs");
 
         // 7. Create a point light source
-        Light pointLightSource(modelShader, cubeVertices, 288);
+        Light pointLightSource(lightShader, cubeVertices, 288);
         pointLightSource.SetPosition(glm::vec3(5.0f, 0.0f, 0.0f));
         pointLightSource.SetAmbient(glm::vec3(0.05f, 0.05f, 0.05f));
         pointLightSource.SetDiffuse(glm::vec3(0.8f, 0.8f, 0.8f));

@@ -40,7 +40,7 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
     return textureID;
 }
 
-void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights)
+void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager)
 {
     m_shader->Use();
     glm::mat4 projection = camera.GetProjectionMatrix();
@@ -48,11 +48,17 @@ void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector
     m_shader->SetMat4("projection", projection);
     m_shader->SetMat4("view", view);
     // <TEMP>
-    glm::mat4 model = glm::mat4(1.0f);
     float t = static_cast<float>(glfwGetTime());
-    model = glm::rotate(model, t, glm::vec3(0.5f, 1.0f, 0.0f));
-    model = glm::scale(model, glm::vec3((0.1 * sin(2 * t)) + 0.9));
-    m_shader->SetMat4("model", model);
+    // Check for model rotation:
+    if (inputManager->keyboard.GetKeyState(GLFW_KEY_UP))
+        m_model = glm::rotate(m_model, 0.0025f, glm::vec3(1.0f, 0.0f, 0.0f));
+    if (inputManager->keyboard.GetKeyState(GLFW_KEY_DOWN))
+        m_model = glm::rotate(m_model, 0.0025f, glm::vec3(-1.0f, 0.0f, 0.0f));
+    if (inputManager->keyboard.GetKeyState(GLFW_KEY_LEFT))
+        m_model = glm::rotate(m_model, 0.0025f, glm::vec3(0.0f, -1.0f, 0.0f));
+    if (inputManager->keyboard.GetKeyState(GLFW_KEY_RIGHT))
+        m_model = glm::rotate(m_model, 0.0025f, glm::vec3(0.0f, 1.0f, 0.0f));
+    m_shader->SetMat4("model", m_model);
     // </TEMP>
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(*m_shader, *directionalLight, pointLights);
@@ -173,9 +179,12 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     // 4. height maps
     std::vector<MeshTexture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+    // 5. shininess
+    float shininess = 0.0f;
+    aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shininess);
 
     // return a mesh object created from the extracted mesh data
-    return Mesh(vertices, indices, textures);
+    return Mesh(vertices, indices, textures, shininess);
 }
 
 std::vector<MeshTexture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)

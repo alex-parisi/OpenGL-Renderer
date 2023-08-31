@@ -5,6 +5,7 @@
 #include "light.hpp"
 #include "directional_light.hpp"
 #include "model.hpp"
+#include "input.hpp"
 
 class Scene
 {
@@ -13,7 +14,7 @@ class Scene
         Scene();
         ~Scene();
         // Public Functions:
-        void Render(float deltaTime, Camera* camera);
+        void Render(float deltaTime, Camera* camera, InputManager* inputManager);
         // Add object to scene:
         void AddObject(Object& object);
         void AddLight(Light& pointLight);

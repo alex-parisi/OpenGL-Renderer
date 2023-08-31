@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\directional_light.cpp" />
     <ClCompile Include="..\src\engine.cpp" />
     <ClCompile Include="..\src\glad.c" />
+    <ClCompile Include="..\src\input.cpp" />
     <ClCompile Include="..\src\light.cpp" />
     <ClCompile Include="..\src\material.cpp" />
     <ClCompile Include="..\src\mesh.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\directional_light.hpp" />
     <ClInclude Include="..\src\engine.hpp" />
+    <ClInclude Include="..\src\input.hpp" />
     <ClInclude Include="..\src\light.hpp" />
     <ClInclude Include="..\src\material.hpp" />
     <ClInclude Include="..\src\mesh.hpp" />
