@@ -117,8 +117,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>S:\OpenGL-Renderer\lib\include;$(IncludePath)</IncludePath>
-    <LibraryPath>S:\OpenGL-Renderer\lib\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>S:\OpenGL-Renderer\lib\include;C:\alex\code\OpenGL-Renderer\lib\include;$(IncludePath)</IncludePath>
+    <LibraryPath>S:\OpenGL-Renderer\lib\lib;C:\alex\code\OpenGL-Renderer\lib\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
