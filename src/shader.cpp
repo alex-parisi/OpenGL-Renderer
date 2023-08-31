@@ -1,13 +1,15 @@
 #include "shader.hpp"
 
 // Default constructor:
-Shader::Shader()
+Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
-    ID = NULL;
-    vertexCodePath = NULL;
-    fragmentCodePath = NULL;
-    vertexGLSLCode = "";
-    fragmentGLSLCode = "";
+    // Update Code file locations
+    SetVertexPath(vertexPath);
+    SetFragmentPath(fragmentPath);
+    // Load the GLSL code and compile
+    LoadGLSLCode();
+    Compile();
+    Link();
 }
 
 // Default Destructor:
@@ -17,20 +19,6 @@ Shader::~Shader()
 }
 
 // Public Functions:
-bool Shader::Initialize(const char* vertexPath, const char* fragmentPath)
-{
-    // Update Code file locations
-    SetVertexPath(vertexPath);
-    SetFragmentPath(fragmentPath);
-    // Load the GLSL code and compile
-    if (LoadGLSLCode() && Compile() && Link())
-    {
-        return true;
-    }
-    return false;
-
-}
-
 void Shader::Use() const
 {
     glUseProgram(ID);

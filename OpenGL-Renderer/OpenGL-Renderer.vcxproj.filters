@@ -95,6 +95,9 @@
     <ClInclude Include="..\src\model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\shapes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\colors.fs">
@@ -107,6 +110,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\src\shaders\light_cube.vs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\shaders\model_loading.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\shaders\model_loading.vs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

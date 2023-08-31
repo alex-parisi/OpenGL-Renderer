@@ -3,6 +3,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "shader.hpp"
+#include "directional_light.hpp"
+#include "light.hpp"
 #include <string>
 #include <vector>
 
@@ -32,7 +34,7 @@ class Mesh {
         Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<MeshTexture> textures);
         ~Mesh();
         // Public Functions:
-        void Draw(Shader& shader);
+        void Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<Light*> pointLights);
         // Public Attributes:
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;

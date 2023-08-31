@@ -45,6 +45,7 @@
     <ClInclude Include="..\src\object.hpp" />
     <ClInclude Include="..\src\scene.hpp" />
     <ClInclude Include="..\src\shader.hpp" />
+    <ClInclude Include="..\src\shapes.hpp" />
     <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\texture.hpp" />
   </ItemGroup>
@@ -53,6 +54,8 @@
     <None Include="..\src\shaders\colors.vs" />
     <None Include="..\src\shaders\light_cube.fs" />
     <None Include="..\src\shaders\light_cube.vs" />
+    <None Include="..\src\shaders\model_loading.fs" />
+    <None Include="..\src\shaders\model_loading.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

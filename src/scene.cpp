@@ -3,6 +3,7 @@
 Scene::Scene()
 {
     objects.clear();
+    models.clear();
     pointLights.clear();
 }
 
@@ -20,6 +21,11 @@ void Scene::Render(float deltaTime, Camera* camera)
     for (auto& o : objects)
     {
         o->Render(deltaTime, camera, directionalLight, pointLights);
+    }
+    // Render each model in the scene:
+    for (auto& m : models)
+    {
+        m->Draw(*camera, directionalLight, pointLights);
     }
     // Also render the point lights:
     for (auto& l : pointLights)
@@ -41,4 +47,9 @@ void Scene::AddLight(Light& pointLight)
 void Scene::SetDirectionalLight(DirectionalLight& newDirectionalLight)
 {
     directionalLight = &newDirectionalLight;
+}
+
+void Scene::AddModel(Model& model)
+{
+    models.push_back(&model);
 }

@@ -14,10 +14,9 @@ class Shader
 {
     public:
         // Constructor & Destructor
-        Shader();
+        Shader(const char* vertexPath, const char* fragmentPath);
         ~Shader();
         // Public Functions:
-        bool Initialize(const char* vertexPath, const char* fragmentPath);
         void Use() const;
         // Utility Uniform Functions:
         void SetBool(const std::string &name, bool value) const;

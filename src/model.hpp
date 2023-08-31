@@ -8,6 +8,9 @@
 #include <assimp/postprocess.h>
 #include "mesh.hpp"
 #include "shader.hpp"
+#include "camera.hpp"
+#include "light.hpp"
+#include "directional_light.hpp"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -21,11 +24,12 @@ class Model
 {
     public:
         // Constructor & Destructor
-        Model(std::string const& path, bool gamma = false) : gammaCorrection(gamma)
+        Model(Shader& shader, std::string const& path, bool gamma = false) : gammaCorrection(gamma)
         {
+            m_shader = &shader;
             LoadModel(path);
         }
-        void Draw(Shader& shader);
+        void Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights);
         // Public Attributes
         std::vector<MeshTexture> texturesLoaded;
         std::vector<Mesh> meshes;
@@ -37,4 +41,5 @@ class Model
         void ProcessNode(aiNode* node, const aiScene* scene);
         Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
         std::vector<MeshTexture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+        Shader* m_shader;
 };

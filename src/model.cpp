@@ -40,10 +40,22 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
     return textureID;
 }
 
-void Model::Draw(Shader& shader)
+void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights)
 {
+    m_shader->Use();
+    glm::mat4 projection = camera.GetProjectionMatrix();
+    glm::mat4 view = camera.GetViewMatrix();
+    m_shader->SetMat4("projection", projection);
+    m_shader->SetMat4("view", view);
+    // <TEMP>
+    glm::mat4 model = glm::mat4(1.0f);
+    float t = static_cast<float>(glfwGetTime());
+    model = glm::rotate(model, t, glm::vec3(0.5f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3((0.1 * sin(2 * t)) + 0.9));
+    m_shader->SetMat4("model", model);
+    // </TEMP>
     for (unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw(shader);
+        meshes[i].Draw(*m_shader, *directionalLight, pointLights);
 }
 
 void Model::LoadModel(std::string const& path)
@@ -150,10 +162,10 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     // normal: texture_normalN
 
     // 1. diffuse maps
-    std::vector<MeshTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
+    std::vector<MeshTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "material.diffuse");
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     // 2. specular maps
-    std::vector<MeshTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+    std::vector<MeshTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "material.specular");
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     // 3. normal maps
     std::vector<MeshTexture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");

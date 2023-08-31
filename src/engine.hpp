@@ -9,6 +9,7 @@
 #include "scene.hpp"
 #include "camera.hpp"
 #include "light.hpp"
+#include "model.hpp"
 
 class Engine
 {

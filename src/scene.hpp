@@ -4,6 +4,7 @@
 #include "camera.hpp"
 #include "light.hpp"
 #include "directional_light.hpp"
+#include "model.hpp"
 
 class Scene
 {
@@ -17,10 +18,14 @@ class Scene
         void AddObject(Object& object);
         void AddLight(Light& pointLight);
         void SetDirectionalLight(DirectionalLight& newDirectionalLight);
+        // Add model to the scene:
+        void AddModel(Model& model);
 
     private:
         // List of objects in the scene:
         std::vector<Object *> objects;
+        // List of models in the scene:
+        std::vector<Model *> models;
         // Lighting: can have unlimited point sources, but only one directional source
         std::vector<Light *> pointLights;
         DirectionalLight* directionalLight;

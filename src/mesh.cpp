@@ -13,8 +13,28 @@ Mesh::~Mesh()
 
 }
 
-void Mesh::Draw(Shader& shader)
+void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<Light*> pointLights)
 {
+    // Bind material properties
+    shader.Use();
+    shader.SetFloat("material.shininess", 32.0f);
+    // Set Light Properties:
+    // Directional light:
+    shader.SetVec3("dirLight.direction", directionalLight.GetDirection());
+    shader.SetVec3("dirLight.ambient", directionalLight.GetAmbient());
+    shader.SetVec3("dirLight.diffuse", directionalLight.GetDiffuse());
+    shader.SetVec3("dirLight.specular", directionalLight.GetSpecular());
+    // Point light:
+    for (auto& p : pointLights)
+    {
+        shader.SetVec3("pointLights[0].position", p->GetPosition());
+        shader.SetVec3("pointLights[0].ambient", p->GetAmbient());
+        shader.SetVec3("pointLights[0].diffuse", p->GetDiffuse());
+        shader.SetVec3("pointLights[0].specular", p->GetSpecular());
+        shader.SetFloat("pointLights[0].constant", p->GetConstant());
+        shader.SetFloat("pointLights[0].linear", p->GetLinear());
+        shader.SetFloat("pointLights[0].quadratic", p->GetQuadratic());
+    }
     // Bind textures
     unsigned int diffuseNr = 1;
     unsigned int specularNr = 1;
@@ -25,9 +45,9 @@ void Mesh::Draw(Shader& shader)
         glActiveTexture(GL_TEXTURE0 + i);
         std::string number;
         std::string name = m_textures[i].type;
-        if (name == "texture_diffuse")
+        if (name == "material.diffuse")
             number = std::to_string(diffuseNr++);
-        else if (name == "texture_specular")
+        else if (name == "material.specular")
             number = std::to_string(specularNr++); // transfer unsigned int to string
         else if (name == "texture_normal")
             number = std::to_string(normalNr++); // transfer unsigned int to string
