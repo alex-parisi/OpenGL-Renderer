@@ -64,6 +64,16 @@ void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector
         meshes[i].Draw(*m_shader, *directionalLight, pointLights);
 }
 
+glm::mat4 Model::GetModel()
+{
+    return m_model;
+}
+
+void Model::SetModel(glm::mat4 newModel)
+{
+    m_model = newModel;
+}
+
 void Model::LoadModel(std::string const& path)
 {
     // read file via ASSIMP

@@ -47,8 +47,8 @@
     <ClInclude Include="..\src\object.hpp" />
     <ClInclude Include="..\src\scene.hpp" />
     <ClInclude Include="..\src\shader.hpp" />
-    <ClInclude Include="..\src\shapes.hpp" />
     <ClInclude Include="..\src\stb_image.h" />
+    <ClInclude Include="..\src\test_objects.hpp" />
     <ClInclude Include="..\src\texture.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -37,6 +37,8 @@ class Model
         std::vector<Mesh> meshes;
         std::string directory;
         bool gammaCorrection;
+        glm::mat4 GetModel();
+        void SetModel(glm::mat4 newModel);
 
     private:
         void LoadModel(std::string const& path);

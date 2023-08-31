@@ -22,7 +22,7 @@ void Scene::Render(float deltaTime, Camera* camera, InputManager* inputManager)
     {
         l->Render(deltaTime, camera);
     }
-    // 2. Render each object in the scene (potentially deprecated):
+    // 2. Render each object in the scene (floors and other geometric shapes)
     for (auto& o : objects)
     {
         o->Render(deltaTime, camera, directionalLight, pointLights);

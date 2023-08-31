@@ -23,6 +23,8 @@ class Object
         glm::vec3 GetPosition();
         void SetWireframeMode(bool newWireframeMode);
         bool GetWireframeMode();
+        void SetModel(glm::mat4 newModel);
+        glm::mat4 GetModel();
 
     private:
         // Private Attributes

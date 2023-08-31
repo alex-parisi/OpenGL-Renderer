@@ -1,5 +1,5 @@
 #include "src/engine.hpp"
-#include "src/shapes.hpp"
+#include "src/test_objects.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -70,8 +70,9 @@ int main(int argc, char* argv[])
         // 1. Load the shader:
         Shader modelShader("../src/shaders/model_loading.vs", "../src/shaders/model_loading.fs");
 
-        // 2. Load the model
+        // 2. Load the model and move it up a teensy bit
         Model model(modelShader, "../resources/models/backpack.obj");
+        model.SetModel(glm::translate(model.GetModel(), glm::vec3(0.0f, 5.0f, 0.0f)));
 
         // 3. Add the model to the scene
         engine.scene.AddModel(model);
@@ -91,7 +92,7 @@ int main(int argc, char* argv[])
 
         // 7. Create a point light source
         Light pointLightSource(lightShader, cubeVertices, 288);
-        pointLightSource.SetPosition(glm::vec3(5.0f, 0.0f, 0.0f));
+        pointLightSource.SetPosition(glm::vec3(10.0f, 10.0f, 0.0f));
         pointLightSource.SetAmbient(glm::vec3(0.05f, 0.05f, 0.05f));
         pointLightSource.SetDiffuse(glm::vec3(0.8f, 0.8f, 0.8f));
         pointLightSource.SetSpecular(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -101,6 +102,29 @@ int main(int argc, char* argv[])
 
         // 8. Add the point light source to the scene
         engine.scene.AddLight(pointLightSource);
+
+        // 9. Add a floor to the scene
+        // 9a. Create a texture for the floor object
+        Texture floorTexture;
+        floorTexture.LoadRGB("../resources/textures/wood.jpg");
+        // 9b. Create a material for the floor object
+        Material floorMaterial;
+        floorMaterial.SetShader(modelShader);
+        floorMaterial.SetAmbient(glm::vec3(1.0f, 0.5f, 0.31f));
+        floorMaterial.SetDiffuse(glm::vec3(1.0f, 0.5f, 0.31f));
+        floorMaterial.SetSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
+        floorMaterial.SetShininess(32.0f);
+        floorMaterial.SetDiffuseTexture(floorTexture);
+        floorMaterial.SetSpecularTexture(floorTexture);
+        // 9c. Create the floor object
+        Object floorObject(floorMaterial, cubeVertices, 288, false);
+        // 9d. Resize and move the floor
+        glm::mat4 floorModel = floorObject.GetModel();
+        floorModel = glm::scale(floorModel, glm::vec3(100.0f, 0.1f, 100.0f));
+        floorModel = glm::translate(floorModel, glm::vec3(0.0f, -0.05f, 0.0f));
+        floorObject.SetModel(floorModel);
+        // 9e. Add the floor object to the scene
+        engine.scene.AddObject(floorObject);
 
         //////////////////////////////
         // <End Model Loading Test> //

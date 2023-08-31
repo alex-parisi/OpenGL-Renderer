@@ -98,10 +98,10 @@
     <ClInclude Include="..\src\model.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\shapes.hpp">
+    <ClInclude Include="..\src\input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\input.hpp">
+    <ClInclude Include="..\src\test_objects.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

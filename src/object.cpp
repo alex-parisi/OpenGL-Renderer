@@ -91,10 +91,8 @@ void Object::Render(float deltaTime, Camera* camera, DirectionalLight* direction
     m_material->GetShader()->SetMat4("view", view);
     // Do time transformations here:
     // <TEMP>
-    model = glm::mat4(1.0f);
-    float t = static_cast<float>(glfwGetTime());
-    Rotate(t * 25, glm::vec3(0.5f, 1.0f, 0.0f));
-    Scale(glm::vec3((0.1 * sin(2 * t)) + 0.9));
+    // Do moving stuff here
+    // Maybe add another function that loops, and each unique object can overload this function (TO - DO)
     // </TEMP>
     // Bind material's texture onto texture unit (if there is a texture)
     glActiveTexture(GL_TEXTURE0);
@@ -120,4 +118,14 @@ void Object::SetWireframeMode(bool newWireframeMode)
 bool Object::GetWireframeMode()
 {
     return wireframeMode;
+}
+
+void Object::SetModel(glm::mat4 newModel)
+{
+    model = newModel;
+}
+
+glm::mat4 Object::GetModel()
+{
+    return model;
 }
