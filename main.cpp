@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
     {
         // <TEST>
 
-        float vertices[] = {
+        float cubeVertices[] = {
             // positions          // normals           // texture coords
             -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
              0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
@@ -77,10 +77,10 @@ int main(int argc, char* argv[])
         testMaterial.SetSpecularTexture(testTexture);
 
         // Finally, create the object
-        Object testObject(testMaterial, vertices, 288, false);
+        Object testObject(testMaterial, cubeVertices, 288, false);
 
         // And create a point light
-        Light testLight1(lightShader, vertices, 288);
+        Light testLight1(lightShader, cubeVertices, 288);
         testLight1.SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
         testLight1.SetAmbient(glm::vec3(0.05f, 0.05f, 0.05f));
         testLight1.SetDiffuse(glm::vec3(0.8f, 0.8f, 0.8f));

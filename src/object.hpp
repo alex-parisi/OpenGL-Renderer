@@ -5,6 +5,8 @@
 #include "light.hpp"
 #include "directional_light.hpp"
 
+#define MAX_BONE_INFLUENCE 4
+
 class Object
 {
     public:

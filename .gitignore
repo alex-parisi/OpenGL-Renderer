@@ -8,4 +8,4 @@ OpenGL-Renderer/x64/*
 *.exe
 *.pdb
 *.idb
-!x64/Debug/assimp-vc143-mtd.exp
+!x64/Debug/assimpd.dll
