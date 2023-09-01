@@ -25,6 +25,7 @@ class Object
         bool GetWireframeMode();
         void SetModel(glm::mat4 newModel);
         glm::mat4 GetModel();
+        void SetTexScaling(float newTexScaling);
 
     private:
         // Private Attributes
@@ -33,4 +34,5 @@ class Object
         bool wireframeMode;
         glm::vec3 position;
         unsigned int VAO, VBO;
+        float texScaling;
 };

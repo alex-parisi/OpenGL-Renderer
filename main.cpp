@@ -123,7 +123,9 @@ int main(int argc, char* argv[])
         floorModel = glm::scale(floorModel, glm::vec3(100.0f, 0.1f, 100.0f));
         floorModel = glm::translate(floorModel, glm::vec3(0.0f, -0.05f, 0.0f));
         floorObject.SetModel(floorModel);
-        // 9e. Add the floor object to the scene
+        // 9e. Set the texture scaling
+        floorObject.SetTexScaling(10.0f);
+        // 9f. Add the floor object to the scene
         engine.scene.AddObject(floorObject);
 
         //////////////////////////////

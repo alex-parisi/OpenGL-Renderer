@@ -4,6 +4,7 @@ Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
 {
     // Initialize the object model
     model = glm::mat4(1.0f);
+    texScaling = 1.0f;
     // Set the material
     m_material = &material;
     // Initialize Vertex Array and Vertex Buffer Objects
@@ -64,6 +65,8 @@ void Object::Render(float deltaTime, Camera* camera, DirectionalLight* direction
     // Activate the shader
     m_material->GetShader()->Use();
     m_material->GetShader()->SetVec3("viewPos", camera->GetCameraPos());
+    m_material->GetShader()->SetBool("blinn", m_material->GetShader()->blinn);
+    m_material->GetShader()->SetFloat("texScaling", texScaling);
     // Set Shininess:
     m_material->GetShader()->SetFloat("material.shininess", m_material->GetShininess());
     // Set Light Properties:
@@ -128,4 +131,9 @@ void Object::SetModel(glm::mat4 newModel)
 glm::mat4 Object::GetModel()
 {
     return model;
+}
+
+void Object::SetTexScaling(float newTexScaling)
+{
+    texScaling = newTexScaling;
 }
