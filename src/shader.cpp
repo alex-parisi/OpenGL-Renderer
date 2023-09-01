@@ -3,6 +3,8 @@
 // Default constructor:
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
+    blinn = true;
+    blinnToggle = false;
     // Update Code file locations
     SetVertexPath(vertexPath);
     SetFragmentPath(fragmentPath);

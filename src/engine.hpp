@@ -11,6 +11,7 @@
 #include "light.hpp"
 #include "model.hpp"
 #include "input.hpp"
+#include "settings.hpp"
 
 // Structure that gets passed to each callback function. Add pointers to relevant things here.
 struct CallbackObj

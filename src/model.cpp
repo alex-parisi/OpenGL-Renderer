@@ -19,6 +19,11 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
             format = GL_RGB;
         else if (nrComponents == 4)
             format = GL_RGBA;
+        else
+        {
+            std::cout << "ERROR | MODEL | TEXTURE: Unknown format.\n" << path << std::endl;
+            stbi_image_free(data);
+        }
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -33,7 +38,7 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
     }
     else
     {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
+        std::cout << "ERROR | MODEL | TEXTURE: Failed to load texture at: " << path << "\n" << std::endl;
         stbi_image_free(data);
     }
 
@@ -58,7 +63,21 @@ void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector
         m_model = glm::rotate(m_model, 0.0025f, glm::vec3(0.0f, -1.0f, 0.0f));
     if (inputManager->keyboard.GetKeyState(GLFW_KEY_RIGHT))
         m_model = glm::rotate(m_model, 0.0025f, glm::vec3(0.0f, 1.0f, 0.0f));
+    // Set the model
     m_shader->SetMat4("model", m_model);
+    // Toggle the lighting model
+    if (inputManager->keyboard.GetKeyState(GLFW_KEY_1))
+    {
+        if (!m_shader->blinnToggle)
+        {
+            m_shader->blinn = !m_shader->blinn;
+            m_shader->blinnToggle = true;
+        }
+    }
+    else
+    {
+        m_shader->blinnToggle = false;
+    }
     // </TEMP>
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(*m_shader, *directionalLight, pointLights);
@@ -82,7 +101,7 @@ void Model::LoadModel(std::string const& path)
     // check for errors
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
     {
-        std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
+        std::cout << "ERROR | ASSIMP | " << importer.GetErrorString() << std::endl;
         return;
     }
     // retrieve the directory path of the filepath

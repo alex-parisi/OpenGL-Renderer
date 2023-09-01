@@ -9,8 +9,8 @@ Camera::Camera()
     firstMouse = true;
     yaw = -90.0f;
     pitch = 0.0f;
-    lastX = 800.0f / 2.0;
-    lastY = 600.0f / 2.0;
+    lastX = SCREEN_WIDTH / 2.0;
+    lastY = SCREEN_HEIGHT / 2.0;
     fov = 45.0f;
 }
 

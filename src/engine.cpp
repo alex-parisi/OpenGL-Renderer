@@ -29,7 +29,7 @@ bool Engine::Initialize()
         // Enable depth testing
         glEnable(GL_DEPTH_TEST);
         // Create a new viewport
-        glViewport(0, 0, 800, 600);
+        glViewport(0, 0, static_cast<int>(SCREEN_WIDTH), static_cast<int>(SCREEN_HEIGHT));
         // Map Callback functions 
         MapCallbacks();
         return true;
@@ -150,7 +150,7 @@ bool Engine::InitializeGLAD()
 bool Engine::CreateWindow()
 {
     // Create a new window instance
-    window = glfwCreateWindow(800, 600, "OpenGL + GLFW Renderer - Alex Parisi", NULL, NULL);
+    window = glfwCreateWindow(static_cast<int>(SCREEN_WIDTH), static_cast<int>(SCREEN_HEIGHT), "OpenGL + GLFW Renderer - Alex Parisi", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "ERROR | ENGINE | GLFW: Failed to create window.\n" << std::endl;
@@ -219,6 +219,7 @@ void Engine::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset)
 void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     CallbackObj* obj = (CallbackObj*)glfwGetWindowUserPointer(window);
+    // Set the keyboard and mouse managers based on the key input
     if (obj->inputManager->keyboard.CheckKey(key))
         obj->inputManager->keyboard.SetKeyState(key, action);
     if (obj->inputManager->mouse.CheckKey(key))

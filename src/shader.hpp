@@ -34,6 +34,8 @@ class Shader
         // Public attributes:
         unsigned int ID;
         unsigned int vertexShader, fragmentShader;
+        bool blinn;
+        bool blinnToggle;
     private:
         // Private Functions:
         void SetVertexPath(const char* vertexPath);

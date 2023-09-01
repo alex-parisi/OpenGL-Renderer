@@ -46,6 +46,7 @@
     <ClInclude Include="..\src\model.hpp" />
     <ClInclude Include="..\src\object.hpp" />
     <ClInclude Include="..\src\scene.hpp" />
+    <ClInclude Include="..\src\settings.hpp" />
     <ClInclude Include="..\src\shader.hpp" />
     <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\test_objects.hpp" />

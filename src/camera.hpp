@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "input.hpp"
+#include "settings.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>

@@ -4,6 +4,7 @@ out vec4 FragColor;
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
+    sampler2D normal;
     float shininess;
 }; 
 
@@ -16,7 +17,6 @@ struct DirLight {
 
 struct PointLight {
     vec3 position;
-    
     float constant;
     float linear;
     float quadratic;
@@ -26,6 +26,9 @@ struct PointLight {
 };
 
 // Could also be replaced with a SSBO (Shader Storage Buffer Object) (TO - DO)
+// The idea here is to define a maximum number of lights to render in the scene,
+// and then only render the maximum number of lights that there are currently,
+// as long as this number is less than the maximum.
 #define MAX_LIGHTS_TO_RENDER 128
 
 in vec3 FragPos;
@@ -37,6 +40,7 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[MAX_LIGHTS_TO_RENDER];
 uniform Material material;
 uniform int numLights;
+uniform bool blinn;
 
 // function prototypes
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -71,12 +75,19 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    // Blinn-Phong:
-    float spec = 0.0f;
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-    // Phong:
-    // float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec;
+    if (blinn)
+    {
+        // Blinn-Phong:
+        spec = 0.0f;
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+    }
+    else
+    {
+        // Phong:
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    }
     // combine results
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
@@ -92,12 +103,19 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float diff = max(dot(normal, lightDir), 0.0);
     // specular shading
     vec3 reflectDir = reflect(-lightDir, normal);
-    // Blinn-Phong:
-    float spec = 0.0f;
-    vec3 halfwayDir = normalize(lightDir + viewDir);
-    spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
-    // Phong:
-    // float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec;
+    if (blinn)
+    {
+        // Blinn-Phong:
+        spec = 0.0f;
+        vec3 halfwayDir = normalize(lightDir + viewDir);
+        spec = pow(max(dot(normal, halfwayDir), 0.0), material.shininess);
+    }
+    else
+    {
+        // Phong:
+        spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    }
     // attenuation
     float distance = length(light.position - fragPos);
     float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    

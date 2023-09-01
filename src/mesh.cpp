@@ -18,6 +18,7 @@ void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<
 {
     // Bind material properties
     shader.Use();
+    shader.SetBool("blinn", shader.blinn);
     shader.SetFloat("material.shininess", m_shininess / 4);
     // shader.SetFloat("material.shininess", m_shininess / 4000.0f);
     // Set Light Properties:
