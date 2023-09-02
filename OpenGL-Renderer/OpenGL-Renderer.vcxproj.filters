@@ -127,5 +127,11 @@
     <None Include="..\src\shaders\model_loading.vs">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\src\shaders\normal_mapping.fs">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\src\shaders\normal_mapping.vs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

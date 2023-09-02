@@ -68,7 +68,8 @@ int main(int argc, char* argv[])
         stbi_set_flip_vertically_on_load(true);
 
         // 1. Load the shader:
-        Shader modelShader("../src/shaders/model_loading.vs", "../src/shaders/model_loading.fs");
+        // Shader modelShader("../src/shaders/model_loading.vs", "../src/shaders/model_loading.fs");
+        Shader modelShader("../src/shaders/normal_mapping.vs", "../src/shaders/normal_mapping.fs");
 
         // 2. Load the model and move it up a teensy bit
         Model model(modelShader, "../resources/models/backpack.obj");
@@ -101,15 +102,17 @@ int main(int argc, char* argv[])
         pointLightSource.SetQuadratic(0.032f);
 
         // 8. Add the point light source to the scene
-        engine.scene.AddLight(pointLightSource);
+        // engine.scene.AddLight(pointLightSource);
 
         // 9. Add a floor to the scene
+        // 90. Use old shader temporarily
+        Shader floorShader("../src/shaders/model_loading.vs", "../src/shaders/model_loading.fs");
         // 9a. Create a texture for the floor object
         Texture floorTexture;
         floorTexture.LoadRGB("../resources/textures/wood.jpg");
         // 9b. Create a material for the floor object
         Material floorMaterial;
-        floorMaterial.SetShader(modelShader);
+        floorMaterial.SetShader(floorShader);
         floorMaterial.SetAmbient(glm::vec3(1.0f, 0.5f, 0.31f));
         floorMaterial.SetDiffuse(glm::vec3(1.0f, 0.5f, 0.31f));
         floorMaterial.SetSpecular(glm::vec3(0.5f, 0.5f, 0.5f));

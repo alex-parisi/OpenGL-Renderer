@@ -54,7 +54,7 @@ void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<
             number = std::to_string(diffuseNr++);
         else if (name == "material.specular")
             number = std::to_string(specularNr++); // transfer unsigned int to string
-        else if (name == "texture_normal")
+        else if (name == "material.normal")
             number = std::to_string(normalNr++); // transfer unsigned int to string
         else if (name == "texture_height")
             number = std::to_string(heightNr++); // transfer unsigned int to string

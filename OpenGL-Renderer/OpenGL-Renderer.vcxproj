@@ -59,6 +59,8 @@
     <None Include="..\src\shaders\light_cube.vs" />
     <None Include="..\src\shaders\model_loading.fs" />
     <None Include="..\src\shaders\model_loading.vs" />
+    <None Include="..\src\shaders\normal_mapping.fs" />
+    <None Include="..\src\shaders\normal_mapping.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
