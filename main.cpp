@@ -45,9 +45,9 @@ int main(int argc, char* argv[])
         DirectionalLight directionalLightSource;
         // 8a. Set the lighting properties
         directionalLightSource.SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
-        directionalLightSource.SetAmbient(glm::vec3(0.05f, 0.05f, 0.05f));
-        directionalLightSource.SetDiffuse(glm::vec3(0.4f, 0.4f, 0.4f));
-        directionalLightSource.SetSpecular(glm::vec3(0.5f, 0.5f, 0.5f));
+        directionalLightSource.SetAmbient(glm::vec3(0.025f, 0.025f, 0.025f));
+        directionalLightSource.SetDiffuse(glm::vec3(0.2f, 0.2f, 0.2f));
+        directionalLightSource.SetSpecular(glm::vec3(0.25f, 0.25f, 0.25f));
         // 8b. Add the directional light source to the scene
         engine.scene.SetDirectionalLight(directionalLightSource);
 
