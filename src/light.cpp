@@ -115,3 +115,11 @@ void Light::SetQuadratic(float newQuadratic)
 {
     quadratic = newQuadratic;
 }
+
+void Light::SetPreset(int preset)
+{
+    glm::vec3 p = presets[preset];
+    SetConstant(p.x);
+    SetLinear(p.y);
+    SetQuadratic(p.z);
+}

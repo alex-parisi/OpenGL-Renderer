@@ -64,7 +64,6 @@ void Object::Render(float deltaTime, Camera* camera, Shader& shader, Directional
     shader.Use();
     shader.SetVec3("viewPos", camera->GetCameraPos());
     shader.SetBool("blinn", shader.blinn);
-    shader.SetBool("gamma", shader.gamma);
     shader.SetFloat("texScaling", texScaling);
     // Set Shininess:
     shader.SetFloat("material.shininess", m_material->GetShininess());

@@ -58,9 +58,7 @@ int main(int argc, char* argv[])
         pointLightSource.SetAmbient(glm::vec3(0.05f, 0.05f, 0.05f));
         pointLightSource.SetDiffuse(glm::vec3(0.8f, 0.8f, 0.8f));
         pointLightSource.SetSpecular(glm::vec3(1.0f, 1.0f, 1.0f));
-        pointLightSource.SetConstant(1.0f);
-        pointLightSource.SetLinear(0.09f);
-        pointLightSource.SetQuadratic(0.032f);
+        pointLightSource.SetPreset(200);
         // 9b. Add the point light source to the scene
         engine.scene.AddLight(pointLightSource);
 

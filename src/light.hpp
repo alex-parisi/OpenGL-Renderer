@@ -1,6 +1,7 @@
 #pragma once
 #include "camera.hpp"
 #include "shader.hpp"
+#include <unordered_map>
 
 class Light
 {
@@ -26,6 +27,7 @@ class Light
         void SetConstant(float newConstant);
         void SetLinear(float newLinear);
         void SetQuadratic(float newQuadratic);
+        void SetPreset(int preset);
 
     private:
         // Private Attributes
@@ -39,4 +41,18 @@ class Light
         float constant;
         float linear;
         float quadratic;
+        std::unordered_map<int, glm::vec3> presets = {
+            {7,     glm::vec3(1.0,    0.7,        1.8)},
+            {13,    glm::vec3(1.0,    0.35,       0.44)},
+            {20,    glm::vec3(1.0,    0.22,       0.20)},
+            {32,    glm::vec3(1.0,    0.14,       0.07)},
+            {50,    glm::vec3(1.0,    0.09,       0.032)},
+            {65,    glm::vec3(1.0,    0.07,       0.017)},
+            {100,   glm::vec3(1.0,    0.045,      0.0075)},
+            {160,   glm::vec3(1.0,    0.027,      0.0028)},
+            {200,   glm::vec3(1.0,    0.022,      0.0019)},
+            {325,   glm::vec3(1.0,    0.014,      0.0007)},
+            {600,   glm::vec3(1.0,    0.007,      0.0002)},
+            {3250,  glm::vec3(1.0,    0.0014,     0.000007)}
+        };
 };
