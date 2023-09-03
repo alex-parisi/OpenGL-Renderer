@@ -6,10 +6,10 @@ class Light
 {
     public:
         // Constructor & Destructor:
-        Light(Shader& shader, float* vertices, int N);
+        Light(float* vertices, int N);
         ~Light();
         // Inherited Functions:
-        void Render(float deltaTime, Camera* camera);
+        void Render(float deltaTime, Camera* camera, Shader& shader);
         // Get/Set
         glm::vec3 GetPosition();
         void SetPosition(glm::vec3 newPosition);
@@ -31,7 +31,6 @@ class Light
         // Private Attributes
         glm::vec3 position;
         unsigned int m_VAO, m_VBO;
-        Shader* m_shader;
         glm::mat4 model;
         bool draw;
         glm::vec3 ambient;

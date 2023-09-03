@@ -25,13 +25,12 @@ class Model
 {
     public:
         // Constructor & Destructor
-        Model(Shader& shader, std::string const& path, bool gamma = false) : gammaCorrection(gamma)
+        Model(std::string const& path, bool gamma = false) : gammaCorrection(gamma)
         {
-            m_shader = &shader;
             LoadModel(path);
             m_model = glm::mat4(1.0f);
         }
-        void Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager);
+        void Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager);
         // Public Attributes
         std::vector<MeshTexture> texturesLoaded;
         std::vector<Mesh> meshes;
@@ -44,7 +43,6 @@ class Model
         void LoadModel(std::string const& path);
         void ProcessNode(aiNode* node, const aiScene* scene);
         Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<MeshTexture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
-        Shader* m_shader;
+        std::vector<MeshTexture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, bool gamma);
         glm::mat4 m_model;
 };

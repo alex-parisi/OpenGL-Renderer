@@ -4,10 +4,10 @@ Camera::Camera()
 {
     locked = true;
     cameraPos = glm::vec3(0.0f, 10.0f, 3.0f);
-    cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    cameraFront = glm::vec3(-1.0f, 0.0f, 0.0f);
     cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     firstMouse = true;
-    yaw = -90.0f;
+    yaw = 180.0f;
     pitch = 0.0f;
     lastX = SCREEN_WIDTH / 2.0;
     lastY = SCREEN_HEIGHT / 2.0;

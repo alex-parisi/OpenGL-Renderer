@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{1de34634-aa01-4132-a979-d5bd778dc35b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\camera.cpp">
@@ -110,28 +113,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\colors.fs">
-      <Filter>Resource Files</Filter>
+      <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\colors.vs">
-      <Filter>Resource Files</Filter>
+      <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\light_cube.fs">
-      <Filter>Resource Files</Filter>
+      <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\light_cube.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\src\shaders\model_loading.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\src\shaders\model_loading.vs">
-      <Filter>Resource Files</Filter>
+      <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\normal_mapping.fs">
-      <Filter>Resource Files</Filter>
+      <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\normal_mapping.vs">
-      <Filter>Resource Files</Filter>
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\shadow_mapping_depth.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\shadow_mapping_depth.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\generic_lighting.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\generic_lighting.vs">
+      <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
 </Project>

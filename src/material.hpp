@@ -11,10 +11,8 @@ class Material
         // Public Functions:
         void SetDiffuseTexture(Texture &newDiffuseTexture);
         void SetSpecularTexture(Texture &newSpecularTexture);
-        void SetShader(Shader &newShader);
         Texture* GetDiffuseTexture();
         Texture* GetSpecularTexture();
-        Shader* GetShader();
         void SetAmbient(glm::vec3 newAmbient);
         void SetDiffuse(glm::vec3 newDiffuse);
         void SetSpecular(glm::vec3 newSpecular);
@@ -28,7 +26,6 @@ class Material
         // Private Attributes:
         Texture* diffuseTexture;
         Texture* specularTexture;
-        Shader* shader;
         glm::vec3 ambient;
         glm::vec3 diffuse;
         glm::vec3 specular;

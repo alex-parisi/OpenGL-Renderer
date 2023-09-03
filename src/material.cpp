@@ -5,7 +5,6 @@ Material::Material()
 {
     diffuseTexture = NULL;
     specularTexture = NULL;
-    shader = NULL;
 }
 
 // Default Destructor:
@@ -24,11 +23,6 @@ void Material::SetSpecularTexture(Texture &newSpecularTexture)
     specularTexture = &newSpecularTexture;
 }
 
-void Material::SetShader(Shader &newShader)
-{
-    shader = &newShader;
-}
-
 Texture* Material::GetDiffuseTexture()
 {
     return diffuseTexture;
@@ -37,11 +31,6 @@ Texture* Material::GetDiffuseTexture()
 Texture* Material::GetSpecularTexture()
 {
     return specularTexture;
-}
-
-Shader* Material::GetShader()
-{
-    return shader;
 }
 
 void Material::SetAmbient(glm::vec3 newAmbient)

@@ -24,8 +24,6 @@ Object::Object(Material& material, float* vertices, int N, bool wireframeOn)
     // Texture Attribute:
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
-    // As we only have a single shader, we could also just activate our shader once beforehand if we want to 
-    glUseProgram(m_material->GetShader()->ID);
     // Set the wireframe mode to be on or off
     if (wireframeOn)
     {
@@ -60,38 +58,39 @@ void Object::Scale(glm::vec3 scale)
 }
 
 // Inherited Render function:
-void Object::Render(float deltaTime, Camera* camera, DirectionalLight* directionalLight, std::vector<Light *> pointLights)
+void Object::Render(float deltaTime, Camera* camera, Shader& shader, DirectionalLight* directionalLight, std::vector<Light *> pointLights)
 {
     // Activate the shader
-    m_material->GetShader()->Use();
-    m_material->GetShader()->SetVec3("viewPos", camera->GetCameraPos());
-    m_material->GetShader()->SetBool("blinn", m_material->GetShader()->blinn);
-    m_material->GetShader()->SetFloat("texScaling", texScaling);
+    shader.Use();
+    shader.SetVec3("viewPos", camera->GetCameraPos());
+    shader.SetBool("blinn", shader.blinn);
+    shader.SetBool("gamma", shader.gamma);
+    shader.SetFloat("texScaling", texScaling);
     // Set Shininess:
-    m_material->GetShader()->SetFloat("material.shininess", m_material->GetShininess());
+    shader.SetFloat("material.shininess", m_material->GetShininess());
     // Set Light Properties:
     // Start with directional light:
-    m_material->GetShader()->SetVec3("dirLight.direction", directionalLight->GetDirection());
-    m_material->GetShader()->SetVec3("dirLight.ambient", directionalLight->GetAmbient());
-    m_material->GetShader()->SetVec3("dirLight.diffuse", directionalLight->GetDiffuse());
-    m_material->GetShader()->SetVec3("dirLight.specular", directionalLight->GetSpecular());
+    shader.SetVec3("dirLight.direction", directionalLight->GetDirection());
+    shader.SetVec3("dirLight.ambient", directionalLight->GetAmbient());
+    shader.SetVec3("dirLight.diffuse", directionalLight->GetDiffuse());
+    shader.SetVec3("dirLight.specular", directionalLight->GetSpecular());
     // Then do all of the point lights: (right now limited to one)
     for (auto& p : pointLights)
     {
-        m_material->GetShader()->SetVec3("pointLights[0].position", p->GetPosition());
-        m_material->GetShader()->SetVec3("pointLights[0].ambient", p->GetAmbient());
-        m_material->GetShader()->SetVec3("pointLights[0].diffuse", p->GetDiffuse());
-        m_material->GetShader()->SetVec3("pointLights[0].specular", p->GetSpecular());
-        m_material->GetShader()->SetFloat("pointLights[0].constant", p->GetConstant());
-        m_material->GetShader()->SetFloat("pointLights[0].linear", p->GetLinear());
-        m_material->GetShader()->SetFloat("pointLights[0].quadratic", p->GetQuadratic());
+        shader.SetVec3("pointLights[0].position", p->GetPosition());
+        shader.SetVec3("pointLights[0].ambient", p->GetAmbient());
+        shader.SetVec3("pointLights[0].diffuse", p->GetDiffuse());
+        shader.SetVec3("pointLights[0].specular", p->GetSpecular());
+        shader.SetFloat("pointLights[0].constant", p->GetConstant());
+        shader.SetFloat("pointLights[0].linear", p->GetLinear());
+        shader.SetFloat("pointLights[0].quadratic", p->GetQuadratic());
     }
     // Pass the projection matrix to the shader
     glm::mat4 projection = camera->GetProjectionMatrix();
-    m_material->GetShader()->SetMat4("projection", projection);
+    shader.SetMat4("projection", projection);
     // Camera/View Transformation
     glm::mat4 view = camera->GetViewMatrix();
-    m_material->GetShader()->SetMat4("view", view);
+    shader.SetMat4("view", view);
     // Do time transformations here:
     // <TEMP>
     // Do moving stuff here
@@ -103,7 +102,7 @@ void Object::Render(float deltaTime, Camera* camera, DirectionalLight* direction
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, m_material->GetSpecularTexture()->texture);
     // Render the object:
-    m_material->GetShader()->SetMat4("model", model);
+    shader.SetMat4("model", model);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }

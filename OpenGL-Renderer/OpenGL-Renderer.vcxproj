@@ -55,12 +55,14 @@
   <ItemGroup>
     <None Include="..\src\shaders\colors.fs" />
     <None Include="..\src\shaders\colors.vs" />
+    <None Include="..\src\shaders\generic_lighting.fs" />
+    <None Include="..\src\shaders\generic_lighting.vs" />
     <None Include="..\src\shaders\light_cube.fs" />
     <None Include="..\src\shaders\light_cube.vs" />
-    <None Include="..\src\shaders\model_loading.fs" />
-    <None Include="..\src\shaders\model_loading.vs" />
     <None Include="..\src\shaders\normal_mapping.fs" />
     <None Include="..\src\shaders\normal_mapping.vs" />
+    <None Include="..\src\shaders\shadow_mapping_depth.fs" />
+    <None Include="..\src\shaders\shadow_mapping_depth.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

@@ -12,21 +12,32 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
     unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
     if (data)
     {
-        GLenum format;
+        GLenum dataFormat;
+        GLenum internalFormat;
         if (nrComponents == 1)
-            format = GL_RED;
+        {
+            dataFormat = GL_RED;
+            internalFormat = GL_RED;
+        }
         else if (nrComponents == 3)
-            format = GL_RGB;
+        {
+            dataFormat = GL_RGB;
+            internalFormat = gamma ? GL_SRGB : GL_RGB;
+        }
         else if (nrComponents == 4)
-            format = GL_RGBA;
+        {
+            dataFormat = GL_RGBA;
+            internalFormat = gamma ? GL_SRGB_ALPHA : GL_RGBA;
+        }
         else
         {
             std::cout << "ERROR | MODEL | TEXTURE: Unknown format.\n" << path << std::endl;
             stbi_image_free(data);
+            // TO - DO: End function here, don't continue
         }
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, dataFormat, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -45,14 +56,16 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
     return textureID;
 }
 
-void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager)
+void Model::Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager)
 {
-    m_shader->Use();
+    shader.Use();
     glm::mat4 projection = camera.GetProjectionMatrix();
     glm::mat4 view = camera.GetViewMatrix();
-    m_shader->SetMat4("projection", projection);
-    m_shader->SetMat4("view", view);
+    shader.SetMat4("projection", projection);
+    shader.SetMat4("view", view);
     // <TEMP>
+    // TO - DO: MOVE THIS SECTION SOMEWHERE ELSE
+    // This does not belong here silly boy
     float t = static_cast<float>(glfwGetTime());
     // Check for model rotation:
     if (inputManager->keyboard.GetKeyState(GLFW_KEY_UP))
@@ -64,23 +77,36 @@ void Model::Draw(Camera& camera, DirectionalLight* directionalLight, std::vector
     if (inputManager->keyboard.GetKeyState(GLFW_KEY_RIGHT))
         m_model = glm::rotate(m_model, 0.0025f, glm::vec3(0.0f, 1.0f, 0.0f));
     // Set the model
-    m_shader->SetMat4("model", m_model);
+    shader.SetMat4("model", m_model);
     // Toggle the lighting model
     if (inputManager->keyboard.GetKeyState(GLFW_KEY_1))
     {
-        if (!m_shader->blinnToggle)
+        if (!shader.blinnToggle)
         {
-            m_shader->blinn = !m_shader->blinn;
-            m_shader->blinnToggle = true;
+            shader.blinn = !shader.blinn;
+            shader.blinnToggle = true;
         }
     }
     else
     {
-        m_shader->blinnToggle = false;
+        shader.blinnToggle = false;
+    }
+    // Toggle the gamma correction
+    if (inputManager->keyboard.GetKeyState(GLFW_KEY_2))
+    {
+        if (!shader.gammaToggle)
+        {
+            shader.gamma = !shader.gamma;
+            shader.gammaToggle = true;
+        }
+    }
+    else
+    {
+        shader.gammaToggle = false;
     }
     // </TEMP>
     for (unsigned int i = 0; i < meshes.size(); i++)
-        meshes[i].Draw(*m_shader, *directionalLight, pointLights);
+        meshes[i].Draw(shader, *directionalLight, pointLights);
 }
 
 glm::mat4 Model::GetModel()
@@ -197,16 +223,16 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     // normal: texture_normalN
 
     // 1. diffuse maps
-    std::vector<MeshTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "material.diffuse");
+    std::vector<MeshTexture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "material.diffuse", true);
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     // 2. specular maps
-    std::vector<MeshTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "material.specular");
+    std::vector<MeshTexture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "material.specular", false);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     // 3. normal maps
-    std::vector<MeshTexture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "material.normal");
+    std::vector<MeshTexture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "material.normal", false);
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
     // 4. height maps
-    std::vector<MeshTexture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+    std::vector<MeshTexture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height", false);
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
     // 5. shininess
     float shininess = 0.0f;
@@ -216,7 +242,7 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     return Mesh(vertices, indices, textures, shininess);
 }
 
-std::vector<MeshTexture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+std::vector<MeshTexture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, bool gamma)
 {
     std::vector<MeshTexture> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -237,7 +263,7 @@ std::vector<MeshTexture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureT
         if (!skip)
         {   // if texture hasn't been loaded already, load it
             MeshTexture texture;
-            texture.id = TextureFromFile(str.C_Str(), this->directory);
+            texture.id = TextureFromFile(str.C_Str(), this->directory, gamma);
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);

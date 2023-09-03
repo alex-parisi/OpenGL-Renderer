@@ -36,6 +36,8 @@ class Shader
         unsigned int vertexShader, fragmentShader;
         bool blinn;
         bool blinnToggle;
+        bool gamma;
+        bool gammaToggle;
     private:
         // Private Functions:
         void SetVertexPath(const char* vertexPath);
