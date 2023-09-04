@@ -2,7 +2,7 @@
 #include <vector>
 #include "material.hpp"
 #include "camera.hpp"
-#include "light.hpp"
+#include "point_light.hpp"
 #include "directional_light.hpp"
 
 #define MAX_BONE_INFLUENCE 4
@@ -18,7 +18,7 @@ class Object
         void Rotate(float angle, glm::vec3 axis);
         void Scale(glm::vec3 scale);
         // Inherited Functions:
-        void Render(float deltaTime, Camera* camera, Shader& shader, DirectionalLight* directionalLight, std::vector<Light *> pointLights);
+        void Render(float deltaTime, Camera* camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights);
         // Get/Set
         glm::vec3 GetPosition();
         void SetWireframeMode(bool newWireframeMode);

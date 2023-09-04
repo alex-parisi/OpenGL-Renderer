@@ -9,7 +9,7 @@
 #include "mesh.hpp"
 #include "shader.hpp"
 #include "camera.hpp"
-#include "light.hpp"
+#include "point_light.hpp"
 #include "directional_light.hpp"
 #include "input.hpp"
 #include <string>
@@ -30,7 +30,7 @@ class Model
             LoadModel(path);
             m_model = glm::mat4(1.0f);
         }
-        void Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager);
+        void Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights, InputManager* inputManager);
         // Public Attributes
         std::vector<MeshTexture> texturesLoaded;
         std::vector<Mesh> meshes;

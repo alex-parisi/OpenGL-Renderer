@@ -33,7 +33,7 @@ void Scene::AddObject(Object& object)
     objects.push_back(&object);
 }
 
-void Scene::AddLight(Light& pointLight)
+void Scene::AddLight(PointLight& pointLight)
 {
     pointLights.push_back(&pointLight);
 }

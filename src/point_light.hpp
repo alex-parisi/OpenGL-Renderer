@@ -3,12 +3,12 @@
 #include "shader.hpp"
 #include <unordered_map>
 
-class Light
+class PointLight
 {
     public:
         // Constructor & Destructor:
-        Light(float* vertices, int N);
-        ~Light();
+        PointLight(float* vertices, int N);
+        ~PointLight();
         // Inherited Functions:
         void Render(float deltaTime, Camera* camera, Shader& shader);
         // Get/Set

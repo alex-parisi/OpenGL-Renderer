@@ -1,6 +1,6 @@
-#include "light.hpp"
+#include "point_light.hpp"
 
-Light::Light(float* vertices, int N)
+PointLight::PointLight(float* vertices, int N)
 {
     // Set the shader and initial variables
     model = glm::mat4(1.0f);
@@ -18,12 +18,12 @@ Light::Light(float* vertices, int N)
     glEnableVertexAttribArray(0);
 }
 
-Light::~Light()
+PointLight::~PointLight()
 {
 
 }
 
-void Light::Render(float deltaTime, Camera* camera, Shader& shader)
+void PointLight::Render(float deltaTime, Camera* camera, Shader& shader)
 {
     if (draw)
     {
@@ -41,82 +41,82 @@ void Light::Render(float deltaTime, Camera* camera, Shader& shader)
     }
 }
 
-glm::vec3 Light::GetPosition()
+glm::vec3 PointLight::GetPosition()
 {
 	return position;
 }
 
-void Light::SetPosition(glm::vec3 newPosition)
+void PointLight::SetPosition(glm::vec3 newPosition)
 {
 	position = newPosition;
 }
 
-void Light::SetDraw(bool newDraw)
+void PointLight::SetDraw(bool newDraw)
 {
     draw = newDraw;
 }
 
-glm::vec3 Light::GetAmbient()
+glm::vec3 PointLight::GetAmbient()
 {
     return ambient;
 }
 
-glm::vec3 Light::GetDiffuse()
+glm::vec3 PointLight::GetDiffuse()
 {
     return diffuse;
 }
 
-glm::vec3 Light::GetSpecular()
+glm::vec3 PointLight::GetSpecular()
 {
     return specular;
 }
 
-float Light::GetConstant()
+float PointLight::GetConstant()
 {
     return constant;
 }
 
-float Light::GetLinear()
+float PointLight::GetLinear()
 {
     return linear;
 }
 
-float Light::GetQuadratic()
+float PointLight::GetQuadratic()
 {
     return quadratic;
 }
 
-void Light::SetAmbient(glm::vec3 newAmbient)
+void PointLight::SetAmbient(glm::vec3 newAmbient)
 {
     ambient = newAmbient;
 }
 
-void Light::SetDiffuse(glm::vec3 newDiffuse)
+void PointLight::SetDiffuse(glm::vec3 newDiffuse)
 {
     diffuse = newDiffuse;
 }
 
-void Light::SetSpecular(glm::vec3 newSpecular)
+void PointLight::SetSpecular(glm::vec3 newSpecular)
 {
     specular = newSpecular;
 }
 
-void Light::SetConstant(float newConstant)
+void PointLight::SetConstant(float newConstant)
 {
     constant = newConstant;
 }
 
-void Light::SetLinear(float newLinear)
+void PointLight::SetLinear(float newLinear)
 {
     linear = newLinear;
 }
 
-void Light::SetQuadratic(float newQuadratic)
+void PointLight::SetQuadratic(float newQuadratic)
 {
     quadratic = newQuadratic;
 }
 
-void Light::SetPreset(int preset)
+void PointLight::SetPreset(int preset)
 {
     glm::vec3 p = presets[preset];
     SetConstant(p.x);

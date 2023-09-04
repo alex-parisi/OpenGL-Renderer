@@ -58,7 +58,7 @@ void Object::Scale(glm::vec3 scale)
 }
 
 // Inherited Render function:
-void Object::Render(float deltaTime, Camera* camera, Shader& shader, DirectionalLight* directionalLight, std::vector<Light *> pointLights)
+void Object::Render(float deltaTime, Camera* camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights)
 {
     // Activate the shader
     shader.Use();

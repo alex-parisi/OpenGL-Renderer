@@ -56,7 +56,7 @@ unsigned int TextureFromFile(const char* path, const std::string& directory, boo
     return textureID;
 }
 
-void Model::Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<Light*> pointLights, InputManager* inputManager)
+void Model::Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights, InputManager* inputManager)
 {
     shader.Use();
     glm::mat4 projection = camera.GetProjectionMatrix();

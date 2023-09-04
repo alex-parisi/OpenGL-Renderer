@@ -14,7 +14,7 @@ Mesh::~Mesh()
 
 }
 
-void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<Light*> pointLights)
+void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<PointLight*> pointLights)
 {
     // Bind material properties
     shader.Use();

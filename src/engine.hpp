@@ -8,7 +8,7 @@
 #include <iostream>
 #include "scene.hpp"
 #include "camera.hpp"
-#include "light.hpp"
+#include "point_light.hpp"
 #include "model.hpp"
 #include "input.hpp"
 #include "settings.hpp"
