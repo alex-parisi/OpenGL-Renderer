@@ -58,8 +58,8 @@ int main(int argc, char* argv[])
         // 8. Directional Light Source:
         DirectionalLight directionalLightSource;
         // 8a. Set the lighting properties
-        directionalLightSource.SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
-        directionalLightSource.SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+        directionalLightSource.SetPosition(glm::vec3(10.0f, 10.0f, 0.0f));
+        directionalLightSource.SetDirection(glm::normalize(-directionalLightSource.GetPosition()));
         directionalLightSource.SetAmbient(glm::vec3(0.005f, 0.005f, 0.005f));
         directionalLightSource.SetDiffuse(glm::vec3(0.05f, 0.05f, 0.05f));
         directionalLightSource.SetSpecular(glm::vec3(0.05f, 0.05f, 0.05f));
@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
         pointLightSource.SetSpecular(glm::vec3(1.0f, 1.0f, 1.0f));
         pointLightSource.SetPreset(200);
         // 9b. Add the point light source to the scene
-        engine.scene.AddLight(pointLightSource);
+        // engine.scene.AddLight(pointLightSource);
 
         // 10. Add a floor to the scene
         // 10a. Create a texture for the floor object
