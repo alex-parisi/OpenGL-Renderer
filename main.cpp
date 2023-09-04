@@ -41,6 +41,7 @@ int main(int argc, char* argv[])
         // 6. Object(s):
         // Perhaps deprecated, unsure if objects will ever be used over models
         // Having objects is nice for test scenes, but this could be a limitation
+        // Although currently the floor is an object so it may have its uses...
 
         // 7. Skybox:
         std::vector<std::string> facePaths
@@ -58,6 +59,7 @@ int main(int argc, char* argv[])
         DirectionalLight directionalLightSource;
         // 8a. Set the lighting properties
         directionalLightSource.SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
+        directionalLightSource.SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
         directionalLightSource.SetAmbient(glm::vec3(0.005f, 0.005f, 0.005f));
         directionalLightSource.SetDiffuse(glm::vec3(0.05f, 0.05f, 0.05f));
         directionalLightSource.SetSpecular(glm::vec3(0.05f, 0.05f, 0.05f));

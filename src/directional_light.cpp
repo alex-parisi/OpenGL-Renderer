@@ -2,6 +2,7 @@
 
 DirectionalLight::DirectionalLight()
 {
+	position = glm::vec3(0.0f);
 	direction = glm::vec3(0.0f);
 	ambient = glm::vec3(0.0f);
 	diffuse = glm::vec3(0.0f);
@@ -11,6 +12,11 @@ DirectionalLight::DirectionalLight()
 DirectionalLight::~DirectionalLight()
 {
 
+}
+
+glm::vec3 DirectionalLight::GetPosition()
+{
+	return position;
 }
 
 glm::vec3 DirectionalLight::GetDirection()
@@ -31,6 +37,11 @@ glm::vec3 DirectionalLight::GetDiffuse()
 glm::vec3 DirectionalLight::GetSpecular()
 {
 	return specular;
+}
+
+void DirectionalLight::SetPosition(glm::vec3 newPosition)
+{
+	position = newPosition;
 }
 
 void DirectionalLight::SetDirection(glm::vec3 newDirection)
