@@ -7,6 +7,7 @@
 #include "model.hpp"
 #include "input.hpp"
 #include "settings.hpp"
+#include "skybox.hpp"
 
 class Scene
 {
@@ -26,10 +27,13 @@ class Scene
         void SetLightShader(Shader& newLightShader);
         void SetShadowshader(Shader& newShaderShader);
         void SetLightbulbShader(Shader& newLightbulbShader);
+        void SetSkyboxShader(Shader& newSkyboxShader);
         // Depth Map buffers for shadows:
         void ConfigureDepthMap();
         unsigned int depthMapFBO;
         unsigned int depthMap;
+        // Skybox:
+        Skybox skybox;
 
     private:
         void RenderScene(float deltaTime, Camera* camera, InputManager* inputManager);
@@ -45,4 +49,6 @@ class Scene
         Shader* lightShader;
         Shader* shadowShader;
         Shader* lightbulbShader;
+        Shader* skyboxShader;
+        
 };

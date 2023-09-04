@@ -26,6 +26,10 @@ int main(int argc, char* argv[])
         Shader lightbulbShader("../src/shaders/light_cube.vs", "../src/shaders/light_cube.fs");
         engine.scene.SetLightbulbShader(lightbulbShader);
 
+        // 5. Skybox Shader:
+        Shader skyboxShader("../src/shaders/skybox.vs", "../src/shaders/skybox.fs");
+        engine.scene.SetSkyboxShader(skyboxShader);
+
         // 5. Model(s):
         // 5a. Load an example model
         Model model("../resources/models/backpack.obj");
@@ -39,15 +43,24 @@ int main(int argc, char* argv[])
         // Having objects is nice for test scenes, but this could be a limitation
 
         // 7. Skybox:
-        // TO - DO
+        std::vector<std::string> facePaths
+        {
+            "../resources/skybox/right.jpg",
+            "../resources/skybox/left.jpg",
+            "../resources/skybox/top.jpg",
+            "../resources/skybox/bottom.jpg",
+            "../resources/skybox/front.jpg",
+            "../resources/skybox/back.jpg"
+        };
+        engine.scene.skybox.Load(facePaths, skyboxVertices, 108);
 
         // 8. Directional Light Source:
         DirectionalLight directionalLightSource;
         // 8a. Set the lighting properties
         directionalLightSource.SetDirection(glm::vec3(0.0f, -1.0f, 0.0f));
-        directionalLightSource.SetAmbient(glm::vec3(0.025f, 0.025f, 0.025f));
-        directionalLightSource.SetDiffuse(glm::vec3(0.2f, 0.2f, 0.2f));
-        directionalLightSource.SetSpecular(glm::vec3(0.25f, 0.25f, 0.25f));
+        directionalLightSource.SetAmbient(glm::vec3(0.0125f, 0.0125f, 0.0125f));
+        directionalLightSource.SetDiffuse(glm::vec3(0.1f, 0.1f, 0.1f));
+        directionalLightSource.SetSpecular(glm::vec3(0.125f, 0.125f, 0.125f));
         // 8b. Add the directional light source to the scene
         engine.scene.SetDirectionalLight(directionalLightSource);
 

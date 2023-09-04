@@ -12,6 +12,8 @@
 #include "model.hpp"
 #include "input.hpp"
 #include "settings.hpp"
+#include <vector>
+#include <string>
 
 // Structure that gets passed to each callback function. Add pointers to relevant things here.
 struct CallbackObj

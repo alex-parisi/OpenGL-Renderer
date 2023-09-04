@@ -23,6 +23,9 @@ void Scene::Render(float deltaTime, Camera* camera, InputManager* inputManager)
     RenderDepthOfScene(deltaTime, camera, inputManager);
     // 2. Render Scene:
     RenderScene(deltaTime, camera, inputManager);
+    // 3. Render skybox:
+    if (skybox.loaded)
+        skybox.Render(*skyboxShader, *camera);
 }
 
 void Scene::AddObject(Object& object)
@@ -58,6 +61,11 @@ void Scene::SetShadowshader(Shader& newShadowShader)
 void Scene::SetLightbulbShader(Shader& newLightbulbShader)
 {
     lightbulbShader = &newLightbulbShader;
+}
+
+void Scene::SetSkyboxShader(Shader& newSkyboxShader)
+{
+    skyboxShader = &newSkyboxShader;
 }
 
 void Scene::RenderScene(float deltaTime, Camera* camera, InputManager* inputManager)
@@ -105,6 +113,8 @@ void Scene::RenderDepthOfScene(float deltaTime, Camera* camera, InputManager* in
     //glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+
 
 void Scene::ConfigureDepthMap()
 {

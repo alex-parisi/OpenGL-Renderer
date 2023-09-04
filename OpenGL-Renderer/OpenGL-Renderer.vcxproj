@@ -32,6 +32,7 @@
     <ClCompile Include="..\src\object.cpp" />
     <ClCompile Include="..\src\scene.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
+    <ClCompile Include="..\src\skybox.cpp" />
     <ClCompile Include="..\src\stb_image.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
   </ItemGroup>
@@ -48,6 +49,7 @@
     <ClInclude Include="..\src\scene.hpp" />
     <ClInclude Include="..\src\settings.hpp" />
     <ClInclude Include="..\src\shader.hpp" />
+    <ClInclude Include="..\src\skybox.hpp" />
     <ClInclude Include="..\src\stb_image.h" />
     <ClInclude Include="..\src\test_objects.hpp" />
     <ClInclude Include="..\src\texture.hpp" />
@@ -63,6 +65,8 @@
     <None Include="..\src\shaders\normal_mapping.vs" />
     <None Include="..\src\shaders\shadow_mapping_depth.fs" />
     <None Include="..\src\shaders\shadow_mapping_depth.vs" />
+    <None Include="..\src\shaders\skybox.fs" />
+    <None Include="..\src\shaders\skybox.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

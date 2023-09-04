@@ -63,6 +63,9 @@
     <ClCompile Include="..\src\input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\skybox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\camera.hpp">
@@ -110,6 +113,9 @@
     <ClInclude Include="..\src\settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\skybox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\src\shaders\colors.fs">
@@ -140,6 +146,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\generic_lighting.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\skybox.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\skybox.fs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
