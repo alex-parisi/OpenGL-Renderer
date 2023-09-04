@@ -14,7 +14,7 @@ class Shader
 {
     public:
         // Constructor & Destructor
-        Shader(const char* vertexPath, const char* fragmentPath);
+        Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
         ~Shader();
         // Public Functions:
         void Use() const;
@@ -33,7 +33,7 @@ class Shader
         void SetMat4(const std::string &name, const glm::mat4 &mat) const;
         // Public attributes:
         unsigned int ID;
-        unsigned int vertexShader, fragmentShader;
+        unsigned int vertexShader, fragmentShader, geometryShader;
         bool blinn;
         bool blinnToggle;
         bool gamma;
@@ -42,15 +42,18 @@ class Shader
         // Private Functions:
         void SetVertexPath(const char* vertexPath);
         void SetFragmentPath(const char* fragmentPath);
+        void SetGeometryPath(const char* geometryPath);
         bool LoadGLSLCode();
         bool Compile();
         bool Link();
         // Private attributes:
         const char* vertexCodePath;
         const char* fragmentCodePath;
-        std::string vertexGLSLCode, fragmentGLSLCode;
-        std::ifstream vertexShaderFile, fragmentShaderFile;
-        std::stringstream vertexShaderStream, fragmentShaderStream;
+        const char* geometryCodePath;
+        std::string vertexGLSLCode, fragmentGLSLCode, geometryGLSLCode;
+        std::ifstream vertexShaderFile, fragmentShaderFile, geometryShaderFile;
+        std::stringstream vertexShaderStream, fragmentShaderStream, geometryShaderStream;
         const char* vertexShaderSource;
         const char* fragmentShaderSource;
+        const char* geometryShaderSource;
 };

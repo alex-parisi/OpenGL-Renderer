@@ -27,6 +27,7 @@ bool Engine::Initialize()
         // Associate the callback object pointer to the window
         glfwSetWindowUserPointer(window, &callbackObj);
         // Configure global OpenGL state:
+        glEnable(GL_MULTISAMPLE);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glEnable(GL_FRAMEBUFFER_SRGB);

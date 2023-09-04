@@ -114,8 +114,6 @@ void Scene::RenderDepthOfScene(float deltaTime, Camera* camera, InputManager* in
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-
-
 void Scene::ConfigureDepthMap()
 {
     glGenFramebuffers(1, &depthMapFBO);
