@@ -31,6 +31,7 @@ class Model
             m_model = glm::mat4(1.0f);
         }
         void Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights, InputManager* inputManager);
+        void DrawDepth(Shader& shader);
         // Public Attributes
         std::vector<MeshTexture> texturesLoaded;
         std::vector<Mesh> meshes;

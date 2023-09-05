@@ -19,6 +19,7 @@ class Object
         void Scale(glm::vec3 scale);
         // Inherited Functions:
         void Render(float deltaTime, Camera* camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights);
+        void RenderDepth(Shader& shader);
         // Get/Set
         glm::vec3 GetPosition();
         void SetWireframeMode(bool newWireframeMode);

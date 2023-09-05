@@ -35,6 +35,7 @@ class Mesh {
         ~Mesh();
         // Public Functions:
         void Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<PointLight*> pointLights);
+        void DrawDepth(Shader& shader);
         // Public Attributes:
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;

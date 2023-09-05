@@ -71,6 +71,16 @@ void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<
     glActiveTexture(GL_TEXTURE0);
 }
 
+void Mesh::DrawDepth(Shader& shader)
+{
+    // Bind material properties
+    shader.Use();
+    // Draw mesh
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(m_indices.size()), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+}
+
 void Mesh::SetupMesh()
 {
     // Create buffers/arrays

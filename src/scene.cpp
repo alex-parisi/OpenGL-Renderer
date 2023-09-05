@@ -89,5 +89,31 @@ void Scene::RenderScene(float deltaTime, Camera* camera, InputManager* inputMana
 
 void Scene::RenderDepthOfScene(float deltaTime, Camera* camera, InputManager* inputManager)
 {
+    glm::mat4 lightProjection, lightView;
+    glm::mat4 lightSpaceMatrix;
+    float near_plane = 1.0f, far_plane = 7.5f;
+    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+    lightView = glm::lookAt(directionalLight->GetPosition(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+    lightSpaceMatrix = lightProjection * lightView;
+    // render scene from light's point of view
+    shadowShader->Use();
+    shadowShader->SetMat4("lightSpaceMatrix", lightSpaceMatrix);
 
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, directionalLight->depthMapFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    for (auto& o : objects)
+    {
+        o->RenderDepth(*lightShader);
+    }
+    for (auto& m : models)
+    {
+        m->DrawDepth(*lightShader);
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }

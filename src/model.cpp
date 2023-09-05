@@ -109,6 +109,14 @@ void Model::Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLi
         meshes[i].Draw(shader, *directionalLight, pointLights);
 }
 
+void Model::DrawDepth(Shader& shader)
+{
+    shader.Use();
+    shader.SetMat4("model", m_model);
+    for (unsigned int i = 0; i < meshes.size(); i++)
+        meshes[i].DrawDepth(shader);
+}
+
 glm::mat4 Model::GetModel()
 {
     return m_model;

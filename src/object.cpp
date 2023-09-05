@@ -106,6 +106,16 @@ void Object::Render(float deltaTime, Camera* camera, Shader& shader, Directional
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
 
+void Object::RenderDepth(Shader& shader)
+{
+    // Activate the shader
+    shader.Use();
+    // Render the object:
+    shader.SetMat4("model", model);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
 glm::vec3 Object::GetPosition()
 {
     return position;
