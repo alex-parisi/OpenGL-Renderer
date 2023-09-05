@@ -24,6 +24,7 @@ void Mesh::Draw(Shader& shader, DirectionalLight& directionalLight, std::vector<
     // shader.SetFloat("material.shininess", m_shininess / 4000.0f);
     // Set Light Properties:
     // Directional light:
+    shader.SetVec3("dirLight.position", directionalLight.GetPosition());
     shader.SetVec3("dirLight.direction", directionalLight.GetDirection());
     shader.SetVec3("dirLight.ambient", directionalLight.GetAmbient());
     shader.SetVec3("dirLight.diffuse", directionalLight.GetDiffuse());

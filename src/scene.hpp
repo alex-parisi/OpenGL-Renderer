@@ -30,6 +30,7 @@ class Scene
         void SetSkyboxShader(Shader& newSkyboxShader);
         // Skybox:
         Skybox skybox;
+        glm::mat4 lightSpaceMatrix;
 
     private:
         void RenderScene(float deltaTime, Camera* camera, InputManager* inputManager);

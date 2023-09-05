@@ -69,6 +69,7 @@ void Object::Render(float deltaTime, Camera* camera, Shader& shader, Directional
     shader.SetFloat("material.shininess", m_material->GetShininess());
     // Set Light Properties:
     // Start with directional light:
+    shader.SetVec3("dirLight.position", directionalLight->GetPosition());
     shader.SetVec3("dirLight.direction", directionalLight->GetDirection());
     shader.SetVec3("dirLight.ambient", directionalLight->GetAmbient());
     shader.SetVec3("dirLight.diffuse", directionalLight->GetDiffuse());
