@@ -1,7 +1,10 @@
 #pragma once
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "settings.hpp"
 
 class DirectionalLight
 {
@@ -20,6 +23,8 @@ class DirectionalLight
 		void SetAmbient(glm::vec3 newAmbient);
 		void SetDiffuse(glm::vec3 newDiffuse);
 		void SetSpecular(glm::vec3 newSpecular);
+		void ConfigureDepthMap();
+		unsigned int depthMap, depthMapFBO;
 
 	private:
 		glm::vec3 position;

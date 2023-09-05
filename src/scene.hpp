@@ -28,10 +28,6 @@ class Scene
         void SetShadowshader(Shader& newShaderShader);
         void SetLightbulbShader(Shader& newLightbulbShader);
         void SetSkyboxShader(Shader& newSkyboxShader);
-        // Depth Map buffers for shadows:
-        void ConfigureDepthMap();
-        unsigned int depthMapFBO;
-        unsigned int depthMap;
         // Skybox:
         Skybox skybox;
 

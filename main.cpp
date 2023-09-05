@@ -8,9 +8,6 @@ int main(int argc, char* argv[])
     {
         stbi_set_flip_vertically_on_load(true);
 
-        // 1. Configure the shadow buffers:
-        engine.scene.ConfigureDepthMap();
-
         // 2. Main Lighting Shader:
         // Used to render all objects and models in the scene
         Shader lightingShader("../src/shaders/generic_lighting.vs", "../src/shaders/generic_lighting.fs");
