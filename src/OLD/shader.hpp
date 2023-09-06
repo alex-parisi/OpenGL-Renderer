@@ -33,6 +33,11 @@ class Shader
         void SetMat4(const std::string &name, const glm::mat4 &mat) const;
         // Public attributes:
         unsigned int ID;
+        unsigned int vertexShader, fragmentShader, geometryShader;
+        bool blinn;
+        bool blinnToggle;
+        bool gamma;
+        bool gammaToggle;
     private:
         // Private Functions:
         void SetVertexPath(const char* vertexPath);

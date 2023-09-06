@@ -1,60 +1,62 @@
 #pragma once
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <vector>
-#include <iostream>
-#include "scene.hpp"
-#include "camera.hpp"
-#include "point_light.hpp"
-#include "model.hpp"
-#include "input.hpp"
-#include "settings.hpp"
-#include <vector>
-#include <string>
 
-// Structure that gets passed to each callback function. Add pointers to relevant things here.
-struct CallbackObj
-{
-	Camera* camera;
-	InputManager* inputManager;
-};
+#include "settings.hpp"
+
+#include <iostream>
+#include <string>
 
 class Engine
 {
 	public:
-		// Constructor/Destructor
+		// Constructor & Destructor:
 		Engine();
 		~Engine();
-		// Exposed functions
-		bool Initialize();
-		void MapCallbacks();
+		// External functions:
 		void Execute();
 		void Terminate();
-		void ProcessInput(GLFWwindow* window);
-		void Render();
-		void HandleEvents();
-		// Exposed attributes
-		GLFWwindow* window;
-        Scene scene;
-        Camera camera;
-		InputManager inputManager;
-        // Timing attributes:
-        float deltaTime;
-        float lastFrame;
-		// Callback Object
-		CallbackObj callbackObj;
-
+		// Get/Set:
+		bool GetIsSetup();
+		
 	private:
-		// Internal initialization functions
+		// Internal functions:
 		void InitializeGLFW();
-		bool InitializeGLAD();
-		bool CreateWindow();
-		// Callback functions (need to be static to work with GLFW)
+		void InitializeGLAD();
+		void CreateWindow();
+		void MapCallbacks();
+		// Callback functions:
 		static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
-		static void MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn);
-		static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
-		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		// Internal properties:
+		GLFWwindow* window;
+		EngineError engineError;
+		bool isSetup;
+};
+
+class EngineError
+{
+	public:
+		// Constructor & Destructor:
+		EngineError();
+		~EngineError();
+		// Get/Set:
+		void SetErrorCode(std::string type, Error newCode);
+		Error GetErrorCode(std::string type);
+	private:
+		// Internal functions:
+		// Internal properties:
+		Error GLAD;
+		Error WINDOW_CREATION;
+};
+
+const enum Error
+{
+	NONE = 0,
+	WARNING = 1,
+	ERROR = 2
 };

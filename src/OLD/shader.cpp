@@ -4,6 +4,10 @@
 Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
 {
     geometryCodePath = nullptr;
+    blinn = true;
+    blinnToggle = false;
+    gamma = true;
+    gammaToggle = false;
     // Update Code file locations
     SetVertexPath(vertexPath);
     SetFragmentPath(fragmentPath);
@@ -149,7 +153,6 @@ bool Shader::LoadGLSLCode()
 
 bool Shader::Compile()
 {
-    unsigned int vertexShader, fragmentShader, geometryShader;
     // Vertex shader
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -197,7 +200,6 @@ bool Shader::Compile()
 bool Shader::Link()
 {
     // Link shaders
-    unsigned int vertexShader, fragmentShader, geometryShader;
     ID = glCreateProgram();
     glAttachShader(ID, vertexShader);
     glAttachShader(ID, fragmentShader);
