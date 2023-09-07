@@ -193,7 +193,7 @@ bool Shader::Compile()
     // Geometry Shader
     if (geometryCodePath != nullptr)
     {
-        geometryShader = glCreateShader(GL_FRAGMENT_SHADER);
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
         glShaderSource(geometryShader, 1, &geometryShaderSource, NULL);
         glCompileShader(geometryShader);
         // Check for compile errors

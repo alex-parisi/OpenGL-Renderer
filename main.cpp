@@ -14,9 +14,11 @@ int main(int argc, char* argv[])
         // Load the shaders:
         Shader lightingShader("../src/shaders/lighting.vs", "../src/shaders/lighting.fs");
         Shader shadowShader("../src/shaders/shadow.vs", "../src/shaders/shadow.fs");
+        Shader pointShadowShader("../src/shaders/point_shadow.vs", "../src/shaders/point_shadow.fs", "../src/shaders/point_shadow.gs");
         // Set the shaders:
         engine.SetLightingShader(lightingShader);
         engine.SetShadowShader(shadowShader);
+        engine.SetPointShadowShader(pointShadowShader);
 
         // 2. Objects:
         // Load the floor object:
@@ -27,9 +29,6 @@ int main(int argc, char* argv[])
         // Set the objects:
         engine.AddObjectToScene(floor);
         engine.AddObjectToScene(cube);
-
-        // 3. Turn on the directional light:
-        engine.GetScene()->GetDirectionalLight()->TurnOn();
 
         // Begin Engine:
         engine.Configure();

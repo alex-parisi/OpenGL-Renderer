@@ -67,22 +67,22 @@ void main()
     vec3 lightColor = vec3(0.3);
     // 1. Directional Light:
     // Ambient
-    vec3 ambient = dirLight.ambient * lightColor;
+    vec3 ambient = dirLight.ambient * color;
     // Diffuse
     // vec3 lightDir = normalize(dirLight.position - fs_in.FragPos);
     vec3 lightDir = normalize(-dirLight.direction);
     float diff = max(dot(lightDir, normal), 0.0);
-    vec3 diffuse = dirLight.diffuse * diff * lightColor;
+    vec3 diffuse = dirLight.diffuse * diff * color;
     // Specular
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
-    vec3 specular = dirLight.specular * spec * lightColor;    
+    vec3 specular = dirLight.specular * spec * color;    
     // Calculate shadow
     float shadow = ShadowCalculation(fs_in.FragPosLightSpace);                      
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;    
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));    
     
     FragColor = vec4(lighting, 1.0);
 }

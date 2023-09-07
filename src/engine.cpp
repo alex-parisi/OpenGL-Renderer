@@ -85,6 +85,11 @@ void Engine::SetShadowShader(Shader& shadowShader)
     m_scene.SetShadowShader(shadowShader);
 }
 
+void Engine::SetPointShadowShader(Shader& pointShadowShader)
+{
+    m_scene.SetPointShadowShader(pointShadowShader);
+}
+
 Scene* Engine::GetScene()
 {
     return &m_scene;

@@ -94,5 +94,14 @@
     <None Include="..\src\shaders\lighting.fs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\src\shaders\point_shadow.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\point_shadow.gs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\point_shadow.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

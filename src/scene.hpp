@@ -31,7 +31,10 @@ class Scene
 		Shader* GetLightingShader();
 		void SetShadowShader(Shader& shadowShader);
 		Shader* GetShadowShader();
+		void SetPointShadowShader(Shader& pointShadowShader);
+		Shader* GetPointShadowShader();
 		DirectionalLight* GetDirectionalLight();
+
 
 		unsigned int woodTexture;
 
@@ -42,10 +45,13 @@ class Scene
 		// Shaders used in rendering:
 		Shader* m_lightingShader;
 		Shader* m_shadowShader;
+		Shader* m_pointShadowShader;
 		// List of all objects being rendered:
 		std::vector<Object*> m_objects;
 		// Depth map used in generating shadows:
 		unsigned int m_depthMap, m_depthMapFBO;
-		// Directional light, turned off by default
+		// Directional light, turned on by default
 		DirectionalLight m_directionalLight;
+		// List of all point lights in the scene:
+		std::vector<PointLight*> m_pointLights;
 };

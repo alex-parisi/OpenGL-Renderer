@@ -139,6 +139,16 @@ Shader* Scene::GetShadowShader()
     return m_shadowShader;
 }
 
+void Scene::SetPointShadowShader(Shader& pointShadowShader)
+{
+    m_pointShadowShader = &pointShadowShader;
+}
+
+Shader* Scene::GetPointShadowShader()
+{
+    return m_pointShadowShader;
+}
+
 DirectionalLight* Scene::GetDirectionalLight()
 {
     return &m_directionalLight;
