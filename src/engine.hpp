@@ -15,9 +15,15 @@
 #include "scene.hpp"
 #include "shader.hpp"
 #include "input.hpp"
+#include "camera.hpp"
 
 #include <iostream>
 #include <string>
+
+struct CallbackObj {
+	Camera* camera;
+	InputManager* inputManager;
+};
 
 class Engine
 {
@@ -29,6 +35,7 @@ class Engine
 		bool Initialize();
 		void Execute();
 		void Terminate();
+		void Configure();
 		// Get/Set:
 		void SetLightingShader(Shader& lightingShader);
 		void SetShadowShader(Shader& shadowShader);
@@ -52,6 +59,8 @@ class Engine
 		// Internal properties:
 		GLFWwindow* m_window;
 		Scene m_scene;
-		InputManager inputManager;
-
+		InputManager m_inputManager;
+		Camera m_camera;
+		CallbackObj m_callbackObj;
+		float deltaTime, lastFrame;
 };

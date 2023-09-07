@@ -5,8 +5,6 @@
 #include "src/engine.hpp"
 #include "src/vertices.hpp"
 
-#define PRINT_INPUTS 0
-
 int main(int argc, char* argv[])
 {
 	Engine engine;
@@ -22,14 +20,16 @@ int main(int argc, char* argv[])
 
         // 2. Objects:
         // Load the floor object:
-        Floor floor(planeVertices, 48);
+        Object floor(planeVertices, 48);
         // Load the cube object:
         Object cube(cubeVertices, 288);
+        cube.SetModel(glm::translate(cube.GetModel(), glm::vec3(0.0f, 2.0f, 0.0f)));
         // Set the objects:
         engine.AddObjectToScene(floor);
         engine.AddObjectToScene(cube);
 
         // Begin Engine:
+        engine.Configure();
         engine.Execute();
     }
 	return 0;

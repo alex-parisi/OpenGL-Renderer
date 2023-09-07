@@ -7,7 +7,9 @@
 // Constructor:
 Engine::Engine()
 {
-    m_window = nullptr;   
+    m_window = nullptr;
+    deltaTime = 0.0f;
+    lastFrame = 0.0f;
 }
 
 // Destructor::
@@ -23,16 +25,18 @@ bool Engine::Initialize()
     if (InitializeGLFW() && CreateWindow() && InitializeGLAD())
     {
         // Reset input manager
-        inputManager.m_keyboard.Reset();
-        inputManager.m_mouse.Reset();
+        m_inputManager.m_keyboard.Reset();
+        m_inputManager.m_mouse.Reset();
         // Configure global OpenGL state:
         glEnable(GL_DEPTH_TEST);
         // Create a new viewport
         glViewport(0, 0, static_cast<int>(SCREEN_WIDTH), static_cast<int>(SCREEN_HEIGHT));
         // Map Callback functions 
         MapCallbacks();
-        // Associate the input manager with the window:
-        glfwSetWindowUserPointer(m_window, &inputManager);
+        // Setup the callback object with pointers to the camera and input manager
+        m_callbackObj.camera = &m_camera;
+        m_callbackObj.inputManager = &m_inputManager;
+        glfwSetWindowUserPointer(m_window, &m_callbackObj);
         return true;
     }
     return false;
@@ -43,6 +47,10 @@ void Engine::Execute()
     // If initialization passes, enter the rendering loop
     while (!glfwWindowShouldClose(m_window))
     {
+        // Update timing
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
         // Process inputs, render, and then handle global GLFW events
         ProcessInput(m_window);
         Render();
@@ -55,6 +63,16 @@ void Engine::Execute()
 void Engine::Terminate()
 {
     glfwTerminate();
+}
+
+void Engine::Configure()
+{
+    // Configure the scene depth map:
+    m_scene.ConfigureDepthMap();
+    // Configure the shaders:
+    m_scene.ConfigureShaders();
+
+    m_scene.woodTexture = loadTexture("../resources/textures/wood_floor.png");
 }
 
 void Engine::SetLightingShader(Shader& lightingShader)
@@ -119,6 +137,12 @@ void Engine::MapCallbacks()
 {
     // Callback function called when the window is resized:
     glfwSetFramebufferSizeCallback(m_window, FrameBufferSizeCallback);
+    // Callback function called when the mouse is moved:
+    glfwSetCursorPosCallback(m_window, MouseCallback);
+    // Callback function called when the scroll wheel is moved:
+    glfwSetScrollCallback(m_window, ScrollCallback);
+    // Callback function called when a key is pressed, released, or repeated:
+    glfwSetKeyCallback(m_window, KeyCallback);
 }
 
 void Engine::ProcessInput(GLFWwindow* window)
@@ -126,6 +150,33 @@ void Engine::ProcessInput(GLFWwindow* window)
     // Close the window if the escape key is pressed
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    // Move the camera around when pressing the WASD keys
+    float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+    glm::vec3 cameraPos = m_camera.GetCameraPos();
+    glm::vec3 cameraFront = m_camera.GetCameraFront();
+    glm::vec3 cameraUp = m_camera.GetCameraUp();
+    glm::vec3 newPos = cameraPos;
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_W))
+        newPos += cameraSpeed * cameraFront;
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_S))
+        newPos -= cameraSpeed * cameraFront;
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_A))
+        newPos -= cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_D))
+        newPos += cameraSpeed * glm::normalize(glm::cross(cameraFront, cameraUp));
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_Q))
+        newPos += cameraSpeed * cameraUp;
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_E))
+        newPos -= cameraSpeed * cameraUp;
+    m_camera.SetCameraPos(newPos);
+    // Unlock/Lock the camera when the Mouse Left is pressed/released
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        m_camera.SetLock(false);
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+    {
+        m_camera.SetLock(true);
+        m_camera.SetFirstMouse(true);
+    }
 }
 
 void Engine::Render()
@@ -134,7 +185,7 @@ void Engine::Render()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Render the scene
-    m_scene.Render();
+    m_scene.Render(m_camera);
     // Copy the buffer to the screen
     glfwSwapBuffers(m_window);
 }
@@ -165,7 +216,7 @@ void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
         obj->camera->SetFirstMouse(false);
     }
 
-    if (!obj->camera->locked)
+    if (!obj->camera->GetLock())
     {
         float xOffset = xPos - obj->camera->GetLastX();
         float yOffset = obj->camera->GetLastY() - yPos; // reversed since y-coordinates go from bottom to top
@@ -203,8 +254,8 @@ void Engine::KeyCallback(GLFWwindow* window, int key, int scancode, int action, 
 {
     CallbackObj* obj = (CallbackObj*)glfwGetWindowUserPointer(window);
     // Set the keyboard and mouse managers based on the key input
-    if (obj->inputManager->keyboard.CheckKey(key))
-        obj->inputManager->keyboard.SetKeyState(key, action);
-    if (obj->inputManager->mouse.CheckKey(key))
-        obj->inputManager->mouse.SetKeyState(key, action);
+    if (obj->inputManager->m_keyboard.CheckKey(key))
+        obj->inputManager->m_keyboard.SetKeyState(key, action);
+    if (obj->inputManager->m_mouse.CheckKey(key))
+        obj->inputManager->m_mouse.SetKeyState(key, action);
 }

@@ -30,12 +30,5 @@ class Object
 	private:
 		glm::mat4 m_model;
 		unsigned int m_VAO, m_VBO;
-};
-
-class Floor : public Object
-{
-	using Object::Object;
-
-	public:
-		void Render(Shader& shader);
+		int m_N;
 };

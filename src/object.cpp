@@ -10,12 +10,16 @@ Object::Object()
     m_model = glm::mat4(1.0f);
     m_VAO = NULL;
     m_VBO = NULL;
+    m_N = NULL;
 }
 
 Object::Object(const float* vertices, int N)
 {
     // Initialize model and object buffers:
     m_model = glm::mat4(1.0f);
+    m_N = N;
+    m_VAO = NULL;
+    m_VBO = NULL;
     glGenVertexArrays(1, &m_VAO);
     glGenBuffers(1, &m_VBO);
     // Fill buffer
@@ -43,11 +47,10 @@ Object::~Object()
 void Object::Render(Shader& shader)
 {
     // Set the shader settings:
-    shader.Use();
     shader.SetMat4("model", m_model);
     // Render the object:
     glBindVertexArray(m_VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawArrays(GL_TRIANGLES, 0, m_N / 8);
     glBindVertexArray(0);
 }
 
@@ -70,16 +73,4 @@ unsigned int Object::GetVAO()
 unsigned int Object::GetVBO()
 {
     return m_VBO;
-}
-
-// Floor-type object
-void Floor::Render(Shader& shader)
-{
-    // Set the shader settings:
-    shader.Use();
-    shader.SetMat4("model", GetModel());
-    // Render the object:
-    glBindVertexArray(GetVAO());
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
 }
