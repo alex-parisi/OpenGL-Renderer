@@ -1,3 +1,7 @@
+///////////////
+// input.cpp //
+///////////////
+
 #include "input.hpp"
 
 Input::Input()

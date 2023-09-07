@@ -24,6 +24,7 @@
     <ClCompile Include="..\src\engine.cpp" />
     <ClCompile Include="..\src\glad.c" />
     <ClCompile Include="..\src\input.cpp" />
+    <ClCompile Include="..\src\light.cpp" />
     <ClCompile Include="..\src\object.cpp" />
     <ClCompile Include="..\src\scene.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
@@ -33,6 +34,7 @@
     <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\engine.hpp" />
     <ClInclude Include="..\src\input.hpp" />
+    <ClInclude Include="..\src\light.hpp" />
     <ClInclude Include="..\src\object.hpp" />
     <ClInclude Include="..\src\scene.hpp" />
     <ClInclude Include="..\src\settings.hpp" />

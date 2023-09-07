@@ -9,6 +9,9 @@ Scene::Scene()
 {
 	m_lightingShader = nullptr;
 	m_shadowShader = nullptr;
+    m_depthMap = NULL;
+    m_depthMapFBO = NULL;
+    woodTexture = NULL;
 }
 // Destructor:
 Scene::~Scene()
@@ -17,16 +20,32 @@ Scene::~Scene()
 }
 
 // External functions:
-void Scene::Render(Camera& camera)
+void Scene::Render(Camera& camera, InputManager& inputManager)
 {
+    // TEMP:
+    // Rotate the cube object if the arrow keys are pressed:
+    for (auto& o : m_objects)
+    {
+        if (o->GetName() == "cube")
+        {
+            if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_UP))
+                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+            if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_DOWN))
+                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(1.0f, 0.0f, 0.0f)));
+            if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_LEFT))
+                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, -1.0f, 0.0f)));
+            if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_RIGHT))
+                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        }
+    }
+
 	// 1. Render Depth of Scene:
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
     float near_plane = 1.0f, far_plane = 7.5f;
-    glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
 
     lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
-    lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+    lightView = glm::lookAt(m_directionalLight.GetPosition(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
 
     // Render scene from light's point of view
@@ -52,9 +71,9 @@ void Scene::Render(Camera& camera)
     m_lightingShader->SetMat4("projection", projection);
     m_lightingShader->SetMat4("view", view);
     // set light uniforms
-    m_lightingShader->SetVec3("viewPos", camera.GetCameraPos());
-    m_lightingShader->SetVec3("lightPos", lightPos);
     m_lightingShader->SetMat4("lightSpaceMatrix", lightSpaceMatrix);
+    m_directionalLight.SetUniforms(*m_lightingShader);   
+    m_lightingShader->SetVec3("viewPos", camera.GetCameraPos());
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, woodTexture);
     glActiveTexture(GL_TEXTURE1);
@@ -120,6 +139,11 @@ Shader* Scene::GetShadowShader()
     return m_shadowShader;
 }
 
+DirectionalLight* Scene::GetDirectionalLight()
+{
+    return &m_directionalLight;
+}
+
 // Internal functions:
 void Scene::RenderScene(Shader& shader)
 {
@@ -154,9 +178,9 @@ unsigned int loadTexture(char const* path)
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);

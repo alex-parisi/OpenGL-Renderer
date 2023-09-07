@@ -20,13 +20,16 @@ int main(int argc, char* argv[])
 
         // 2. Objects:
         // Load the floor object:
-        Object floor(planeVertices, 48);
+        Object floor("floor", planeVertices, 48);
         // Load the cube object:
-        Object cube(cubeVertices, 288);
-        cube.SetModel(glm::translate(cube.GetModel(), glm::vec3(0.0f, 2.0f, 0.0f)));
+        Object cube("cube", cubeVertices, 288);
+        cube.SetModel(glm::translate(cube.GetModel(), glm::vec3(0.0f, 3.0f, 0.0f)));
         // Set the objects:
         engine.AddObjectToScene(floor);
         engine.AddObjectToScene(cube);
+
+        // 3. Turn on the directional light:
+        engine.GetScene()->GetDirectionalLight()->TurnOn();
 
         // Begin Engine:
         engine.Configure();

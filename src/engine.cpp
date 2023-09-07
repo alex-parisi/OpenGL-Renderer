@@ -85,6 +85,11 @@ void Engine::SetShadowShader(Shader& shadowShader)
     m_scene.SetShadowShader(shadowShader);
 }
 
+Scene* Engine::GetScene()
+{
+    return &m_scene;
+}
+
 void Engine::AddObjectToScene(Object& object)
 {
     m_scene.AddObject(object);
@@ -185,7 +190,7 @@ void Engine::Render()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Render the scene
-    m_scene.Render(m_camera);
+    m_scene.Render(m_camera, m_inputManager);
     // Copy the buffer to the screen
     glfwSwapBuffers(m_window);
 }

@@ -11,13 +11,15 @@ Object::Object()
     m_VAO = NULL;
     m_VBO = NULL;
     m_N = NULL;
+    m_name = "";
 }
 
-Object::Object(const float* vertices, int N)
+Object::Object(std::string name, const float* vertices, int N)
 {
     // Initialize model and object buffers:
     m_model = glm::mat4(1.0f);
     m_N = N;
+    m_name = name;
     m_VAO = NULL;
     m_VBO = NULL;
     glGenVertexArrays(1, &m_VAO);
@@ -73,4 +75,14 @@ unsigned int Object::GetVAO()
 unsigned int Object::GetVBO()
 {
     return m_VBO;
+}
+
+std::string Object::GetName()
+{
+    return m_name;
+}
+
+void Object::SetName(std::string name)
+{
+    m_name = name;
 }

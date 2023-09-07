@@ -12,12 +12,14 @@
 
 #include "shader.hpp"
 
+#include <string>
+
 class Object
 {
 	public:
 		// Constructor(s) & Destructor:
 		Object();
-		Object(const float* vertices, int N);
+		Object(std::string name, const float* vertices, int N);
 		~Object();
 		// External functions:
 		void Render(Shader& shader);
@@ -26,9 +28,13 @@ class Object
 		void SetModel(glm::mat4 model);
 		unsigned int GetVAO();
 		unsigned int GetVBO();
+		std::string GetName();
+		void SetName(std::string name);
+		
 		
 	private:
 		glm::mat4 m_model;
 		unsigned int m_VAO, m_VBO;
 		int m_N;
+		std::string m_name;
 };

@@ -39,6 +39,7 @@ class Engine
 		// Get/Set:
 		void SetLightingShader(Shader& lightingShader);
 		void SetShadowShader(Shader& shadowShader);
+		Scene* GetScene();
 		// Other:
 		void AddObjectToScene(Object& object);
 		

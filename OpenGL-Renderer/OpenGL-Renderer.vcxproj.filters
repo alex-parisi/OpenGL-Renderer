@@ -45,6 +45,9 @@
     <ClCompile Include="..\src\input.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\engine.hpp">
@@ -72,6 +75,9 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\light.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
