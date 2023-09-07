@@ -1,3 +1,7 @@
+////////////////
+// engine.hpp //
+////////////////
+
 #pragma once
 
 #include <glad/glad.h>
@@ -8,6 +12,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "settings.hpp"
+#include "scene.hpp"
+#include "shader.hpp"
+#include "input.hpp"
 
 #include <iostream>
 #include <string>
@@ -19,44 +26,32 @@ class Engine
 		Engine();
 		~Engine();
 		// External functions:
+		bool Initialize();
 		void Execute();
 		void Terminate();
 		// Get/Set:
-		bool GetIsSetup();
+		void SetLightingShader(Shader& lightingShader);
+		void SetShadowShader(Shader& shadowShader);
+		// Other:
+		void AddObjectToScene(Object& object);
 		
 	private:
 		// Internal functions:
-		void InitializeGLFW();
-		void InitializeGLAD();
-		void CreateWindow();
+		bool InitializeGLFW();
+		bool InitializeGLAD();
+		bool CreateWindow();
 		void MapCallbacks();
+		void ProcessInput(GLFWwindow* window);
+		void Render();
+		void HandleEvents();
 		// Callback functions:
 		static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
+		static void MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn);
+		static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
+		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 		// Internal properties:
-		GLFWwindow* window;
-		EngineError engineError;
-		bool isSetup;
-};
+		GLFWwindow* m_window;
+		Scene m_scene;
+		InputManager inputManager;
 
-class EngineError
-{
-	public:
-		// Constructor & Destructor:
-		EngineError();
-		~EngineError();
-		// Get/Set:
-		void SetErrorCode(std::string type, Error newCode);
-		Error GetErrorCode(std::string type);
-	private:
-		// Internal functions:
-		// Internal properties:
-		Error GLAD;
-		Error WINDOW_CREATION;
-};
-
-const enum Error
-{
-	NONE = 0,
-	WARNING = 1,
-	ERROR = 2
 };

@@ -20,16 +20,31 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\main.cpp" />
+    <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\engine.cpp" />
     <ClCompile Include="..\src\glad.c" />
+    <ClCompile Include="..\src\input.cpp" />
+    <ClCompile Include="..\src\object.cpp" />
+    <ClCompile Include="..\src\scene.cpp" />
     <ClCompile Include="..\src\shader.cpp" />
     <ClCompile Include="..\src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\camera.hpp" />
     <ClInclude Include="..\src\engine.hpp" />
+    <ClInclude Include="..\src\input.hpp" />
+    <ClInclude Include="..\src\object.hpp" />
+    <ClInclude Include="..\src\scene.hpp" />
     <ClInclude Include="..\src\settings.hpp" />
     <ClInclude Include="..\src\shader.hpp" />
     <ClInclude Include="..\src\stb_image.h" />
+    <ClInclude Include="..\src\vertices.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\shaders\lighting.fs" />
+    <None Include="..\src\shaders\lighting.vs" />
+    <None Include="..\src\shaders\shadow.fs" />
+    <None Include="..\src\shaders\shadow.vs" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

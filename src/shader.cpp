@@ -1,8 +1,23 @@
+////////////////
+// shader.cpp //
+////////////////
+
 #include "shader.hpp"
 
-// Default constructor:
+// Default constructor(s):
+Shader::Shader()
+{
+    vertexShader = NULL;
+    fragmentShader = NULL;
+    geometryShader = NULL;
+    geometryCodePath = nullptr;
+}
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
 {
+    vertexShader = NULL;
+    fragmentShader = NULL;
+    geometryShader = NULL;
     geometryCodePath = nullptr;
     // Update Code file locations
     SetVertexPath(vertexPath);
@@ -149,7 +164,6 @@ bool Shader::LoadGLSLCode()
 
 bool Shader::Compile()
 {
-    unsigned int vertexShader, fragmentShader, geometryShader;
     // Vertex shader
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -197,7 +211,6 @@ bool Shader::Compile()
 bool Shader::Link()
 {
     // Link shaders
-    unsigned int vertexShader, fragmentShader, geometryShader;
     ID = glCreateProgram();
     glAttachShader(ID, vertexShader);
     glAttachShader(ID, fragmentShader);
