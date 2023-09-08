@@ -100,16 +100,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\src\shaders\lighting.vs">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="..\src\shaders\shadow.fs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\shadow.vs">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="..\src\shaders\lighting.fs">
       <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\point_shadow.fs">
@@ -125,6 +119,18 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="..\src\shaders\light_cube.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\lighting.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\lighting.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\lighting_noNormals.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\lighting_noNormals.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -51,6 +51,8 @@
   <ItemGroup>
     <None Include="..\src\shaders\lighting.fs" />
     <None Include="..\src\shaders\lighting.vs" />
+    <None Include="..\src\shaders\lighting_noNormals.fs" />
+    <None Include="..\src\shaders\lighting_noNormals.vs" />
     <None Include="..\src\shaders\light_cube.fs" />
     <None Include="..\src\shaders\light_cube.vs" />
     <None Include="..\src\shaders\point_shadow.fs" />

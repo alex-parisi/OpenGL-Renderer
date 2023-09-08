@@ -82,6 +82,7 @@ void Object::Render(Shader& shader)
     // Set the shader settings:
     shader.SetMat4("model", m_model);
     shader.SetFloat("texScaling", m_texScaling);
+    shader.SetBool("useNormalMap", false);
     // Bind the texture (right now just use diffuse texture for both diffuse and specular)
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, m_texture);
