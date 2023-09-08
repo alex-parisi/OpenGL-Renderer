@@ -10,3 +10,4 @@ OpenGL-Renderer/x64/*
 *.idb
 !x64/Debug/assimpd.dll
 !resources/models/backpack.obj
+!resources/models/test.obj

@@ -30,13 +30,16 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     // Rotate the model object if the arrow keys are pressed:
     for (auto& m : m_models)
     {
-        if (m->GetName() == "testModel")
+        // if (m->GetName() == "testModel")
+        if (1)
         {
-            if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_UP))
+            // if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_UP))
+            if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_SPACE))
                 m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(-1.0f, 0.0f, 0.0f)));
             if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_DOWN))
                 m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(1.0f, 0.0f, 0.0f)));
-            if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_LEFT))
+            // if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_LEFT))
+            if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_SPACE))
                 m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, -1.0f, 0.0f)));
             if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_RIGHT))
                 m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f)));
@@ -290,7 +293,8 @@ void Scene::DrawLightbulbs(Camera& camera, InputManager& inputManager)
     for (auto& l : m_pointLights)
     {
         glm::mat4 model = glm::mat4(1.0f);
-        if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_SPACE))
+        // if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_SPACE))
+        if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_SPACE))
         {
             model = glm::rotate(model, glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
             model = glm::translate(model, l->GetPosition());

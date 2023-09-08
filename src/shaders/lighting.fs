@@ -22,9 +22,9 @@ struct PointLight {
 
 in VS_OUT {
     vec3 FragPos;
-    vec3 Normal;
     vec2 TexCoords;
     vec4 FragPosLightSpace;
+    mat3 TBN;
 } fs_in;
 
 // Could also be replaced with a SSBO (Shader Storage Buffer Object) (TO - DO)
@@ -56,36 +56,43 @@ vec3 gridSamplingDisk[20] = vec3[]
    vec3(0, 1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0, 1, -1)
 );
 
-vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir);
-float ShadowCalculation(vec4 fragPosLightSpace);
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir, vec3 TangentFragPos);
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 norm);
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 TangentFragPos);
 float PointShadowCalculation(PointLight light, vec3 fragPos);
 
 void main()
 {
     // Properties:
-    vec3 norm = normalize(fs_in.Normal);
-    vec3 viewDir = normalize(viewPos - fs_in.FragPos);
+    // Calculate normal from normal map provided by model:
+    vec3 normal = texture(normalTexture, fs_in.TexCoords).rgb;
+    normal = normalize(normal * 2.0 - 1.0);
+    vec3 TangentViewPos = fs_in.TBN * viewPos;
+    vec3 TangentFragPos = fs_in.TBN * fs_in.FragPos;
+    vec3 viewDir = normalize(TangentViewPos - TangentFragPos);
 
     // 1. Perform Directional Lighting and Shading:
-    vec3 result = CalcDirLight(dirLight, norm, viewDir);
+    vec3 result = CalcDirLight(dirLight, normal, viewDir, TangentFragPos);
 
     // 2. Perform Point Lighting and Shading:
     for(int i = 0; i < n_pointLights; i++)
-        result += CalcPointLight(pointLight[i], norm, fs_in.FragPos, viewDir);
+        result += CalcPointLight(pointLight[i], normal, fs_in.FragPos, viewDir, TangentFragPos);
     
     // 3. Output result:
     FragColor = vec4(result, 1.0);
+
     // 4. Gamma correction:
     FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
 }
 
-vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)
+vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir, vec3 TangentFragPos)
 {
     // Ambient
     vec3 ambient = dirLight.ambient * texture(diffuseTexture, fs_in.TexCoords).rgb;
     // Diffuse
     vec3 lightDir = normalize(-dirLight.direction);
+    // vec3 TangentLightPos = fs_in.TBN * dirLight.position;
+    // vec3 lightDir = normalize(TangentLightPos - TangentFragPos);
     float diff = max(dot(lightDir, norm), 0.0);
     vec3 diffuse = dirLight.diffuse * diff * texture(diffuseTexture, fs_in.TexCoords).rgb;
     // Specular
@@ -95,12 +102,12 @@ vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)
     spec = pow(max(dot(norm, halfwayDir), 0.0), 64.0);
     vec3 specular = dirLight.specular * spec * texture(specularTexture, fs_in.TexCoords).rgb;    
     // Calculate shadow
-    float shadow = ShadowCalculation(fs_in.FragPosLightSpace);                      
+    float shadow = ShadowCalculation(fs_in.FragPosLightSpace, norm);                      
     
     return (ambient + (1.0 - shadow) * (diffuse + specular));
 }
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation(vec4 fragPosLightSpace, vec3 norm)
 {
     // Perform perspective divide
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
@@ -111,7 +118,7 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     // Get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // Calculate bias (based on depth map resolution and slope)
-    vec3 normal = normalize(fs_in.Normal);
+    vec3 normal = normalize(norm);
     vec3 lightDir = normalize(-dirLight.direction);
     float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
     // PCF
@@ -134,9 +141,11 @@ float ShadowCalculation(vec4 fragPosLightSpace)
     return shadow;
 }
 
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 TangentFragPos)
 {
-    vec3 lightDir = normalize(light.position - fragPos);
+    // vec3 lightDir = normalize(light.position - fragPos);
+    vec3 TangentLightPos = fs_in.TBN * light.position;
+    vec3 lightDir = normalize(TangentLightPos - TangentFragPos);
     // Diffuse shading
     float diff = max(dot(normal, lightDir), 0.0);
     // Specular shading
@@ -159,7 +168,6 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float shadow = PointShadowCalculation(light, fragPos);
 
     return (ambient + (1.0 - shadow) * (diffuse + specular));
-    // return (ambient + diffuse + specular);
 }
 
 
