@@ -1,17 +1,21 @@
+////////////////
+// camera.cpp //
+////////////////
+
 #include "camera.hpp"
 
 Camera::Camera()
 {
-    locked = true;
-    cameraPos = glm::vec3(0.0f, 10.0f, 3.0f);
-    cameraFront = glm::vec3(-1.0f, 0.0f, 0.0f);
-    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    firstMouse = true;
-    yaw = 180.0f;
-    pitch = 0.0f;
-    lastX = SCREEN_WIDTH / 2.0;
-    lastY = SCREEN_HEIGHT / 2.0;
-    fov = 45.0f;
+    m_locked = true;
+    m_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+    m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    m_firstMouse = true;
+    m_yaw = 180.0f;
+    m_pitch = 0.0f;
+    m_lastX = SCREEN_WIDTH / 2.0;
+    m_lastY = SCREEN_HEIGHT / 2.0;
+    m_fov = 45.0f;
 }
 
 Camera::~Camera()
@@ -19,102 +23,117 @@ Camera::~Camera()
 
 }
 
-void Camera::SetCameraPos(glm::vec3 newCameraPos)
+void Camera::SetCameraPos(glm::vec3 cameraPos)
 {
-    cameraPos = newCameraPos;
+    m_cameraPos = cameraPos;
 }
 
-void Camera::SetCameraFront(glm::vec3 newCameraFront)
+void Camera::SetCameraFront(glm::vec3 cameraFront)
 {
-    cameraFront = newCameraFront;
+    m_cameraFront = cameraFront;
 }
 
-void Camera::SetCameraUp(glm::vec3 newCameraUp)
+void Camera::SetCameraUp(glm::vec3 cameraUp)
 {
-    cameraUp = newCameraUp;
+    m_cameraUp = cameraUp;
 }
 
 glm::vec3 Camera::GetCameraPos()
 {
-    return cameraPos;
+    return m_cameraPos;
 }
 
 glm::vec3 Camera::GetCameraFront()
 {
-    return cameraFront;
+    return m_cameraFront;
 }
 
 glm::vec3 Camera::GetCameraUp()
 {
-    return cameraUp;
+    return m_cameraUp;
 }
 
-void Camera::SetFirstMouse(bool newFirstMouse)
+void Camera::SetFirstMouse(bool firstMouse)
 {
-    firstMouse = newFirstMouse;
+    m_firstMouse = firstMouse;
 }
 
-void Camera::SetYaw(float newYaw)
+void Camera::SetYaw(float yaw)
 {
-    yaw = newYaw;
+    m_yaw = yaw;
 }
 
-void Camera::SetPitch(float newPitch)
+void Camera::SetPitch(float pitch)
 {
-    pitch = newPitch;
+    m_pitch = pitch;
 }
 
-void Camera::SetLastX(float newLastX)
+void Camera::SetLastX(float lastX)
 {
-    lastX = newLastX;
+    m_lastX = lastX;
 }
 
-void Camera::SetLastY(float newLastY)
+void Camera::SetLastY(float lastY)
 {
-    lastY = newLastY;
+    m_lastY = lastY;
 }
 
-void Camera::SetFov(float newFov)
+void Camera::SetFov(float fov)
 {
-    fov = newFov;
+    m_fov = fov;
 }
 
 bool Camera::GetFirstMouse()
 {
-    return firstMouse;
+    return m_firstMouse;
 }
 
 float Camera::GetYaw()
 {
-    return yaw;
+    return m_yaw;
 }
 
 float Camera::GetPitch()
 {
-    return pitch;
+    return m_pitch;
 }
 
 float Camera::GetLastX()
 {
-    return lastX;
+    return m_lastX;
 }
 
 float Camera::GetLastY()
 {
-    return lastY;
+    return m_lastY;
 }
 
 float Camera::GetFov()
 {
-    return fov;
+    return m_fov;
 }
 
 glm::mat4 Camera::GetProjectionMatrix()
 {
-    return glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
+    return glm::perspective(glm::radians(m_fov), 800.0f / 600.0f, 0.1f, 100.0f);
 }
 
 glm::mat4 Camera::GetViewMatrix()
 {
-    return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    return glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
+}
+
+bool Camera::GetLock()
+{
+    return m_locked;
+}
+
+void Camera::SetLock(bool locked)
+{
+    m_locked = locked;
+}
+
+void Camera::FlipLock()
+{
+    m_locked = !m_locked;
 }

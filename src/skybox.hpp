@@ -18,7 +18,7 @@ class Skybox
 		Skybox();
 		~Skybox();
 		// Public Functions:
-		void Load(std::vector<std::string> facePaths, float* vertices, int N);
+		void Load(std::vector<std::string> facePaths, const float* vertices, int N);
 		unsigned int LoadCubemap(std::vector<std::string> facePaths);
 		void Render(Shader& shader, Camera& camera);
 		// Public Attributes:

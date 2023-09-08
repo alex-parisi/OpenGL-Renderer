@@ -13,7 +13,7 @@ Skybox::~Skybox()
 
 }
 
-void Skybox::Load(std::vector<std::string> facePaths, float* vertices, int N)
+void Skybox::Load(std::vector<std::string> facePaths, const float* vertices, int N)
 {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);

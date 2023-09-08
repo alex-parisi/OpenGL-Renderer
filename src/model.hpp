@@ -1,4 +1,9 @@
+///////////////
+// model.hpp //
+///////////////
+
 #pragma once
+
 #include <glad/glad.h> 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -6,12 +11,10 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
 #include "mesh.hpp"
 #include "shader.hpp"
-#include "camera.hpp"
-#include "point_light.hpp"
-#include "directional_light.hpp"
-#include "input.hpp"
+
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -19,31 +22,32 @@
 #include <map>
 #include <vector>
 
-unsigned int TextureFromFile(const char* path, const std::string& directory, bool gamma = false);
+unsigned int TextureFromFile(const char* path, const std::string& directory);
 
 class Model
 {
     public:
-        // Constructor & Destructor
-        Model(std::string const& path, bool gamma = false) : gammaCorrection(gamma)
-        {
-            LoadModel(path);
-            m_model = glm::mat4(1.0f);
-        }
-        void Draw(Camera& camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights, InputManager* inputManager);
-        void DrawDepth(Shader& shader);
-        // Public Attributes
-        std::vector<MeshTexture> texturesLoaded;
+        // Constructor & Destructor:
+        Model();
+        Model(std::string const& path, std::string name);
+        ~Model();
+        // External functions:
+        void Draw(Shader& shader);
+        // Get/Set:
+        glm::mat4 GetModel();
+        void SetModel(glm::mat4 model);
+        std::string GetName();
+        // External attributes:
+        std::vector<Texture> textures_loaded;
         std::vector<Mesh> meshes;
         std::string directory;
-        bool gammaCorrection;
-        glm::mat4 GetModel();
-        void SetModel(glm::mat4 newModel);
 
     private:
+        // Private functions:
         void LoadModel(std::string const& path);
         void ProcessNode(aiNode* node, const aiScene* scene);
         Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<MeshTexture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, bool gamma);
+        std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
         glm::mat4 m_model;
+        std::string m_name;
 };

@@ -1,39 +1,46 @@
-#pragma once
-#include <vector>
-#include "material.hpp"
-#include "camera.hpp"
-#include "point_light.hpp"
-#include "directional_light.hpp"
+////////////////
+// object.hpp //
+////////////////
 
-#define MAX_BONE_INFLUENCE 4
+#pragma once
+
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+#include "shader.hpp"
+
+#include <string>
 
 class Object
 {
-    public:
-        // Constructor & Destructor:
-        Object(Material& material, float* vertices, int N, bool wireframeOn);
-        ~Object();
-        // Transforms
-        void Translate(glm::vec3 newPos);
-        void Rotate(float angle, glm::vec3 axis);
-        void Scale(glm::vec3 scale);
-        // Inherited Functions:
-        void Render(float deltaTime, Camera* camera, Shader& shader, DirectionalLight* directionalLight, std::vector<PointLight*> pointLights);
-        void RenderDepth(Shader& shader);
-        // Get/Set
-        glm::vec3 GetPosition();
-        void SetWireframeMode(bool newWireframeMode);
-        bool GetWireframeMode();
-        void SetModel(glm::mat4 newModel);
-        glm::mat4 GetModel();
-        void SetTexScaling(float newTexScaling);
-
-    private:
-        // Private Attributes
-        Material* m_material;
-        glm::mat4 model;
-        bool wireframeMode;
-        glm::vec3 position;
-        unsigned int VAO, VBO;
-        float texScaling;
+	public:
+		// Constructor(s) & Destructor:
+		Object();
+		Object(std::string name, const float* vertices, int N);
+		Object(std::string name, const float* vertices, int N, unsigned int texture);
+		~Object();
+		// External functions:
+		void Render(Shader& shader);
+		// Get/Set:
+		glm::mat4 GetModel();
+		void SetModel(glm::mat4 model);
+		unsigned int GetVAO();
+		unsigned int GetVBO();
+		std::string GetName();
+		void SetName(std::string name);
+		void SetTexScaling(float texScaling);
+		void SetTexture(unsigned int texture);
+		unsigned int GetTexture();
+		
+		
+	private:
+		glm::mat4 m_model;
+		unsigned int m_VAO, m_VBO;
+		int m_N;
+		std::string m_name;
+		float m_texScaling;
+		unsigned int m_texture;
 };

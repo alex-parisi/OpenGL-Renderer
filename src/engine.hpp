@@ -1,23 +1,26 @@
+////////////////
+// engine.hpp //
+////////////////
+
 #pragma once
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <vector>
-#include <iostream>
-#include "scene.hpp"
-#include "camera.hpp"
-#include "point_light.hpp"
-#include "model.hpp"
-#include "input.hpp"
+
 #include "settings.hpp"
-#include <vector>
+#include "scene.hpp"
+#include "shader.hpp"
+#include "input.hpp"
+#include "camera.hpp"
+
+#include <iostream>
 #include <string>
 
-// Structure that gets passed to each callback function. Add pointers to relevant things here.
-struct CallbackObj
-{
+struct CallbackObj {
 	Camera* camera;
 	InputManager* inputManager;
 };
@@ -25,36 +28,46 @@ struct CallbackObj
 class Engine
 {
 	public:
-		// Constructor/Destructor
+		// Constructor & Destructor:
 		Engine();
 		~Engine();
-		// Exposed functions
+		// External functions:
 		bool Initialize();
-		void MapCallbacks();
 		void Execute();
 		void Terminate();
+		void Configure();
+		// Get/Set:
+		void SetLightingShader(Shader& lightingShader);
+		void SetShadowShader(Shader& shadowShader);
+		void SetPointShadowShader(Shader& pointShadowShader);
+		void SetLightbulbShader(Shader& lightbulbShader);
+		void SetSkybox(Skybox& skybox);
+		void SetSkyboxShader(Shader& skyboxShader);
+		Scene* GetScene();
+		// Other:
+		void AddObjectToScene(Object& object);
+		void AddPointLightToScene(PointLight& pointLight);
+		void AddModelToScene(Model& model);
+		
+	private:
+		// Internal functions:
+		bool InitializeGLFW();
+		bool InitializeGLAD();
+		bool CreateWindow();
+		void MapCallbacks();
 		void ProcessInput(GLFWwindow* window);
 		void Render();
 		void HandleEvents();
-		// Exposed attributes
-		GLFWwindow* window;
-        Scene scene;
-        Camera camera;
-		InputManager inputManager;
-        // Timing attributes:
-        float deltaTime;
-        float lastFrame;
-		// Callback Object
-		CallbackObj callbackObj;
-
-	private:
-		// Internal initialization functions
-		void InitializeGLFW();
-		bool InitializeGLAD();
-		bool CreateWindow();
-		// Callback functions (need to be static to work with GLFW)
+		// Callback functions:
 		static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
 		static void MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn);
 		static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 		static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+		// Internal properties:
+		GLFWwindow* m_window;
+		Scene m_scene;
+		InputManager m_inputManager;
+		Camera m_camera;
+		CallbackObj m_callbackObj;
+		float deltaTime, lastFrame;
 };

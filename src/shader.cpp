@@ -1,13 +1,24 @@
+////////////////
+// shader.cpp //
+////////////////
+
 #include "shader.hpp"
 
-// Default constructor:
+// Default constructor(s):
+Shader::Shader()
+{
+    vertexShader = NULL;
+    fragmentShader = NULL;
+    geometryShader = NULL;
+    geometryCodePath = nullptr;
+}
+
 Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath)
 {
+    vertexShader = NULL;
+    fragmentShader = NULL;
+    geometryShader = NULL;
     geometryCodePath = nullptr;
-    blinn = true;
-    blinnToggle = false;
-    gamma = true;
-    gammaToggle = false;
     // Update Code file locations
     SetVertexPath(vertexPath);
     SetFragmentPath(fragmentPath);
@@ -182,7 +193,7 @@ bool Shader::Compile()
     // Geometry Shader
     if (geometryCodePath != nullptr)
     {
-        geometryShader = glCreateShader(GL_FRAGMENT_SHADER);
+        geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
         glShaderSource(geometryShader, 1, &geometryShaderSource, NULL);
         glCompileShader(geometryShader);
         // Check for compile errors

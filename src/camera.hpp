@@ -1,11 +1,15 @@
+////////////////
+// camera.hpp //
+////////////////
+
 #pragma once
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "input.hpp"
 #include "settings.hpp"
 #include <iostream>
 #include <fstream>
@@ -18,20 +22,20 @@ class Camera
         // Constructor & Destructor:
         Camera();
         ~Camera();
-        // Functions to get/set camera settings
-        void SetCameraPos(glm::vec3 newCameraPos);
-        void SetCameraFront(glm::vec3 newCameraFront);
-        void SetCameraUp(glm::vec3 newCameraUp);
+        // Functions to get/set camera attributes:
+        void SetCameraPos(glm::vec3 cameraPos);
+        void SetCameraFront(glm::vec3 cameraFront);
+        void SetCameraUp(glm::vec3 cameraUp);
         glm::vec3 GetCameraPos();
         glm::vec3 GetCameraFront();
         glm::vec3 GetCameraUp();
-        // Functions to get/set the look settings
-        void SetFirstMouse(bool newFirstMouse);
-        void SetYaw(float newYaw);
-        void SetPitch(float newPitch);
-        void SetLastX(float newLastX);
-        void SetLastY(float newLastY);
-        void SetFov(float newFov);
+        // Functions to get/set the look attributes:
+        void SetFirstMouse(bool firstMouse);
+        void SetYaw(float yaw);
+        void SetPitch(float pitch);
+        void SetLastX(float lastX);
+        void SetLastY(float lastY);
+        void SetFov(float fov);
         bool GetFirstMouse();
         float GetYaw();
         float GetPitch();
@@ -42,18 +46,22 @@ class Camera
         glm::mat4 GetProjectionMatrix();
         glm::mat4 GetViewMatrix();
         // Lock
-        bool locked;
+        bool GetLock();
+        void SetLock(bool locked);
+        void FlipLock();
 
     private:
         // Camera attributes:
-        glm::vec3 cameraPos;
-        glm::vec3 cameraFront;
-        glm::vec3 cameraUp;
+        glm::vec3 m_cameraPos;
+        glm::vec3 m_cameraFront;
+        glm::vec3 m_cameraUp;
         // Look attributes:
-        bool firstMouse;
-        float yaw;
-        float pitch;
-        float lastX;
-        float lastY;
-        float fov;
+        bool m_firstMouse;
+        float m_yaw;
+        float m_pitch;
+        float m_lastX;
+        float m_lastY;
+        float m_fov;
+        // Lock
+        bool m_locked;
 };

@@ -1,51 +1,74 @@
+///////////////
+// scene.hpp //
+///////////////
+
 #pragma once
-#include <vector>
+
 #include "object.hpp"
-#include "camera.hpp"
-#include "point_light.hpp"
-#include "directional_light.hpp"
-#include "model.hpp"
-#include "input.hpp"
+#include "shader.hpp"
 #include "settings.hpp"
+#include "camera.hpp"
+#include "input.hpp"
+#include "light.hpp"
+#include "model.hpp"
 #include "skybox.hpp"
+
+#include <vector>
+
+unsigned int loadTexture(char const* path);
 
 class Scene
 {
-    public:
-        // Constructor & Destructor:
-        Scene();
-        ~Scene();
-        // Public Functions:
-        void Render(float deltaTime, Camera* camera, InputManager* inputManager);
-        // Add object to scene:
-        void AddObject(Object& object);
-        void AddLight(PointLight& pointLight);
-        void SetDirectionalLight(DirectionalLight& newDirectionalLight);
-        // Add model to the scene:
-        void AddModel(Model& model);
-        // Set the shaders
-        void SetLightShader(Shader& newLightShader);
-        void SetShadowshader(Shader& newShaderShader);
-        void SetLightbulbShader(Shader& newLightbulbShader);
-        void SetSkyboxShader(Shader& newSkyboxShader);
-        // Skybox:
-        Skybox skybox;
-        glm::mat4 lightSpaceMatrix;
+	public:
+		// Constructor & Destructor:
+		Scene();
+		~Scene();
+		// External functions:
+		void Render(Camera& camera, InputManager& inputManager);
+		void AddObject(Object& object);
+		void AddModel(Model& model);
+		void AddPointLight(PointLight& pointLight);
+		void ConfigureDepthMap();
+		void ConfigureCubeMap();
+		void ConfigureShaders();
+		// Get/Set:
+		void SetLightingShader(Shader& lightingShader);
+		Shader* GetLightingShader();
+		void SetShadowShader(Shader& shadowShader);
+		Shader* GetShadowShader();
+		void SetPointShadowShader(Shader& pointShadowShader);
+		Shader* GetPointShadowShader();
+		void SetLightbulbShader(Shader& lightbulbShader);
+		Shader* GetLightbulbShader();
+		DirectionalLight* GetDirectionalLight();
+		Skybox* GetSkybox();
+		void SetSkybox(Skybox& skybox);
+		Shader* GetSkyboxShader();
+		void SetSkyboxShader(Shader& skyboxShader);
 
-    private:
-        void RenderScene(float deltaTime, Camera* camera, InputManager* inputManager);
-        void RenderDepthOfScene(float deltaTime, Camera* camera, InputManager* inputManager);
-        // List of objects in the scene:
-        std::vector<Object *> objects;
-        // List of models in the scene:
-        std::vector<Model *> models;
-        // Lighting: can have unlimited point sources, but only one directional source
-        std::vector<PointLight*> pointLights;
-        DirectionalLight* directionalLight;
-        // Shaders used in the rendering loop:
-        Shader* lightShader;
-        Shader* shadowShader;
-        Shader* lightbulbShader;
-        Shader* skyboxShader;
-        
+	private:
+		// Private functions:
+		void RenderScene(Shader& shader);
+		void DrawLightbulbs(Camera& camera, InputManager& inputManager);
+		// Private attributes:
+		// Shaders used in rendering:
+		Shader* m_lightingShader;
+		Shader* m_shadowShader;
+		Shader* m_pointShadowShader;
+		Shader* m_lightbulbShader;
+		Shader* m_skyboxShader;
+		// List of all objects being rendered:
+		std::vector<Object*> m_objects;
+		// List of all models being rendered:
+		std::vector<Model*> m_models;
+		// Depth map used in generating shadows:
+		unsigned int m_depthMap, m_depthMapFBO;
+		// Depth maps used in generating point shadows:
+		unsigned int m_cubeMap, m_cubeMapFBO;
+		// Directional light, turned on by default
+		DirectionalLight m_directionalLight;
+		// List of all point lights in the scene:
+		std::vector<PointLight*> m_pointLights;
+		// Skybox used in rendering:
+		Skybox* m_skybox;
 };

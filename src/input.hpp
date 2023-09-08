@@ -1,4 +1,9 @@
+///////////////
+// input.hpp //
+///////////////
+
 #pragma once
+
 #include <GLFW/glfw3.h>
 #include <unordered_map>
 
@@ -15,6 +20,8 @@ class Input
 		void AddKey(int key);
 		// Check existing key
 		bool CheckKey(int key);
+		// Reset all keys to not pressed
+		void Reset();
 
 	private:
 		std::unordered_map<int, int> keyState;
@@ -37,7 +44,6 @@ class Mouse : public Input
 		// Get/Set
 		float GetPosX();
 		float GetPosY();
-		float GetOffsetY();
 		void SetPosX(float newPosX);
 		void SetPosY(float newPosY);
 
@@ -46,12 +52,8 @@ class Mouse : public Input
 		float posY;
 };
 
-class InputManager
+struct InputManager
 {
-	public:
-		// Constructor & Destructor
-		InputManager();
-		~InputManager();
-		Keyboard keyboard;
-		Mouse mouse;
+	Keyboard m_keyboard;
+	Mouse m_mouse;
 };

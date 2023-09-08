@@ -1,3 +1,7 @@
+///////////////
+// input.cpp //
+///////////////
+
 #include "input.hpp"
 
 Input::Input()
@@ -36,6 +40,14 @@ bool Input::CheckKey(int key)
 	return true;
 }
 
+void Input::Reset()
+{
+	for (auto const& x : keyState)
+	{
+		keyState[x.first] = GLFW_RELEASE;
+	}
+}
+
 Keyboard::Keyboard()
 {
 	// Initialize the keyboard with the keys we'd like to manage:
@@ -49,8 +61,7 @@ Keyboard::Keyboard()
 	AddKey(GLFW_KEY_LEFT);
 	AddKey(GLFW_KEY_DOWN);
 	AddKey(GLFW_KEY_RIGHT);
-	AddKey(GLFW_KEY_1);
-	AddKey(GLFW_KEY_2);
+	AddKey(GLFW_KEY_SPACE);
 }
 
 Keyboard::~Keyboard()
@@ -91,14 +102,4 @@ void Mouse::SetPosX(float newPosX)
 void Mouse::SetPosY(float newPosY)
 {
 	posY = newPosY;
-}
-
-InputManager::InputManager()
-{
-
-}
-
-InputManager::~InputManager()
-{
-
 }

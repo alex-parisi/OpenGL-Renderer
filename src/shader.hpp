@@ -1,4 +1,9 @@
+////////////////
+// shader.hpp //
+////////////////
+
 #pragma once
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
@@ -13,7 +18,8 @@
 class Shader
 {
     public:
-        // Constructor & Destructor
+        // Constructor(s) & Destructor
+        Shader();
         Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
         ~Shader();
         // Public Functions:
@@ -33,11 +39,6 @@ class Shader
         void SetMat4(const std::string &name, const glm::mat4 &mat) const;
         // Public attributes:
         unsigned int ID;
-        unsigned int vertexShader, fragmentShader, geometryShader;
-        bool blinn;
-        bool blinnToggle;
-        bool gamma;
-        bool gammaToggle;
     private:
         // Private Functions:
         void SetVertexPath(const char* vertexPath);
@@ -56,4 +57,5 @@ class Shader
         const char* vertexShaderSource;
         const char* fragmentShaderSource;
         const char* geometryShaderSource;
+        unsigned int vertexShader, fragmentShader, geometryShader;
 };
