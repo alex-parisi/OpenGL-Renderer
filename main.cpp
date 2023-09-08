@@ -16,11 +16,13 @@ int main(int argc, char* argv[])
         Shader shadowShader("../src/shaders/shadow.vs", "../src/shaders/shadow.fs");
         Shader pointShadowShader("../src/shaders/point_shadow.vs", "../src/shaders/point_shadow.fs", "../src/shaders/point_shadow.gs");
         Shader lightbulbShader("../src/shaders/light_cube.vs", "../src/shaders/light_cube.fs");
+        Shader skyboxShader("../src/shaders/skybox.vs", "../src/shaders/skybox.fs");
         // Set the shaders:
         engine.SetLightingShader(lightingShader);
         engine.SetShadowShader(shadowShader);
         engine.SetPointShadowShader(pointShadowShader);
         engine.SetLightbulbShader(lightbulbShader);
+        engine.SetSkyboxShader(skyboxShader);
 
         // 2. Objects:
         // Load the floor object:
@@ -49,6 +51,21 @@ int main(int argc, char* argv[])
         // pointLight1.SetPosition(glm::vec3(-10.0f, 10.0f, 0.0f));
         // engine.AddPointLightToScene(pointLight1);
 
+        // 5. Skybox:
+        std::vector<std::string> facePaths
+        {
+            "../resources/skybox/right.jpg",
+            "../resources/skybox/left.jpg",
+            "../resources/skybox/top.jpg",
+            "../resources/skybox/bottom.jpg",
+            "../resources/skybox/front.jpg",
+            "../resources/skybox/back.jpg"
+        };
+        Skybox skybox;
+        skybox.Load(facePaths, skyboxVertices, 108);
+        engine.SetSkybox(skybox);
+
+        // Optional: turn off directional light source:
         engine.GetScene()->GetDirectionalLight()->TurnOff();
 
         // Begin Engine:

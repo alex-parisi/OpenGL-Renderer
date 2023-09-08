@@ -41,6 +41,8 @@ class Engine
 		void SetShadowShader(Shader& shadowShader);
 		void SetPointShadowShader(Shader& pointShadowShader);
 		void SetLightbulbShader(Shader& lightbulbShader);
+		void SetSkybox(Skybox& skybox);
+		void SetSkyboxShader(Shader& skyboxShader);
 		Scene* GetScene();
 		// Other:
 		void AddObjectToScene(Object& object);

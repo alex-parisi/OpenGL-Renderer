@@ -9,8 +9,13 @@ Scene::Scene()
 {
 	m_lightingShader = nullptr;
 	m_shadowShader = nullptr;
+    m_lightbulbShader = nullptr;
+    m_pointShadowShader = nullptr;
     m_depthMap = NULL;
     m_depthMapFBO = NULL;
+    m_cubeMap = NULL;
+    m_cubeMapFBO = NULL;
+    m_skybox = nullptr;
 }
 // Destructor:
 Scene::~Scene()
@@ -112,6 +117,11 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
 
     // 4. Draw the lighbulbs
     DrawLightbulbs(camera, inputManager);
+
+    // 5. Render the skybox:
+    if (m_skybox != nullptr)
+        if (m_skybox->loaded)
+            m_skybox->Render(*m_skyboxShader, camera);
 }
 
 void Scene::AddObject(Object& object)
@@ -233,6 +243,26 @@ Shader* Scene::GetLightbulbShader()
 DirectionalLight* Scene::GetDirectionalLight()
 {
     return &m_directionalLight;
+}
+
+Skybox* Scene::GetSkybox()
+{
+    return m_skybox;
+}
+
+void Scene::SetSkybox(Skybox& skybox)
+{
+    m_skybox = &skybox;
+}
+
+Shader* Scene::GetSkyboxShader()
+{
+    return m_skyboxShader;
+}
+
+void Scene::SetSkyboxShader(Shader& skyboxShader)
+{
+    m_skyboxShader = &skyboxShader;
 }
 
 // Internal functions:

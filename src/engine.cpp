@@ -95,6 +95,16 @@ void Engine::SetLightbulbShader(Shader& lightbulbShader)
     m_scene.SetLightbulbShader(lightbulbShader);
 }
 
+void Engine::SetSkybox(Skybox& skybox)
+{
+    m_scene.SetSkybox(skybox);
+}
+
+void Engine::SetSkyboxShader(Shader& skyboxShader)
+{
+    m_scene.SetSkyboxShader(skyboxShader);
+}
+
 Scene* Engine::GetScene()
 {
     return &m_scene;

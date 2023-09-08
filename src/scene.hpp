@@ -11,6 +11,7 @@
 #include "input.hpp"
 #include "light.hpp"
 #include "model.hpp"
+#include "skybox.hpp"
 
 #include <vector>
 
@@ -40,6 +41,10 @@ class Scene
 		void SetLightbulbShader(Shader& lightbulbShader);
 		Shader* GetLightbulbShader();
 		DirectionalLight* GetDirectionalLight();
+		Skybox* GetSkybox();
+		void SetSkybox(Skybox& skybox);
+		Shader* GetSkyboxShader();
+		void SetSkyboxShader(Shader& skyboxShader);
 
 	private:
 		// Private functions:
@@ -51,6 +56,7 @@ class Scene
 		Shader* m_shadowShader;
 		Shader* m_pointShadowShader;
 		Shader* m_lightbulbShader;
+		Shader* m_skyboxShader;
 		// List of all objects being rendered:
 		std::vector<Object*> m_objects;
 		// List of all models being rendered:
@@ -63,4 +69,6 @@ class Scene
 		DirectionalLight m_directionalLight;
 		// List of all point lights in the scene:
 		std::vector<PointLight*> m_pointLights;
+		// Skybox used in rendering:
+		Skybox* m_skybox;
 };
