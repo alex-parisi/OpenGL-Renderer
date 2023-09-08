@@ -76,6 +76,8 @@ void main()
     
     // 3. Output result:
     FragColor = vec4(result, 1.0);
+    // 4. Gamma correction:
+    FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
 }
 
 vec3 CalcDirLight(DirLight light, vec3 norm, vec3 viewDir)

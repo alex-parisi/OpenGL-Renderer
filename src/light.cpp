@@ -152,7 +152,6 @@ void PointLight::SetUniforms(Shader& shader, int i)
 	char strBuf[32];
 	sprintf_s(strBuf, "pointLight[%d].", i);
 	std::string s(strBuf);
-
 	shader.SetVec3(s + "position", m_position);
 	if (m_on)
 	{

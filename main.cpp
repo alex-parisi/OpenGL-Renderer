@@ -33,15 +33,21 @@ int main(int argc, char* argv[])
         cube.SetModel(glm::translate(cube.GetModel(), glm::vec3(0.0f, 3.0f, 0.0f)));
         // Set the objects:
         engine.AddObjectToScene(floor);
-        engine.AddObjectToScene(cube);
+        // engine.AddObjectToScene(cube);
 
-        // 3. Point light(s):
-        PointLight pointLight0(0, 7);
+        // 3. Models:
+        // Load the demo object:
+        Model testModel("../resources/models/backpack.obj", "testModel");
+        testModel.SetModel(glm::translate(testModel.GetModel(), glm::vec3(0.0f, 3.0f, 0.0f)));
+        engine.AddModelToScene(testModel);
+
+        // 4. Point light(s):
+        PointLight pointLight0(0, 6);
         pointLight0.SetPosition(glm::vec3(10.0f, 10.0f, 0.0f));
         engine.AddPointLightToScene(pointLight0);
-        PointLight pointLight1(1, 9);
-        pointLight1.SetPosition(glm::vec3(-10.0f, 10.0f, 0.0f));
-        engine.AddPointLightToScene(pointLight1);
+        // PointLight pointLight1(1, 5);
+        // pointLight1.SetPosition(glm::vec3(-10.0f, 10.0f, 0.0f));
+        // engine.AddPointLightToScene(pointLight1);
 
         engine.GetScene()->GetDirectionalLight()->TurnOff();
 

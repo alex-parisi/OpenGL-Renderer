@@ -45,6 +45,7 @@ class Engine
 		// Other:
 		void AddObjectToScene(Object& object);
 		void AddPointLightToScene(PointLight& pointLight);
+		void AddModelToScene(Model& model);
 		
 	private:
 		// Internal functions:

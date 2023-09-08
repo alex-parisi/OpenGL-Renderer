@@ -61,8 +61,7 @@ Keyboard::Keyboard()
 	AddKey(GLFW_KEY_LEFT);
 	AddKey(GLFW_KEY_DOWN);
 	AddKey(GLFW_KEY_RIGHT);
-	AddKey(GLFW_KEY_1);
-	AddKey(GLFW_KEY_2);
+	AddKey(GLFW_KEY_SPACE);
 }
 
 Keyboard::~Keyboard()

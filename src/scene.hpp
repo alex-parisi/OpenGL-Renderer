@@ -10,6 +10,7 @@
 #include "camera.hpp"
 #include "input.hpp"
 #include "light.hpp"
+#include "model.hpp"
 
 #include <vector>
 
@@ -24,6 +25,7 @@ class Scene
 		// External functions:
 		void Render(Camera& camera, InputManager& inputManager);
 		void AddObject(Object& object);
+		void AddModel(Model& model);
 		void AddPointLight(PointLight& pointLight);
 		void ConfigureDepthMap();
 		void ConfigureCubeMap();
@@ -42,7 +44,7 @@ class Scene
 	private:
 		// Private functions:
 		void RenderScene(Shader& shader);
-		void DrawLightbulbs(Camera& camera);
+		void DrawLightbulbs(Camera& camera, InputManager& inputManager);
 		// Private attributes:
 		// Shaders used in rendering:
 		Shader* m_lightingShader;
@@ -51,6 +53,8 @@ class Scene
 		Shader* m_lightbulbShader;
 		// List of all objects being rendered:
 		std::vector<Object*> m_objects;
+		// List of all models being rendered:
+		std::vector<Model*> m_models;
 		// Depth map used in generating shadows:
 		unsigned int m_depthMap, m_depthMapFBO;
 		// Depth maps used in generating point shadows:

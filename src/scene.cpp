@@ -22,19 +22,19 @@ Scene::~Scene()
 void Scene::Render(Camera& camera, InputManager& inputManager)
 {
     // +TEMP
-    // Rotate the cube object if the arrow keys are pressed:
-    for (auto& o : m_objects)
+    // Rotate the model object if the arrow keys are pressed:
+    for (auto& m : m_models)
     {
-        if (o->GetName() == "cube")
+        if (m->GetName() == "testModel")
         {
             if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_UP))
-                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+                m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(-1.0f, 0.0f, 0.0f)));
             if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_DOWN))
-                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(1.0f, 0.0f, 0.0f)));
+                m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(1.0f, 0.0f, 0.0f)));
             if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_LEFT))
-                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, -1.0f, 0.0f)));
+                m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, -1.0f, 0.0f)));
             if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_RIGHT))
-                o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f)));
+                m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f)));
         }
     }
     // -TEMP
@@ -48,7 +48,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
         glm::vec3 lightPos = m_pointLights[i]->GetPosition();
         // 1a. Create depth cubemap transformation matrices
         float near_plane = 1.0f;
-        float far_plane = 25.0f;
+        float far_plane = 50.0f;
         glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
         std::vector<glm::mat4> shadowTransforms;
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
@@ -98,7 +98,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     m_lightingShader->SetMat4("lightSpaceMatrix", lightSpaceMatrix);
     m_directionalLight.SetUniforms(*m_lightingShader);   
     m_lightingShader->SetVec3("viewPos", camera.GetCameraPos());
-    m_lightingShader->SetFloat("far_plane", 25.0f);
+    m_lightingShader->SetFloat("far_plane", 50.0f);
     for (int i = 0; i < static_cast<int>(m_pointLights.size()); i++)
     {
         m_pointLights[i]->SetUniforms(*m_lightingShader, i);
@@ -111,7 +111,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     RenderScene(*m_lightingShader);
 
     // 4. Draw the lighbulbs
-    DrawLightbulbs(camera);
+    DrawLightbulbs(camera, inputManager);
 }
 
 void Scene::AddObject(Object& object)
@@ -119,6 +119,11 @@ void Scene::AddObject(Object& object)
     // Add the object to the list
     // Object instancing takes care of creating all buffers
 	m_objects.push_back(&object);
+}
+
+void Scene::AddModel(Model& model)
+{
+    m_models.push_back(&model);
 }
 
 void Scene::AddPointLight(PointLight& pointLight)
@@ -233,13 +238,19 @@ DirectionalLight* Scene::GetDirectionalLight()
 // Internal functions:
 void Scene::RenderScene(Shader& shader)
 {
+    // Render all objects:
 	for (auto& o : m_objects)
 	{
 		o->Render(shader);
 	}
+    // Render all models:
+    for (auto& m : m_models)
+    {
+        m->Draw(shader);
+    }
 }
 
-void Scene::DrawLightbulbs(Camera& camera)
+void Scene::DrawLightbulbs(Camera& camera, InputManager& inputManager)
 {
     m_lightbulbShader->Use();
     glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
@@ -249,8 +260,18 @@ void Scene::DrawLightbulbs(Camera& camera)
     for (auto& l : m_pointLights)
     {
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, l->GetPosition());
-        model = glm::scale(model, glm::vec3(0.1));
+        if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_SPACE))
+        {
+            model = glm::rotate(model, glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::translate(model, l->GetPosition());
+            model = glm::scale(model, glm::vec3(0.1f));
+            l->SetPosition(glm::vec3(model[3]));
+        }
+        else
+        {
+            model = glm::translate(model, l->GetPosition());
+            model = glm::scale(model, glm::vec3(0.1f));
+        }
         m_lightbulbShader->SetMat4("model", model);
         glBindVertexArray(l->GetVAO());
         glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -267,16 +288,25 @@ unsigned int loadTexture(char const* path)
     unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
     if (data)
     {
-        GLenum format;
+        GLenum format, internalFormat;
         if (nrComponents == 1)
+        {
             format = GL_RED;
+            internalFormat = GL_RED;
+        }   
         else if (nrComponents == 3)
+        {
             format = GL_RGB;
+            internalFormat = GL_SRGB;
+        }
         else if (nrComponents == 4)
+        {
             format = GL_RGBA;
+            internalFormat = GL_SRGB_ALPHA;
+        }
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

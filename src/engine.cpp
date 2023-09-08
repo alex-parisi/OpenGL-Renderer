@@ -29,6 +29,7 @@ bool Engine::Initialize()
         m_inputManager.m_mouse.Reset();
         // Configure global OpenGL state:
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_FRAMEBUFFER_SRGB);
         // Create a new viewport
         glViewport(0, 0, static_cast<int>(SCREEN_WIDTH), static_cast<int>(SCREEN_HEIGHT));
         // Map Callback functions 
@@ -107,6 +108,11 @@ void Engine::AddObjectToScene(Object& object)
 void Engine::AddPointLightToScene(PointLight& pointLight)
 {
     m_scene.AddPointLight(pointLight);
+}
+
+void Engine::AddModelToScene(Model& model)
+{
+    m_scene.AddModel(model);
 }
 
 // Internal functions:
