@@ -71,8 +71,6 @@ void Engine::Configure()
     m_scene.ConfigureDepthMap();
     // Configure the shaders:
     m_scene.ConfigureShaders();
-
-    m_scene.woodTexture = loadTexture("../resources/textures/wood_floor.png");
 }
 
 void Engine::SetLightingShader(Shader& lightingShader)
@@ -90,6 +88,11 @@ void Engine::SetPointShadowShader(Shader& pointShadowShader)
     m_scene.SetPointShadowShader(pointShadowShader);
 }
 
+void Engine::SetLightbulbShader(Shader& lightbulbShader)
+{
+    m_scene.SetLightbulbShader(lightbulbShader);
+}
+
 Scene* Engine::GetScene()
 {
     return &m_scene;
@@ -98,6 +101,11 @@ Scene* Engine::GetScene()
 void Engine::AddObjectToScene(Object& object)
 {
     m_scene.AddObject(object);
+}
+
+void Engine::AddPointLightToScene(PointLight& pointLight)
+{
+    m_scene.AddPointLight(pointLight);
 }
 
 // Internal functions:

@@ -20,6 +20,7 @@ class Object
 		// Constructor(s) & Destructor:
 		Object();
 		Object(std::string name, const float* vertices, int N);
+		Object(std::string name, const float* vertices, int N, unsigned int texture);
 		~Object();
 		// External functions:
 		void Render(Shader& shader);
@@ -30,6 +31,9 @@ class Object
 		unsigned int GetVBO();
 		std::string GetName();
 		void SetName(std::string name);
+		void SetTexScaling(float texScaling);
+		void SetTexture(unsigned int texture);
+		unsigned int GetTexture();
 		
 		
 	private:
@@ -37,4 +41,6 @@ class Object
 		unsigned int m_VAO, m_VBO;
 		int m_N;
 		std::string m_name;
+		float m_texScaling;
+		unsigned int m_texture;
 };

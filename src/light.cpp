@@ -117,19 +117,29 @@ PointLight::PointLight()
 	m_quadratic = 0.0f;
 	m_on = true;
 	m_id = NULL;
+	m_VAO = NULL;
+	m_VBO = NULL;
 }
 
-PointLight::PointLight(unsigned int id)
+PointLight::PointLight(unsigned int id, int preset)
 {
 	m_position = glm::vec3(0.0f);
-	m_ambient = glm::vec3(0.0f);
-	m_diffuse = glm::vec3(0.0f);
-	m_specular = glm::vec3(0.0f);
+	m_ambient = glm::vec3(0.1f);
+	m_diffuse = glm::vec3(0.8f);
+	m_specular = glm::vec3(1.0f);
 	m_constant = 0.0f;
 	m_linear = 0.0f;
 	m_quadratic = 0.0f;
 	m_on = true;
 	m_id = id;
+	m_VAO = NULL;
+	m_VBO = NULL;
+	// Load the preset:
+	glm::vec3 p = presets[preset];
+	SetConstant(p.x);
+	SetLinear(p.y);
+	SetQuadratic(p.z);
+	SetupBuffers();
 }
 
 PointLight::~PointLight()
@@ -229,4 +239,29 @@ void PointLight::TurnOn()
 void PointLight::TurnOff()
 {
 	m_on = false;
+}
+
+unsigned int PointLight::GetVAO()
+{
+	return m_VAO;
+}
+
+unsigned int PointLight::GetVBO()
+{
+	return m_VBO;
+}
+
+void PointLight::SetupBuffers()
+{
+	// Initialize Vertex Array and Vertex Buffer Objects
+	glGenVertexArrays(1, &m_VAO);
+	glGenBuffers(1, &m_VBO);
+	// Bind the Vertex Array Object first, then bind and set vertex buffers.
+	glBindVertexArray(m_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices) * 288, cubeVertices, GL_STATIC_DRAW);
+	// Then configure vertex attributes(s).
+	// Position:
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
 }

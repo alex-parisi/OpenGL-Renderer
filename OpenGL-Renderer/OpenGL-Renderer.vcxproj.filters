@@ -103,5 +103,11 @@
     <None Include="..\src\shaders\point_shadow.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\src\shaders\light_cube.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\light_cube.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -11,7 +11,6 @@ Scene::Scene()
 	m_shadowShader = nullptr;
     m_depthMap = NULL;
     m_depthMapFBO = NULL;
-    woodTexture = NULL;
 }
 // Destructor:
 Scene::~Scene()
@@ -22,7 +21,7 @@ Scene::~Scene()
 // External functions:
 void Scene::Render(Camera& camera, InputManager& inputManager)
 {
-    // TEMP:
+    // +TEMP
     // Rotate the cube object if the arrow keys are pressed:
     for (auto& o : m_objects)
     {
@@ -38,52 +37,92 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
                 o->SetModel(glm::rotate(o->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f)));
         }
     }
+    // -TEMP
 
-	// 1. Render Depth of Scene:
+    // 1. For each point light in the scene, perform the point shadow depth mapping:
+    for (int i = 0; i < static_cast<int>(m_pointLights.size()); i++)
+    {
+        glm::vec3 lightPos = m_pointLights[i]->GetPosition();
+        // 1a. Create depth cubemap transformation matrices
+        float near_plane = 1.0f;
+        float far_plane = 25.0f;
+        glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
+        std::vector<glm::mat4> shadowTransforms;
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+        shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+        // 1b. Render scene to depth cubemap
+        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_pointDepthMapFBOs[i]);
+        glClear(GL_DEPTH_BUFFER_BIT);
+        m_pointShadowShader->Use();
+        for (unsigned int i = 0; i < 6; ++i)
+            m_pointShadowShader->SetMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
+        m_pointShadowShader->SetFloat("far_plane", far_plane);
+        m_pointShadowShader->SetVec3("lightPos", lightPos);
+        RenderScene(*m_pointShadowShader);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
+
+	// 2. Render Depth of Scene (directional light):
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
     float near_plane = 1.0f, far_plane = 7.5f;
-
     lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     lightView = glm::lookAt(m_directionalLight.GetPosition(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
-
     // Render scene from light's point of view
     m_shadowShader->Use();
     m_shadowShader->SetMat4("lightSpaceMatrix", lightSpaceMatrix);
-
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, woodTexture);
     RenderScene(*m_shadowShader);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    // reset viewport
+    // Reset viewport
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // 2. Render Scene:
+    // 3. Render Final Scene:
     m_lightingShader->Use();
     glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
     glm::mat4 view = camera.GetViewMatrix();
     m_lightingShader->SetMat4("projection", projection);
     m_lightingShader->SetMat4("view", view);
-    // set light uniforms
+    // Set light uniforms
     m_lightingShader->SetMat4("lightSpaceMatrix", lightSpaceMatrix);
     m_directionalLight.SetUniforms(*m_lightingShader);   
     m_lightingShader->SetVec3("viewPos", camera.GetCameraPos());
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, woodTexture);
-    glActiveTexture(GL_TEXTURE1);
+    // Bind the depth texture(s)
+    glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, m_depthMap);
+    for (int i = 0; i < static_cast<int>(m_pointLights.size()); i++)
+    {
+        glActiveTexture(GL_TEXTURE5 + i);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_pointDepthMaps[i]);
+    }
     RenderScene(*m_lightingShader);
+
+    // 4. Draw the lighbulbs
+    DrawLightbulbs(camera);
 }
 
 void Scene::AddObject(Object& object)
 {
+    // Add the object to the list
+    // Object instancing takes care of creating all buffers
 	m_objects.push_back(&object);
+}
+
+void Scene::AddPointLight(PointLight& pointLight)
+{
+    // Add the point light to the list
+    m_pointLights.push_back(&pointLight);
+    // Configure the Depth Map for this object:
+    AddNewPointDepthMap();
 }
 
 void Scene::ConfigureDepthMap()
@@ -112,7 +151,7 @@ void Scene::ConfigureShaders()
     // Lighting:
     m_lightingShader->Use();
     m_lightingShader->SetInt("diffuseTexture", 0);
-    m_lightingShader->SetInt("shadowMap", 1);
+    m_lightingShader->SetInt("shadowMap", 4);
     // Shadow:
     m_shadowShader->Use();
     m_shadowShader->SetInt("depthMap", 0);
@@ -149,6 +188,16 @@ Shader* Scene::GetPointShadowShader()
     return m_pointShadowShader;
 }
 
+void Scene::SetLightbulbShader(Shader& lightbulbShader)
+{
+    m_lightbulbShader = &lightbulbShader;
+}
+
+Shader* Scene::GetLightbulbShader()
+{
+    return m_lightbulbShader;
+}
+
 DirectionalLight* Scene::GetDirectionalLight()
 {
     return &m_directionalLight;
@@ -163,10 +212,51 @@ void Scene::RenderScene(Shader& shader)
 	}
 }
 
+void Scene::DrawLightbulbs(Camera& camera)
+{
+    m_lightbulbShader->Use();
+    glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 view = camera.GetViewMatrix();
+    m_lightbulbShader->SetMat4("projection", projection);
+    m_lightbulbShader->SetMat4("view", view);
+    for (auto& l : m_pointLights)
+    {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, l->GetPosition());
+        model = glm::scale(model, glm::vec3(0.1));
+        m_lightbulbShader->SetMat4("model", model);
+        glBindVertexArray(l->GetVAO());
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
+}
 
+void Scene::AddNewPointDepthMap()
+{
+    unsigned int depthMapFBO;
+    glGenFramebuffers(1, &depthMapFBO);
+    // Create depth cubemap texture
+    unsigned int depthCubemap;
+    glGenTextures(1, &depthCubemap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
+    for (unsigned int i = 0; i < 6; ++i)
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    // Attach depth texture as FBO's depth buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // Add the buffer objects to their respective lists:
+    m_pointDepthMaps.push_back(depthCubemap);
+    m_pointDepthMapFBOs.push_back(depthMapFBO);
+}
 
-
-
+// TO - DO: move this function to where it belongs, not sure where that would be though
 unsigned int loadTexture(char const* path)
 {
     unsigned int textureID;
@@ -188,8 +278,8 @@ unsigned int loadTexture(char const* path)
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

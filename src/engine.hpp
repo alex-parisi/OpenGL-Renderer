@@ -40,9 +40,11 @@ class Engine
 		void SetLightingShader(Shader& lightingShader);
 		void SetShadowShader(Shader& shadowShader);
 		void SetPointShadowShader(Shader& pointShadowShader);
+		void SetLightbulbShader(Shader& lightbulbShader);
 		Scene* GetScene();
 		// Other:
 		void AddObjectToScene(Object& object);
+		void AddPointLightToScene(PointLight& pointLight);
 		
 	private:
 		// Internal functions:

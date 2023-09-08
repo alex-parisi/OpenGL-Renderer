@@ -1,3 +1,5 @@
+#pragma once
+
 const float planeVertices[48] = {
     // positions            // normals         // texcoords
      25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   1.0f,   0.0f,
