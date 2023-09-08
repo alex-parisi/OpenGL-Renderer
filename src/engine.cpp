@@ -69,6 +69,7 @@ void Engine::Configure()
 {
     // Configure the scene depth map:
     m_scene.ConfigureDepthMap();
+    m_scene.ConfigureCubeMap();
     // Configure the shaders:
     m_scene.ConfigureShaders();
 }

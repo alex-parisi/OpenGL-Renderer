@@ -26,6 +26,7 @@ class Scene
 		void AddObject(Object& object);
 		void AddPointLight(PointLight& pointLight);
 		void ConfigureDepthMap();
+		void ConfigureCubeMap();
 		void ConfigureShaders();
 		// Get/Set:
 		void SetLightingShader(Shader& lightingShader);
@@ -42,7 +43,6 @@ class Scene
 		// Private functions:
 		void RenderScene(Shader& shader);
 		void DrawLightbulbs(Camera& camera);
-		void AddNewPointDepthMap();
 		// Private attributes:
 		// Shaders used in rendering:
 		Shader* m_lightingShader;
@@ -54,8 +54,7 @@ class Scene
 		// Depth map used in generating shadows:
 		unsigned int m_depthMap, m_depthMapFBO;
 		// Depth maps used in generating point shadows:
-		std::vector<unsigned int> m_pointDepthMaps;
-		std::vector<unsigned int> m_pointDepthMapFBOs;
+		unsigned int m_cubeMap, m_cubeMapFBO;
 		// Directional light, turned on by default
 		DirectionalLight m_directionalLight;
 		// List of all point lights in the scene:

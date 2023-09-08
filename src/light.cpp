@@ -115,7 +115,7 @@ PointLight::PointLight()
 	m_constant = 0.0f;
 	m_linear = 0.0f;
 	m_quadratic = 0.0f;
-	m_on = true;
+	m_on = false;
 	m_id = NULL;
 	m_VAO = NULL;
 	m_VBO = NULL;
@@ -150,15 +150,29 @@ PointLight::~PointLight()
 void PointLight::SetUniforms(Shader& shader, int i)
 {
 	char strBuf[32];
-	sprintf_s(strBuf, "pointLights[%d]", i);
+	sprintf_s(strBuf, "pointLight[%d].", i);
 	std::string s(strBuf);
-	shader.SetVec3(s + ".position", m_position);
-	shader.SetVec3(s + ".ambient", m_ambient);
-	shader.SetVec3(s + ".diffuse", m_diffuse);
-	shader.SetVec3(s + ".specular", m_specular);
-	shader.SetFloat(s + ".constant", m_constant);
-	shader.SetFloat(s + ".linear", m_linear);
-	shader.SetFloat(s + ".quadratic", m_quadratic);
+
+	shader.SetVec3(s + "position", m_position);
+	if (m_on)
+	{
+		shader.SetVec3(s + "ambient", m_ambient);
+		shader.SetVec3(s + "diffuse", m_diffuse);
+		shader.SetVec3(s + "specular", m_specular);
+		shader.SetFloat(s + "constant", m_constant);
+		shader.SetFloat(s + "linear", m_linear);
+		shader.SetFloat(s + "quadratic", m_quadratic);
+	}
+	else
+	{
+		shader.SetVec3(s + "ambient", glm::vec3(0.0f));
+		shader.SetVec3(s + "diffuse", glm::vec3(0.0f));
+		shader.SetVec3(s + "specular", glm::vec3(0.0f));
+		shader.SetFloat(s + "constant", 0.0f);
+		shader.SetFloat(s + "linear", 0.0f);
+		shader.SetFloat(s + "quadratic", 0.0f);
+	}
+	
 }
 
 glm::vec3 PointLight::GetPosition()

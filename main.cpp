@@ -40,6 +40,8 @@ int main(int argc, char* argv[])
         pointLight.SetPosition(glm::vec3(10.0f, 10.0f, 0.0f));
         engine.AddPointLightToScene(pointLight);
 
+        // engine.GetScene()->GetDirectionalLight()->TurnOff();
+
         // Begin Engine:
         engine.Configure();
         engine.Execute();

@@ -56,7 +56,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
         // 1b. Render scene to depth cubemap
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_pointDepthMapFBOs[i]);
+        glBindFramebuffer(GL_FRAMEBUFFER, m_cubeMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
         m_pointShadowShader->Use();
         for (unsigned int i = 0; i < 6; ++i)
@@ -92,18 +92,22 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     glm::mat4 view = camera.GetViewMatrix();
     m_lightingShader->SetMat4("projection", projection);
     m_lightingShader->SetMat4("view", view);
+    // Set number of point lights to use in render loop:
+    m_lightingShader->SetInt("n_pointLights", static_cast<int>(m_pointLights.size()));
     // Set light uniforms
     m_lightingShader->SetMat4("lightSpaceMatrix", lightSpaceMatrix);
     m_directionalLight.SetUniforms(*m_lightingShader);   
     m_lightingShader->SetVec3("viewPos", camera.GetCameraPos());
+    m_lightingShader->SetFloat("far_plane", 25.0f);
+    for (int i = 0; i < static_cast<int>(m_pointLights.size()); i++)
+    {
+        m_pointLights[i]->SetUniforms(*m_lightingShader, i);
+    }
     // Bind the depth texture(s)
     glActiveTexture(GL_TEXTURE4);
     glBindTexture(GL_TEXTURE_2D, m_depthMap);
-    for (int i = 0; i < static_cast<int>(m_pointLights.size()); i++)
-    {
-        glActiveTexture(GL_TEXTURE5 + i);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_pointDepthMaps[i]);
-    }
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMap);
     RenderScene(*m_lightingShader);
 
     // 4. Draw the lighbulbs
@@ -121,8 +125,6 @@ void Scene::AddPointLight(PointLight& pointLight)
 {
     // Add the point light to the list
     m_pointLights.push_back(&pointLight);
-    // Configure the Depth Map for this object:
-    AddNewPointDepthMap();
 }
 
 void Scene::ConfigureDepthMap()
@@ -146,12 +148,37 @@ void Scene::ConfigureDepthMap()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Scene::ConfigureCubeMap()
+{
+    glGenFramebuffers(1, &m_cubeMapFBO);
+    // Create depth cubemap texture
+    glGenTextures(1, &m_cubeMap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMap);
+    for (unsigned int i = 0; i < 6; ++i)
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    // Attach depth texture as FBO's depth buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, m_cubeMapFBO);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, m_cubeMap, 0);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 void Scene::ConfigureShaders()
 {
     // Lighting:
     m_lightingShader->Use();
     m_lightingShader->SetInt("diffuseTexture", 0);
+    m_lightingShader->SetInt("specularTexture", 1);
+    m_lightingShader->SetInt("normalTexture", 2);
+    m_lightingShader->SetInt("heightTexture", 3);
     m_lightingShader->SetInt("shadowMap", 4);
+    m_lightingShader->SetInt("pointShadowMap", 5);
     // Shadow:
     m_shadowShader->Use();
     m_shadowShader->SetInt("depthMap", 0);
@@ -228,32 +255,6 @@ void Scene::DrawLightbulbs(Camera& camera)
         glBindVertexArray(l->GetVAO());
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
-}
-
-void Scene::AddNewPointDepthMap()
-{
-    unsigned int depthMapFBO;
-    glGenFramebuffers(1, &depthMapFBO);
-    // Create depth cubemap texture
-    unsigned int depthCubemap;
-    glGenTextures(1, &depthCubemap);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
-    for (unsigned int i = 0; i < 6; ++i)
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    // Attach depth texture as FBO's depth buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
-    glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // Add the buffer objects to their respective lists:
-    m_pointDepthMaps.push_back(depthCubemap);
-    m_pointDepthMapFBOs.push_back(depthMapFBO);
 }
 
 // TO - DO: move this function to where it belongs, not sure where that would be though
