@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
         };
         Skybox skybox;
         skybox.Load(facePaths, skyboxVertices, 108);
-        engine.SetSkybox(skybox);
+        // engine.SetSkybox(skybox);
 
         // Optional: turn off directional light source:
         engine.GetScene()->GetDirectionalLight()->TurnOff();
