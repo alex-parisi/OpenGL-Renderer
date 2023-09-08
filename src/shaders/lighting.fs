@@ -31,7 +31,7 @@ in VS_OUT {
 // The idea here is to define a maximum number of lights to render in the scene,
 // and then only render the maximum number of lights that there are currently,
 // as long as this number is less than the maximum.
-#define MAX_LIGHTS_TO_RENDER 1
+#define MAX_LIGHTS_TO_RENDER 128
 
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;

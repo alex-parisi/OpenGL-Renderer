@@ -40,6 +40,9 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     // -TEMP
 
     // 1. For each point light in the scene, perform the point shadow depth mapping:
+    glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+    glBindFramebuffer(GL_FRAMEBUFFER, m_cubeMapFBO);
+    glClear(GL_DEPTH_BUFFER_BIT);
     for (int i = 0; i < static_cast<int>(m_pointLights.size()); i++)
     {
         glm::vec3 lightPos = m_pointLights[i]->GetPosition();
@@ -55,17 +58,14 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
         // 1b. Render scene to depth cubemap
-        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-        glBindFramebuffer(GL_FRAMEBUFFER, m_cubeMapFBO);
-        glClear(GL_DEPTH_BUFFER_BIT);
         m_pointShadowShader->Use();
         for (unsigned int i = 0; i < 6; ++i)
             m_pointShadowShader->SetMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
         m_pointShadowShader->SetFloat("far_plane", far_plane);
         m_pointShadowShader->SetVec3("lightPos", lightPos);
         RenderScene(*m_pointShadowShader);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// 2. Render Depth of Scene (directional light):
     glm::mat4 lightProjection, lightView;
