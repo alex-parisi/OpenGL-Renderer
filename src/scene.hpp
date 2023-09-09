@@ -48,7 +48,7 @@ class Scene
 
 	private:
 		// Private functions:
-		void RenderScene(Shader& shader);
+		void RenderScene(Shader& shader, bool useNormalMap);
 		void DrawLightbulbs(Camera& camera, InputManager& inputManager);
 		// Private attributes:
 		// Shaders used in rendering:

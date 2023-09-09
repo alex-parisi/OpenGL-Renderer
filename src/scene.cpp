@@ -71,7 +71,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
             m_pointShadowShader->SetMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
         m_pointShadowShader->SetFloat("far_plane", far_plane);
         m_pointShadowShader->SetVec3("lightPos", lightPos);
-        RenderScene(*m_pointShadowShader);
+        RenderScene(*m_pointShadowShader, false);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -88,7 +88,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
-    RenderScene(*m_shadowShader);
+    RenderScene(*m_shadowShader, false);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // Reset viewport
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -116,7 +116,10 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     glBindTexture(GL_TEXTURE_2D, m_depthMap);
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMap);
-    RenderScene(*m_lightingShader);
+    if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_1))
+        RenderScene(*m_lightingShader, true);
+    else
+        RenderScene(*m_lightingShader, false);
 
     // 4. Draw the lighbulbs
     DrawLightbulbs(camera, inputManager);
@@ -269,7 +272,7 @@ void Scene::SetSkyboxShader(Shader& skyboxShader)
 }
 
 // Internal functions:
-void Scene::RenderScene(Shader& shader)
+void Scene::RenderScene(Shader& shader, bool useNormalMap)
 {
     // Render all objects:
 	for (auto& o : m_objects)
@@ -279,7 +282,7 @@ void Scene::RenderScene(Shader& shader)
     // Render all models:
     for (auto& m : m_models)
     {
-        m->Draw(shader);
+        m->Draw(shader, useNormalMap);
     }
 }
 
