@@ -1,5 +1,5 @@
 # OpenGL-Renderer
-![](./doc/demo.gif)
+![](https://atparisi.com/app/static/img/opengl_banner.gif)
 ## Model Renderer using OpenGL and GLFW
 ### Features:
 * Geometric shape rendering
