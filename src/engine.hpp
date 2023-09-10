@@ -44,6 +44,7 @@ class Engine
 		void SetSkybox(Skybox& skybox);
 		void SetSkyboxShader(Shader& skyboxShader);
 		void SetHDRShader(Shader& hdrShader);
+		void SetBlurShader(Shader& blurShader);
 		Scene* GetScene();
 		// Other:
 		void AddObjectToScene(Object& object);

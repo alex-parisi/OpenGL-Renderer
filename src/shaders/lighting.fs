@@ -1,6 +1,7 @@
 #version 330 core
 
-out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 BrightColor;
 
 struct DirLight {
     vec3 position;
@@ -97,12 +98,16 @@ void main()
         // 2. Perform Point Lighting and Shading:
         for(int i = 0; i < n_pointLights; i++)
             result += CalcPointLight(pointLight[i], normal, fs_in.FragPos, viewDir, TangentFragPos, texCoords);
-    
-        // 3. Output result:
-        FragColor = vec4(result, 1.0);
 
-        // 4. Gamma correction:
-        // FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
+        // 3. Check whether result is higher than some threshold, if so, output as bloom threshold color:
+        float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
+        if(brightness > 1.0)
+            BrightColor = vec4(result, 1.0);
+        else
+            BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
+
+        // 4. Output result:
+        FragColor = vec4(result, 1.0);
     }
     else
     {
@@ -124,11 +129,15 @@ void main()
         for(int i = 0; i < n_pointLights; i++)
             result += CalcPointLightNoNormal(pointLight[i], norm, fs_in.FragPos, viewDir, texCoords);
     
-        // 3. Output result:
-        FragColor = vec4(result, 1.0);
+        // 3. Check whether result is higher than some threshold, if so, output as bloom threshold color:
+        float brightness = dot(result, vec3(0.2126, 0.7152, 0.0722));
+        if(brightness > 1.0)
+            BrightColor = vec4(result, 1.0);
+        else
+            BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-        // 4. Gamma correction:
-        // FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
+        // 4. Output result:
+        FragColor = vec4(result, 1.0);
     }
 }
 

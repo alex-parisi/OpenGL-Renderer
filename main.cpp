@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
         Shader lightbulbShader("../src/shaders/light_cube.vs", "../src/shaders/light_cube.fs");
         Shader skyboxShader("../src/shaders/skybox.vs", "../src/shaders/skybox.fs");
         Shader hdrShader("../src/shaders/hdr.vs", "../src/shaders/hdr.fs");
+        Shader blurShader("../src/shaders/blur.vs", "../src/shaders/blur.fs");
         // Set the shaders:
         engine.SetLightingShader(lightingShader);
         engine.SetShadowShader(shadowShader);
@@ -25,6 +26,7 @@ int main(int argc, char* argv[])
         engine.SetLightbulbShader(lightbulbShader);
         engine.SetSkyboxShader(skyboxShader);
         engine.SetHDRShader(hdrShader);
+        engine.SetBlurShader(blurShader);
 
         // 2. Objects:
         // Load the floor object:

@@ -133,5 +133,11 @@
     <None Include="..\src\shaders\hdr.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\src\shaders\blur.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\blur.fs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

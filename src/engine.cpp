@@ -75,6 +75,8 @@ void Engine::Configure()
     m_scene.ConfigureShaders();
     // Configure HDR buffer:
     m_scene.ConfigureHDR();
+    // Configure blur buffers:
+    m_scene.ConfigureBlur();
 }
 
 void Engine::SetLightingShader(Shader& lightingShader)
@@ -110,6 +112,11 @@ void Engine::SetSkyboxShader(Shader& skyboxShader)
 void Engine::SetHDRShader(Shader& hdrShader)
 {
     m_scene.SetHDRShader(hdrShader);
+}
+
+void Engine::SetBlurShader(Shader& blurShader)
+{
+    m_scene.SetBlurShader(blurShader);
 }
 
 Scene* Engine::GetScene()

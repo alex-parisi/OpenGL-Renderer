@@ -32,6 +32,7 @@ class Scene
 		void ConfigureCubeMap();
 		void ConfigureShaders();
 		void ConfigureHDR();
+		void ConfigureBlur();
 		// Get/Set:
 		void SetLightingShader(Shader& lightingShader);
 		Shader* GetLightingShader();
@@ -52,6 +53,8 @@ class Scene
 		void SetHDRShader(Shader& hdrShader);
 		float GetExposure();
 		void SetExposure(float exposure);
+		Shader* GetBlurShader();
+		void SetBlurShader(Shader& blurShader);
 
 	private:
 		// Private functions:
@@ -66,6 +69,7 @@ class Scene
 		Shader* m_lightbulbShader;
 		Shader* m_skyboxShader;
 		Shader* m_hdrShader;
+		Shader* m_blurShader;
 		// List of all objects being rendered:
 		std::vector<Object*> m_objects;
 		// List of all models being rendered:
@@ -83,9 +87,14 @@ class Scene
 		// Scaling used in height map:
 		float m_heightScale;
 		// buffers used in HDR:
-		unsigned int m_hdrFBO, m_colorBuffer, m_rboDepth;
+		unsigned int m_hdrFBO;
+		unsigned int m_colorBuffers[2];
+		unsigned int m_rboDepth;
 		// quad buffers
 		unsigned int m_quadVAO, m_quadVBO;
 		// exposure used in hdr:
 		float m_exposure;
+		// buffers used in blur:
+		unsigned int m_pingpongFBO[2];
+		unsigned int m_pingpongColorbuffers[2];
 };

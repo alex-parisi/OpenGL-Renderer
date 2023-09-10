@@ -19,7 +19,6 @@ Scene::Scene()
     m_cubeMap = NULL;
     m_cubeMapFBO = NULL;
     m_heightScale = 0.1f;
-    m_colorBuffer = NULL;
     m_hdrFBO = NULL;
     m_rboDepth = NULL;
     m_quadVAO = NULL;
@@ -132,27 +131,45 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     // + TEMP
     bool turnOnNormalMap = false;
     bool turnOnHeightMap = false;
-    int turnOnHDR = 0;
+    int turnOnBloom = 0;
     if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_1))
         turnOnNormalMap = true;
     if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_2))
         turnOnHeightMap = true;
     if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_3))
-        turnOnHDR = 1;
+        turnOnBloom = 1;
     // - TEMP
     RenderScene(*m_lightingShader, turnOnNormalMap, turnOnHeightMap);
     // 4. Draw the lighbulbs
     DrawLightbulbs(camera, inputManager);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // Now render the floating point color buffer to 2D quads
+    // Blur bright fragments:
+    bool horizontal = true, first_iteration = true;
+    unsigned int amount = 10;
+    m_blurShader->Use();
+    for (unsigned int i = 0; i < amount; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[horizontal]);
+        m_blurShader->SetInt("horizontal", horizontal);
+        glBindTexture(GL_TEXTURE_2D, first_iteration ? m_colorBuffers[1] : m_pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
+        RenderQuad();
+        horizontal = !horizontal;
+        if (first_iteration)
+            first_iteration = false;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+    // --------------------------------------------------------------------------------------------------------------------------
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_hdrShader->Use();
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_colorBuffer);
-    m_hdrShader->SetInt("hdr", turnOnHDR);
+    glBindTexture(GL_TEXTURE_2D, m_colorBuffers[0]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, m_pingpongColorbuffers[!horizontal]);
+    m_hdrShader->SetInt("bloom", turnOnBloom);
     m_hdrShader->SetFloat("exposure", m_exposure);
     RenderQuad();
-
 
     // 5. Render the skybox:
     if (m_skybox != nullptr)
@@ -233,31 +250,64 @@ void Scene::ConfigureShaders()
     // Shadow:
     m_shadowShader->Use();
     m_shadowShader->SetInt("depthMap", 0);
+    // Blur:
+    m_blurShader->Use();
+    m_blurShader->SetInt("image", 0);
     // HDR:
     m_hdrShader->Use();
-    m_hdrShader->SetInt("hdrBuffer", 0);
+    m_hdrShader->SetInt("scene", 0);
+    m_hdrShader->SetInt("bloomBlur", 1);
 }
 
 void Scene::ConfigureHDR()
 {
     glGenFramebuffers(1, &m_hdrFBO);
-    // create floating point color buffer
-    glGenTextures(1, &m_colorBuffer);
-    glBindTexture(GL_TEXTURE_2D, m_colorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // create depth buffer (renderbuffer)
+    glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
+    // create 2 floating point color buffers (1 for normal rendering, other for brightness threshold values)
+    glGenTextures(2, m_colorBuffers);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glBindTexture(GL_TEXTURE_2D, m_colorBuffers[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        // attach texture to framebuffer
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, m_colorBuffers[i], 0);
+    }
+    // create and attach depth buffer (renderbuffer)
     glGenRenderbuffers(1, &m_rboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, m_rboDepth);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCREEN_WIDTH, SCREEN_HEIGHT);
-    // attach buffers
-    glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorBuffer, 0);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_rboDepth);
+    // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers(2, attachments);
+    // finally check if framebuffer is complete
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Scene::ConfigureBlur()
+{
+    glGenFramebuffers(2, m_pingpongFBO);
+    glGenTextures(2, m_pingpongColorbuffers);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, m_pingpongColorbuffers[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pingpongColorbuffers[i], 0);
+        // also check if framebuffers are complete (no need for depth buffer)
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "Framebuffer not complete!" << std::endl;
+    }
 }
 
 // Get/Set:
@@ -354,6 +404,16 @@ float Scene::GetExposure()
 void Scene::SetExposure(float exposure)
 {
     m_exposure = exposure;
+}
+
+Shader* Scene::GetBlurShader()
+{
+    return m_blurShader;
+}
+
+void Scene::SetBlurShader(Shader& blurShader)
+{
+    m_blurShader = &blurShader;
 }
 
 // Internal functions:
