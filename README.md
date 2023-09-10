@@ -9,6 +9,8 @@
 * Directional shadow mapping
 * Omnidirectional shadow maps
 * Normal mapping
+* Parallax mapping
+* HDR and Bloom
 ### Implementation:
 This renderer uses [OpenGL version 3.3](https://registry.khronos.org/OpenGL/specs/gl/glspec33.core.pdf) which is very widely supported. [GLAD](https://github.com/Dav1dde/glad) is used to handle the locating of driver-specific functions, enabling interoperability between different systems. [GLFW](https://www.glfw.org/) is used to provide easy functionality for creating an OpenGL instance, handling user input, and displaying our buffer to a window. 
 ### Structure:
