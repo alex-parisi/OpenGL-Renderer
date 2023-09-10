@@ -45,10 +45,12 @@ class Scene
 		void SetSkybox(Skybox& skybox);
 		Shader* GetSkyboxShader();
 		void SetSkyboxShader(Shader& skyboxShader);
+		float GetHeightScale();
+		void SetHeightScale(float heightScale);
 
 	private:
 		// Private functions:
-		void RenderScene(Shader& shader, bool useNormalMap);
+		void RenderScene(Shader& shader, bool useNormalMap, bool useHeightMap);
 		void DrawLightbulbs(Camera& camera, InputManager& inputManager);
 		// Private attributes:
 		// Shaders used in rendering:
@@ -71,4 +73,6 @@ class Scene
 		std::vector<PointLight*> m_pointLights;
 		// Skybox used in rendering:
 		Skybox* m_skybox;
+		// Scaling used in height map:
+		float m_heightScale;
 };

@@ -18,11 +18,12 @@ Model::~Model()
 
 }
 
-void Model::Draw(Shader& shader, bool useNormalMap)
+void Model::Draw(Shader& shader, bool useNormalMap, bool useHeightMap)
 {
     shader.SetMat4("model", m_model);
     shader.SetFloat("texScaling", 1.0f);
     shader.SetBool("useNormalMap", useNormalMap);
+    shader.SetBool("useHeightMap", useHeightMap);
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader);
 }

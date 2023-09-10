@@ -57,12 +57,18 @@ Keyboard::Keyboard()
 	AddKey(GLFW_KEY_A);
 	AddKey(GLFW_KEY_S);
 	AddKey(GLFW_KEY_D);
+	AddKey(GLFW_KEY_Z);
+	AddKey(GLFW_KEY_X);
+
 	AddKey(GLFW_KEY_UP);
 	AddKey(GLFW_KEY_LEFT);
 	AddKey(GLFW_KEY_DOWN);
 	AddKey(GLFW_KEY_RIGHT);
+
 	AddKey(GLFW_KEY_SPACE);
+
 	AddKey(GLFW_KEY_1);
+	AddKey(GLFW_KEY_2);
 }
 
 Keyboard::~Keyboard()

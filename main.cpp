@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
         engine.AddModelToScene(testModel);
 
         // 4. Point light(s):
-        PointLight pointLight0(0, 6);
+        PointLight pointLight0(0, 10);
         pointLight0.SetPosition(glm::vec3(10.0f, 10.0f, 0.0f));
         engine.AddPointLightToScene(pointLight0);
         // PointLight pointLight1(1, 5);
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
         // engine.SetSkybox(skybox);
 
         // Optional: turn off directional light source:
-        engine.GetScene()->GetDirectionalLight()->TurnOff();
+        // engine.GetScene()->GetDirectionalLight()->TurnOff();
 
         // Begin Engine:
         engine.Configure();

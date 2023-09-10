@@ -32,7 +32,7 @@ class Model
         Model(std::string const& path, std::string name);
         ~Model();
         // External functions:
-        void Draw(Shader& shader, bool useNormalMap);
+        void Draw(Shader& shader, bool useNormalMap, bool useHeightMap);
         // Get/Set:
         glm::mat4 GetModel();
         void SetModel(glm::mat4 model);

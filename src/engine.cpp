@@ -212,6 +212,23 @@ void Engine::ProcessInput(GLFWwindow* window)
         m_camera.SetLock(true);
         m_camera.SetFirstMouse(true);
     }
+    // Change height scaling when pressing Z and X:
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_Z))
+    {
+        // Decrement height scale
+        m_scene.SetHeightScale(m_scene.GetHeightScale() - 0.0005);
+        // Check for lower bounds
+        if (m_scene.GetHeightScale() < 0.0f)
+            m_scene.SetHeightScale(0.0f);
+    }
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_X))
+    {
+        // Increment height scale
+        m_scene.SetHeightScale(m_scene.GetHeightScale() + 0.0005);
+        // Check for upper bounds
+        if (m_scene.GetHeightScale() > 1.0f)
+            m_scene.SetHeightScale(1.0f);
+    }
 }
 
 void Engine::Render()

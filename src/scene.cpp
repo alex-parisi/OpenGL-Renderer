@@ -11,11 +11,13 @@ Scene::Scene()
 	m_shadowShader = nullptr;
     m_lightbulbShader = nullptr;
     m_pointShadowShader = nullptr;
+    m_skyboxShader = nullptr;
+    m_skybox = nullptr;
     m_depthMap = NULL;
     m_depthMapFBO = NULL;
     m_cubeMap = NULL;
     m_cubeMapFBO = NULL;
-    m_skybox = nullptr;
+    m_heightScale = 0.1f;
 }
 // Destructor:
 Scene::~Scene()
@@ -71,7 +73,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
             m_pointShadowShader->SetMat4("shadowMatrices[" + std::to_string(i) + "]", shadowTransforms[i]);
         m_pointShadowShader->SetFloat("far_plane", far_plane);
         m_pointShadowShader->SetVec3("lightPos", lightPos);
-        RenderScene(*m_pointShadowShader, false);
+        RenderScene(*m_pointShadowShader, false, false);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -88,7 +90,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
     glBindFramebuffer(GL_FRAMEBUFFER, m_depthMapFBO);
     glClear(GL_DEPTH_BUFFER_BIT);
-    RenderScene(*m_shadowShader, false);
+    RenderScene(*m_shadowShader, false, false);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // Reset viewport
     glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -107,6 +109,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     m_directionalLight.SetUniforms(*m_lightingShader);   
     m_lightingShader->SetVec3("viewPos", camera.GetCameraPos());
     m_lightingShader->SetFloat("far_plane", 50.0f);
+    m_lightingShader->SetFloat("heightScale", m_heightScale);
     for (int i = 0; i < static_cast<int>(m_pointLights.size()); i++)
     {
         m_pointLights[i]->SetUniforms(*m_lightingShader, i);
@@ -116,10 +119,15 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     glBindTexture(GL_TEXTURE_2D, m_depthMap);
     glActiveTexture(GL_TEXTURE5);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_cubeMap);
+    // + TEMP
+    bool turnOnNormalMap = false;
+    bool turnOnHeightMap = false;
     if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_1))
-        RenderScene(*m_lightingShader, true);
-    else
-        RenderScene(*m_lightingShader, false);
+        turnOnNormalMap = true;
+    if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_2))
+        turnOnHeightMap = true;
+    // - TEMP
+    RenderScene(*m_lightingShader, turnOnNormalMap, turnOnHeightMap);
 
     // 4. Draw the lighbulbs
     DrawLightbulbs(camera, inputManager);
@@ -271,8 +279,18 @@ void Scene::SetSkyboxShader(Shader& skyboxShader)
     m_skyboxShader = &skyboxShader;
 }
 
+float Scene::GetHeightScale()
+{
+    return m_heightScale;
+}
+
+void Scene::SetHeightScale(float heightScale)
+{
+    m_heightScale = heightScale;
+}
+
 // Internal functions:
-void Scene::RenderScene(Shader& shader, bool useNormalMap)
+void Scene::RenderScene(Shader& shader, bool useNormalMap, bool useHeightMap)
 {
     // Render all objects:
 	for (auto& o : m_objects)
@@ -282,7 +300,7 @@ void Scene::RenderScene(Shader& shader, bool useNormalMap)
     // Render all models:
     for (auto& m : m_models)
     {
-        m->Draw(shader, useNormalMap);
+        m->Draw(shader, useNormalMap, useHeightMap);
     }
 }
 
