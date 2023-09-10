@@ -102,7 +102,7 @@ void main()
         FragColor = vec4(result, 1.0);
 
         // 4. Gamma correction:
-        FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
+        // FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
     }
     else
     {
@@ -128,7 +128,7 @@ void main()
         FragColor = vec4(result, 1.0);
 
         // 4. Gamma correction:
-        FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
+        // FragColor.rgb = pow(FragColor.rgb, vec3(1.0 / 2.2));
     }
 }
 

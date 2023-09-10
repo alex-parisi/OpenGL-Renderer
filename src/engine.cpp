@@ -73,6 +73,8 @@ void Engine::Configure()
     m_scene.ConfigureCubeMap();
     // Configure the shaders:
     m_scene.ConfigureShaders();
+    // Configure HDR buffer:
+    m_scene.ConfigureHDR();
 }
 
 void Engine::SetLightingShader(Shader& lightingShader)
@@ -103,6 +105,11 @@ void Engine::SetSkybox(Skybox& skybox)
 void Engine::SetSkyboxShader(Shader& skyboxShader)
 {
     m_scene.SetSkyboxShader(skyboxShader);
+}
+
+void Engine::SetHDRShader(Shader& hdrShader)
+{
+    m_scene.SetHDRShader(hdrShader);
 }
 
 Scene* Engine::GetScene()
@@ -228,6 +235,23 @@ void Engine::ProcessInput(GLFWwindow* window)
         // Check for upper bounds
         if (m_scene.GetHeightScale() > 1.0f)
             m_scene.SetHeightScale(1.0f);
+    }
+    // Check for adjustments to the exposure with C and V:
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_C))
+    {
+        // Decrement the exposure
+        m_scene.SetExposure(m_scene.GetExposure() - 0.001f);
+        // Check for lower bounds
+        if (m_scene.GetExposure() < 0.0f)
+            m_scene.SetExposure(0.0f);
+    }
+    if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_V))
+    {
+        // Increment the exposure
+        m_scene.SetExposure(m_scene.GetExposure() + 0.001f);
+        // Check for upper bounds
+        if (m_scene.GetExposure() > 2.0f)
+            m_scene.SetExposure(2.0f);
     }
 }
 

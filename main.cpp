@@ -17,12 +17,14 @@ int main(int argc, char* argv[])
         Shader pointShadowShader("../src/shaders/point_shadow.vs", "../src/shaders/point_shadow.fs", "../src/shaders/point_shadow.gs");
         Shader lightbulbShader("../src/shaders/light_cube.vs", "../src/shaders/light_cube.fs");
         Shader skyboxShader("../src/shaders/skybox.vs", "../src/shaders/skybox.fs");
+        Shader hdrShader("../src/shaders/hdr.vs", "../src/shaders/hdr.fs");
         // Set the shaders:
         engine.SetLightingShader(lightingShader);
         engine.SetShadowShader(shadowShader);
         engine.SetPointShadowShader(pointShadowShader);
         engine.SetLightbulbShader(lightbulbShader);
         engine.SetSkyboxShader(skyboxShader);
+        engine.SetHDRShader(hdrShader);
 
         // 2. Objects:
         // Load the floor object:
@@ -66,7 +68,7 @@ int main(int argc, char* argv[])
         // engine.SetSkybox(skybox);
 
         // Optional: turn off directional light source:
-        engine.GetScene()->GetDirectionalLight()->TurnOff();
+        // engine.GetScene()->GetDirectionalLight()->TurnOff();
 
         // Configure and begin Engine:
         engine.Configure();

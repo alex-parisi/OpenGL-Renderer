@@ -12,12 +12,19 @@ Scene::Scene()
     m_lightbulbShader = nullptr;
     m_pointShadowShader = nullptr;
     m_skyboxShader = nullptr;
+    m_hdrShader = nullptr;
     m_skybox = nullptr;
     m_depthMap = NULL;
     m_depthMapFBO = NULL;
     m_cubeMap = NULL;
     m_cubeMapFBO = NULL;
     m_heightScale = 0.1f;
+    m_colorBuffer = NULL;
+    m_hdrFBO = NULL;
+    m_rboDepth = NULL;
+    m_quadVAO = NULL;
+    m_quadVBO = NULL;
+    m_exposure = 1.0f;
 }
 // Destructor:
 Scene::~Scene()
@@ -97,6 +104,9 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // 3. Render Final Scene:
+    // Render Scene into the floating point buffer first:
+    glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_lightingShader->Use();
     glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
     glm::mat4 view = camera.GetViewMatrix();
@@ -122,15 +132,27 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
     // + TEMP
     bool turnOnNormalMap = false;
     bool turnOnHeightMap = false;
+    int turnOnHDR = 0;
     if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_1))
         turnOnNormalMap = true;
     if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_2))
         turnOnHeightMap = true;
+    if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_3))
+        turnOnHDR = 1;
     // - TEMP
     RenderScene(*m_lightingShader, turnOnNormalMap, turnOnHeightMap);
-
     // 4. Draw the lighbulbs
     DrawLightbulbs(camera, inputManager);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // Now render the floating point color buffer to 2D quads
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    m_hdrShader->Use();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_colorBuffer);
+    m_hdrShader->SetInt("hdr", turnOnHDR);
+    m_hdrShader->SetFloat("exposure", m_exposure);
+    RenderQuad();
+
 
     // 5. Render the skybox:
     if (m_skybox != nullptr)
@@ -211,6 +233,31 @@ void Scene::ConfigureShaders()
     // Shadow:
     m_shadowShader->Use();
     m_shadowShader->SetInt("depthMap", 0);
+    // HDR:
+    m_hdrShader->Use();
+    m_hdrShader->SetInt("hdrBuffer", 0);
+}
+
+void Scene::ConfigureHDR()
+{
+    glGenFramebuffers(1, &m_hdrFBO);
+    // create floating point color buffer
+    glGenTextures(1, &m_colorBuffer);
+    glBindTexture(GL_TEXTURE_2D, m_colorBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // create depth buffer (renderbuffer)
+    glGenRenderbuffers(1, &m_rboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_rboDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCREEN_WIDTH, SCREEN_HEIGHT);
+    // attach buffers
+    glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorBuffer, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_rboDepth);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Framebuffer not complete!" << std::endl;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 // Get/Set:
@@ -289,6 +336,26 @@ void Scene::SetHeightScale(float heightScale)
     m_heightScale = heightScale;
 }
 
+Shader* Scene::GetHDRShader()
+{
+    return m_hdrShader;
+}
+
+void Scene::SetHDRShader(Shader& hdrShader)
+{
+    m_hdrShader = &hdrShader;
+}
+
+float Scene::GetExposure()
+{
+    return m_exposure;
+}
+
+void Scene::SetExposure(float exposure)
+{
+    m_exposure = exposure;
+}
+
 // Internal functions:
 void Scene::RenderScene(Shader& shader, bool useNormalMap, bool useHeightMap)
 {
@@ -331,6 +398,33 @@ void Scene::DrawLightbulbs(Camera& camera, InputManager& inputManager)
         glBindVertexArray(l->GetVAO());
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+}
+
+void Scene::RenderQuad()
+{
+    if (m_quadVAO == NULL)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &m_quadVAO);
+        glGenBuffers(1, &m_quadVBO);
+        glBindVertexArray(m_quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(m_quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }
 
 // TO - DO: move this function to where it belongs, not sure where that would be though

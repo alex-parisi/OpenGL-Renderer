@@ -43,6 +43,7 @@ class Engine
 		void SetLightbulbShader(Shader& lightbulbShader);
 		void SetSkybox(Skybox& skybox);
 		void SetSkyboxShader(Shader& skyboxShader);
+		void SetHDRShader(Shader& hdrShader);
 		Scene* GetScene();
 		// Other:
 		void AddObjectToScene(Object& object);

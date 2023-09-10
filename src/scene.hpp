@@ -31,6 +31,7 @@ class Scene
 		void ConfigureDepthMap();
 		void ConfigureCubeMap();
 		void ConfigureShaders();
+		void ConfigureHDR();
 		// Get/Set:
 		void SetLightingShader(Shader& lightingShader);
 		Shader* GetLightingShader();
@@ -47,11 +48,16 @@ class Scene
 		void SetSkyboxShader(Shader& skyboxShader);
 		float GetHeightScale();
 		void SetHeightScale(float heightScale);
+		Shader* GetHDRShader();
+		void SetHDRShader(Shader& hdrShader);
+		float GetExposure();
+		void SetExposure(float exposure);
 
 	private:
 		// Private functions:
 		void RenderScene(Shader& shader, bool useNormalMap, bool useHeightMap);
 		void DrawLightbulbs(Camera& camera, InputManager& inputManager);
+		void RenderQuad();
 		// Private attributes:
 		// Shaders used in rendering:
 		Shader* m_lightingShader;
@@ -59,6 +65,7 @@ class Scene
 		Shader* m_pointShadowShader;
 		Shader* m_lightbulbShader;
 		Shader* m_skyboxShader;
+		Shader* m_hdrShader;
 		// List of all objects being rendered:
 		std::vector<Object*> m_objects;
 		// List of all models being rendered:
@@ -75,4 +82,10 @@ class Scene
 		Skybox* m_skybox;
 		// Scaling used in height map:
 		float m_heightScale;
+		// buffers used in HDR:
+		unsigned int m_hdrFBO, m_colorBuffer, m_rboDepth;
+		// quad buffers
+		unsigned int m_quadVAO, m_quadVBO;
+		// exposure used in hdr:
+		float m_exposure;
 };

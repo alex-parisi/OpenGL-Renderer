@@ -127,5 +127,11 @@
     <None Include="..\src\shaders\lighting.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\src\shaders\hdr.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\hdr.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -59,6 +59,8 @@ Keyboard::Keyboard()
 	AddKey(GLFW_KEY_D);
 	AddKey(GLFW_KEY_Z);
 	AddKey(GLFW_KEY_X);
+	AddKey(GLFW_KEY_C);
+	AddKey(GLFW_KEY_V);
 
 	AddKey(GLFW_KEY_UP);
 	AddKey(GLFW_KEY_LEFT);
@@ -69,6 +71,7 @@ Keyboard::Keyboard()
 
 	AddKey(GLFW_KEY_1);
 	AddKey(GLFW_KEY_2);
+	AddKey(GLFW_KEY_3);
 }
 
 Keyboard::~Keyboard()
