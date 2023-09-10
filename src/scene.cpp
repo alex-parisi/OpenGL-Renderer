@@ -32,7 +32,7 @@ Scene::~Scene()
 }
 
 // External functions:
-void Scene::Render(Camera& camera, InputManager& inputManager)
+void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
 {
     // +TEMP
     // Rotate the model object if the arrow keys are pressed:
@@ -147,7 +147,36 @@ void Scene::Render(Camera& camera, InputManager& inputManager)
         if (m_skybox->loaded)
             m_skybox->Render(*m_skyboxShader, camera);
     // 6. Render the text:
-    RenderText(*m_textShader, "This is sample text", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
+    // Title:
+    RenderText(*m_textShader, "OpenGL + GLFW Renderer", 25.0f, SCREEN_HEIGHT - 25.0f, 0.5f, glm::vec3(0.2f, 0.2f, 0.2f));
+    // FPS:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "FPS = %d", static_cast<int>(1.0f / deltaTime));
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 50.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
+    }
+    // Normal Mapping Toggle:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "Normal Mapping = %s", turnOnNormalMap ? "ON" : "OFF");
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 75.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
+    }
+    // Height Mapping Toggle:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "Height Mapping = %s", turnOnHeightMap ? "ON" : "OFF");
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 100.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
+    }
+    // Bloom Toggle:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "HDR + Bloom = %s", turnOnBloom ? "ON" : "OFF");
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 125.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Blur bright fragments:

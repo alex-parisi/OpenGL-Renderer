@@ -34,7 +34,7 @@ class Scene
 		Scene();
 		~Scene();
 		// External functions:
-		void Render(Camera& camera, InputManager& inputManager);
+		void Render(Camera& camera, InputManager& inputManager, float deltaTime);
 		void AddObject(Object& object);
 		void AddModel(Model& model);
 		void AddPointLight(PointLight& pointLight);

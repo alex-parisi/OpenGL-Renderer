@@ -277,7 +277,7 @@ void Engine::Render()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Render the scene
-    m_scene.Render(m_camera, m_inputManager);
+    m_scene.Render(m_camera, m_inputManager, deltaTime);
     // Copy the buffer to the screen
     glfwSwapBuffers(m_window);
 }
