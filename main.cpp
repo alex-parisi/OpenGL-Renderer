@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
         Shader skyboxShader("../src/shaders/skybox.vs", "../src/shaders/skybox.fs");
         Shader hdrShader("../src/shaders/hdr.vs", "../src/shaders/hdr.fs");
         Shader blurShader("../src/shaders/blur.vs", "../src/shaders/blur.fs");
+        Shader textShader("../src/shaders/text.vs", "../src/shaders/text.fs");
         // Set the shaders:
         engine.SetLightingShader(lightingShader);
         engine.SetShadowShader(shadowShader);
@@ -27,6 +28,7 @@ int main(int argc, char* argv[])
         engine.SetSkyboxShader(skyboxShader);
         engine.SetHDRShader(hdrShader);
         engine.SetBlurShader(blurShader);
+        engine.SetTextShader(textShader);
 
         // 2. Objects:
         // Load the floor object:
@@ -67,10 +69,10 @@ int main(int argc, char* argv[])
         };
         Skybox skybox;
         skybox.Load(facePaths, skyboxVertices, 108);
-        // engine.SetSkybox(skybox);
+        engine.SetSkybox(skybox);
 
         // Optional: turn off directional light source:
-        // engine.GetScene()->GetDirectionalLight()->TurnOff();
+        engine.GetScene()->GetDirectionalLight()->TurnOff();
 
         // Configure and begin Engine:
         engine.Configure();

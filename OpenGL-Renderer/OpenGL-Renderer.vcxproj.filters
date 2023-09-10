@@ -139,5 +139,11 @@
     <None Include="..\src\shaders\blur.fs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\src\shaders\text.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\text.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

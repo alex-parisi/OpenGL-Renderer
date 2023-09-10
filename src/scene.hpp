@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <ft2build.h>
+#include FT_FREETYPE_H  
+
 #include "object.hpp"
 #include "shader.hpp"
 #include "settings.hpp"
@@ -16,6 +19,13 @@
 #include <vector>
 
 unsigned int loadTexture(char const* path);
+
+struct Character {
+	unsigned int TextureID; // ID handle of the glyph texture
+	glm::ivec2   Size;      // Size of glyph
+	glm::ivec2   Bearing;   // Offset from baseline to left/top of glyph
+	unsigned int Advance;   // Horizontal offset to advance to next glyph
+};
 
 class Scene
 {
@@ -33,6 +43,7 @@ class Scene
 		void ConfigureShaders();
 		void ConfigureHDR();
 		void ConfigureBlur();
+		void ConfigureFreeType();
 		// Get/Set:
 		void SetLightingShader(Shader& lightingShader);
 		Shader* GetLightingShader();
@@ -55,12 +66,15 @@ class Scene
 		void SetExposure(float exposure);
 		Shader* GetBlurShader();
 		void SetBlurShader(Shader& blurShader);
+		Shader* GetTextShader();
+		void SetTextShader(Shader& textShader);
 
 	private:
 		// Private functions:
 		void RenderScene(Shader& shader, bool useNormalMap, bool useHeightMap);
 		void DrawLightbulbs(Camera& camera, InputManager& inputManager);
 		void RenderQuad();
+		void RenderText(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color);
 		// Private attributes:
 		// Shaders used in rendering:
 		Shader* m_lightingShader;
@@ -70,6 +84,7 @@ class Scene
 		Shader* m_skyboxShader;
 		Shader* m_hdrShader;
 		Shader* m_blurShader;
+		Shader* m_textShader;
 		// List of all objects being rendered:
 		std::vector<Object*> m_objects;
 		// List of all models being rendered:
@@ -97,4 +112,7 @@ class Scene
 		// buffers used in blur:
 		unsigned int m_pingpongFBO[2];
 		unsigned int m_pingpongColorbuffers[2];
+		// buffers used in rendering text:
+		std::map<GLchar, Character> m_characters;
+		unsigned int m_textVAO, m_textVBO;
 };

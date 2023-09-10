@@ -30,6 +30,8 @@ bool Engine::Initialize()
         // Configure global OpenGL state:
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_FRAMEBUFFER_SRGB);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // Create a new viewport
         glViewport(0, 0, static_cast<int>(SCREEN_WIDTH), static_cast<int>(SCREEN_HEIGHT));
         // Map Callback functions 
@@ -77,6 +79,8 @@ void Engine::Configure()
     m_scene.ConfigureHDR();
     // Configure blur buffers:
     m_scene.ConfigureBlur();
+    // Setup FreeType for rendering text on screen:
+    m_scene.ConfigureFreeType();
 }
 
 void Engine::SetLightingShader(Shader& lightingShader)
@@ -117,6 +121,11 @@ void Engine::SetHDRShader(Shader& hdrShader)
 void Engine::SetBlurShader(Shader& blurShader)
 {
     m_scene.SetBlurShader(blurShader);
+}
+
+void Engine::SetTextShader(Shader& textShader)
+{
+    m_scene.SetTextShader(textShader);
 }
 
 Scene* Engine::GetScene()
