@@ -38,6 +38,8 @@ class Model
         void SetModel(glm::mat4 model);
         std::string GetName();
         void SetUseNormal(bool useNormal);
+        int GetNumVertices();
+        int GetNumFaces();
         // External attributes:
         std::vector<Texture> textures_loaded;
         std::vector<Mesh> meshes;
@@ -52,4 +54,6 @@ class Model
         glm::mat4 m_model;
         std::string m_name;
         bool m_useNormal;
+        int m_totalVertices;
+        int m_totalFaces;
 };

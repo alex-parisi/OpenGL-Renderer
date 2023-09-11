@@ -5,6 +5,8 @@ Model::Model()
     m_model = glm::mat4(1.0f);
     m_name = "";
     m_useNormal = true;
+    m_totalFaces = 0;
+    m_totalVertices = 0;
 }
 
 Model::Model(std::string const& path, std::string name, bool flipSTBI)
@@ -53,6 +55,16 @@ void Model::SetUseNormal(bool useNormal)
     m_useNormal = useNormal;
 }
 
+int Model::GetNumVertices()
+{
+    return m_totalVertices;
+}
+
+int Model::GetNumFaces()
+{
+    return m_totalFaces;
+}
+
 void Model::LoadModel(std::string const& path, bool flipSTBI)
 {
     // read file via ASSIMP
@@ -90,6 +102,8 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene, bool flipSTBI)
 
 Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, bool flipSTBI)
 {
+    m_totalFaces += mesh->mNumFaces;
+    m_totalVertices += mesh->mNumVertices;
     // data to fill
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;

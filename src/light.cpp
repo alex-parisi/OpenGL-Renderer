@@ -13,7 +13,7 @@ DirectionalLight::DirectionalLight()
 	// Default directional light:
 	m_position = glm::vec3(0.0f, 8.0f, 1.0f);
 	m_direction = glm::normalize(-m_position);
-	m_ambient = glm::vec3(0.025f);
+	m_ambient = glm::vec3(0.0025f);
 	m_diffuse = glm::vec3(0.25f);
 	m_specular = glm::vec3(0.25f);
 	m_on = true;
@@ -124,7 +124,7 @@ PointLight::PointLight()
 PointLight::PointLight(unsigned int id, int preset)
 {
 	m_position = glm::vec3(0.0f);
-	m_ambient = glm::vec3(0.1f);
+	m_ambient = glm::vec3(0.05f);
 	m_diffuse = glm::vec3(0.8f);
 	m_specular = glm::vec3(1.0f);
 	m_constant = 0.0f;

@@ -28,7 +28,6 @@ Scene::Scene()
     m_exposure = 1.0f;
     m_textVAO = NULL;
     m_textVBO = NULL;
-    
 }
 // Destructor:
 Scene::~Scene()
@@ -332,7 +331,7 @@ void Scene::ConfigureFreeType(Camera& camera, bool doIt)
         }
 
         // find path to font
-        std::string font_name = "../resources/fonts/Antonio-Bold.ttf";
+        std::string font_name = "../resources/fonts/Antonio-Thin.ttf";
         if (font_name.empty())
         {
             std::cout << "ERROR | FREETYPE: Failed to load font_name.\n" << std::endl;
