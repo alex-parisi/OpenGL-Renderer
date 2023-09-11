@@ -23,6 +23,7 @@
 struct CallbackObj {
 	Camera* camera;
 	InputManager* inputManager;
+	Scene* scene;
 };
 
 class Engine

@@ -41,9 +41,9 @@ class Scene
 		void ConfigureDepthMap();
 		void ConfigureCubeMap();
 		void ConfigureShaders();
-		void ConfigureHDR();
-		void ConfigureBlur();
-		void ConfigureFreeType();
+		void ConfigureHDR(Camera& camera);
+		void ConfigureBlur(Camera& camera);
+		void ConfigureFreeType(Camera& camera, bool doIt);
 		// Get/Set:
 		void SetLightingShader(Shader& lightingShader);
 		Shader* GetLightingShader();

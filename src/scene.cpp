@@ -103,7 +103,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
     RenderScene(*m_shadowShader, false, false);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     // Reset viewport
-    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glViewport(0, 0, camera.GetWindowWidth(), camera.GetWindowHeight());
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // 3. Render Final Scene:
@@ -268,7 +268,7 @@ void Scene::ConfigureShaders()
     m_skyboxShader->SetInt("skybox", 0);
 }
 
-void Scene::ConfigureHDR()
+void Scene::ConfigureHDR(Camera& camera)
 {
     glGenFramebuffers(1, &m_hdrFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
@@ -277,7 +277,7 @@ void Scene::ConfigureHDR()
     for (unsigned int i = 0; i < 2; i++)
     {
         glBindTexture(GL_TEXTURE_2D, m_colorBuffers[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, camera.GetWindowWidth(), camera.GetWindowHeight(), 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
@@ -288,7 +288,7 @@ void Scene::ConfigureHDR()
     // create and attach depth buffer (renderbuffer)
     glGenRenderbuffers(1, &m_rboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, m_rboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCREEN_WIDTH, SCREEN_HEIGHT);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, camera.GetWindowWidth(), camera.GetWindowHeight());
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_rboDepth);
     // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
     unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
@@ -299,7 +299,7 @@ void Scene::ConfigureHDR()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Scene::ConfigureBlur()
+void Scene::ConfigureBlur(Camera& camera)
 {
     glGenFramebuffers(2, m_pingpongFBO);
     glGenTextures(2, m_pingpongColorbuffers);
@@ -307,7 +307,7 @@ void Scene::ConfigureBlur()
     {
         glBindFramebuffer(GL_FRAMEBUFFER, m_pingpongFBO[i]);
         glBindTexture(GL_TEXTURE_2D, m_pingpongColorbuffers[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, camera.GetWindowWidth(), camera.GetWindowHeight(), 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
@@ -319,93 +319,96 @@ void Scene::ConfigureBlur()
     }
 }
 
-void Scene::ConfigureFreeType()
+void Scene::ConfigureFreeType(Camera& camera, bool doIt)
 {
-    FT_Library ft;
-    // All functions return a value different than 0 whenever an error occurred
-    if (FT_Init_FreeType(&ft))
+    if (doIt)
     {
-        std::cout << "ERROR | FREETYPE: Could not init FreeType Library.\n" << std::endl;
-        // return -1;
-    }
-
-    // find path to font
-    std::string font_name = "../resources/fonts/Antonio-Bold.ttf";
-    if (font_name.empty())
-    {
-        std::cout << "ERROR | FREETYPE: Failed to load font_name.\n" << std::endl;
-        // return -1;
-    }
-
-    // load font as face
-    FT_Face face;
-    if (FT_New_Face(ft, font_name.c_str(), 0, &face)) {
-        std::cout << "ERROR | FREETYPE: Failed to load font.\n" << std::endl;
-        // return -1;
-    }
-    else {
-        // set size to load glyphs as
-        FT_Set_Pixel_Sizes(face, 0, 48);
-
-        // disable byte-alignment restriction
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-        // load first 128 characters of ASCII set
-        for (unsigned char c = 0; c < 128; c++)
+        FT_Library ft;
+        // All functions return a value different than 0 whenever an error occurred
+        if (FT_Init_FreeType(&ft))
         {
-            // Load character glyph 
-            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-            {
-                std::cout << "ERROR | FREETYTPE: Failed to load Glyph.\n" << std::endl;
-                continue;
-            }
-            // generate texture
-            unsigned int texture;
-            glGenTextures(1, &texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            glTexImage2D(
-                GL_TEXTURE_2D,
-                0,
-                GL_RED,
-                face->glyph->bitmap.width,
-                face->glyph->bitmap.rows,
-                0,
-                GL_RED,
-                GL_UNSIGNED_BYTE,
-                face->glyph->bitmap.buffer
-            );
-            // set texture options
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            // now store character for later use
-            Character character = {
-                texture,
-                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-                static_cast<unsigned int>(face->glyph->advance.x)
-            };
-            m_characters.insert(std::pair<char, Character>(c, character));
+            std::cout << "ERROR | FREETYPE: Could not init FreeType Library.\n" << std::endl;
+            // return -1;
         }
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    // destroy FreeType once we're finished
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
 
-    // configure VAO/VBO for texture quads
-    glGenVertexArrays(1, &m_textVAO);
-    glGenBuffers(1, &m_textVBO);
-    glBindVertexArray(m_textVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, m_textVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+        // find path to font
+        std::string font_name = "../resources/fonts/Antonio-Bold.ttf";
+        if (font_name.empty())
+        {
+            std::cout << "ERROR | FREETYPE: Failed to load font_name.\n" << std::endl;
+            // return -1;
+        }
+
+        // load font as face
+        FT_Face face;
+        if (FT_New_Face(ft, font_name.c_str(), 0, &face)) {
+            std::cout << "ERROR | FREETYPE: Failed to load font.\n" << std::endl;
+            // return -1;
+        }
+        else {
+            // set size to load glyphs as
+            FT_Set_Pixel_Sizes(face, 0, 48);
+
+            // disable byte-alignment restriction
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+            // load first 128 characters of ASCII set
+            for (unsigned char c = 0; c < 128; c++)
+            {
+                // Load character glyph 
+                if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+                {
+                    std::cout << "ERROR | FREETYTPE: Failed to load Glyph.\n" << std::endl;
+                    continue;
+                }
+                // generate texture
+                unsigned int texture;
+                glGenTextures(1, &texture);
+                glBindTexture(GL_TEXTURE_2D, texture);
+                glTexImage2D(
+                    GL_TEXTURE_2D,
+                    0,
+                    GL_RED,
+                    face->glyph->bitmap.width,
+                    face->glyph->bitmap.rows,
+                    0,
+                    GL_RED,
+                    GL_UNSIGNED_BYTE,
+                    face->glyph->bitmap.buffer
+                );
+                // set texture options
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                // now store character for later use
+                Character character = {
+                    texture,
+                    glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                    glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                    static_cast<unsigned int>(face->glyph->advance.x)
+                };
+                m_characters.insert(std::pair<char, Character>(c, character));
+            }
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        // destroy FreeType once we're finished
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+
+        // configure VAO/VBO for texture quads
+        glGenVertexArrays(1, &m_textVAO);
+        glGenBuffers(1, &m_textVBO);
+        glBindVertexArray(m_textVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_textVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4, NULL, GL_DYNAMIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
     // Set the projection matrix
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCREEN_WIDTH), 0.0f, static_cast<float>(SCREEN_HEIGHT));
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(camera.GetWindowWidth()), 0.0f, static_cast<float>(camera.GetWindowHeight()));
     m_textShader->Use();
     glUniformMatrix4fv(glGetUniformLocation(m_textShader->ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
@@ -544,7 +547,7 @@ void Scene::RenderScene(Shader& shader, bool useNormalMap, bool useHeightMap)
 void Scene::DrawLightbulbs(Camera& camera, InputManager& inputManager)
 {
     m_lightbulbShader->Use();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)camera.GetWindowWidth() / (float)camera.GetWindowHeight(), 0.1f, 100.0f);
     glm::mat4 view = camera.GetViewMatrix();
     m_lightbulbShader->SetMat4("projection", projection);
     m_lightbulbShader->SetMat4("view", view);

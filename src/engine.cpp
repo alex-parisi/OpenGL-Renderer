@@ -39,6 +39,7 @@ bool Engine::Initialize()
         // Setup the callback object with pointers to the camera and input manager, as well as itself for get/set
         m_callbackObj.camera = &m_camera;
         m_callbackObj.inputManager = &m_inputManager;
+        m_callbackObj.scene = &m_scene;
         glfwSetWindowUserPointer(m_window, &m_callbackObj);
         return true;
     }
@@ -76,11 +77,11 @@ void Engine::Configure()
     // Configure the shaders:
     m_scene.ConfigureShaders();
     // Configure HDR buffer:
-    m_scene.ConfigureHDR();
+    m_scene.ConfigureHDR(m_camera);
     // Configure blur buffers:
-    m_scene.ConfigureBlur();
+    m_scene.ConfigureBlur(m_camera);
     // Setup FreeType for rendering text on screen:
-    m_scene.ConfigureFreeType();
+    m_scene.ConfigureFreeType(m_camera, true);
 }
 
 void Engine::SetLightingShader(Shader& lightingShader)
@@ -297,6 +298,9 @@ void Engine::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
     CallbackObj* obj = (CallbackObj*)glfwGetWindowUserPointer(window);
     obj->camera->SetWindowHeight(height);
     obj->camera->SetWindowWidth(width);
+    obj->scene->ConfigureHDR(*obj->camera);
+    obj->scene->ConfigureBlur(*obj->camera);
+    obj->scene->ConfigureFreeType(*obj->camera, false);
 }
 
 void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)
