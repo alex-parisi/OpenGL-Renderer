@@ -28,6 +28,10 @@ Scene::Scene()
     m_exposure = 1.0f;
     m_textVAO = NULL;
     m_textVBO = NULL;
+    lockCamera = true;
+    lockCameraToggled = false;
+    changeObjectToggled = false;
+    currentObject = 0;
 }
 // Destructor:
 Scene::~Scene()
@@ -55,6 +59,42 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
             if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_RIGHT))
                 m->SetModel(glm::rotate(m->GetModel(), glm::radians(0.1f), glm::vec3(0.0f, 1.0f, 0.0f)));
         }
+    }
+    // Lock the camera to objects because why not
+    if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_EQUAL))
+    {
+        if (!lockCameraToggled)
+        {
+            lockCamera = !lockCamera;
+            lockCameraToggled = true;
+        }   
+    }
+    else
+    {
+        lockCameraToggled = false;
+    }
+    if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_MINUS))
+    {
+        if (!changeObjectToggled)
+        {
+            currentObject++;
+            if (currentObject >= m_models.size())
+            {
+                currentObject = 0;
+            }
+            changeObjectToggled = true;
+        }
+    }
+    else
+    {
+        changeObjectToggled = false;
+    }
+    if (lockCamera)
+    {
+        glm::vec3 offset = m_models[currentObject]->GetModel()[3];
+        camera.SetCameraFront(glm::normalize(offset - camera.GetCameraPos()));
+        camera.SetPitch(glm::degrees(asin(camera.GetCameraFront().y)));
+        camera.SetYaw(glm::degrees(acos(camera.GetCameraFront().x / cos(glm::radians(camera.GetPitch())))));
     }
     // -TEMP
 

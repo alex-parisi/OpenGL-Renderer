@@ -116,4 +116,8 @@ class Scene
 		// buffers used in rendering text:
 		std::map<GLchar, Character> m_characters;
 		unsigned int m_textVAO, m_textVBO;
+		// temp
+		bool lockCamera, lockCameraToggled;
+		bool changeObjectToggled;
+		int currentObject;
 };

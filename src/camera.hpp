@@ -11,10 +11,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "settings.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <string>
 
 class Camera
 {
