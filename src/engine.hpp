@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <string>
+#include <stdlib.h>
 
 struct CallbackObj {
 	Camera* camera;

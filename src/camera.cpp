@@ -7,14 +7,14 @@
 Camera::Camera()
 {
     m_locked = true;
-    m_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+    m_cameraPos = glm::vec3(12.713f, 11.7414f, 8.60537f);
+    m_cameraFront = glm::vec3(-0.741935f, -0.452435, -0.494808f);
     m_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     m_firstMouse = true;
-    m_yaw = 180.0f;
-    m_pitch = 0.0f;
-    m_lastX = SCREEN_WIDTH / 2.0;
-    m_lastY = SCREEN_HEIGHT / 2.0;
+    m_yaw = 213.7f;
+    m_pitch = -26.9f;
+    m_lastX = 1195;
+    m_lastY = 0;
     m_fov = 45.0f;
     m_windowHeight = SCREEN_HEIGHT;
     m_windowWidth = SCREEN_WIDTH;
