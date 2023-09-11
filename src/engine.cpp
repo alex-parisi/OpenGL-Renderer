@@ -5,7 +5,7 @@
 #include "engine.hpp"
 
 // Constructor:
-Engine::Engine()
+Engine::Engine() : m_callbackObj()
 {
     m_window = nullptr;
     deltaTime = 0.0f;
@@ -36,7 +36,7 @@ bool Engine::Initialize()
         glViewport(0, 0, static_cast<int>(SCREEN_WIDTH), static_cast<int>(SCREEN_HEIGHT));
         // Map Callback functions 
         MapCallbacks();
-        // Setup the callback object with pointers to the camera and input manager
+        // Setup the callback object with pointers to the camera and input manager, as well as itself for get/set
         m_callbackObj.camera = &m_camera;
         m_callbackObj.inputManager = &m_inputManager;
         glfwSetWindowUserPointer(m_window, &m_callbackObj);
@@ -209,7 +209,7 @@ void Engine::ProcessInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
     // Move the camera around when pressing the WASD keys
-    float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+    float cameraSpeed = static_cast<float>(2.5f * deltaTime);
     glm::vec3 cameraPos = m_camera.GetCameraPos();
     glm::vec3 cameraFront = m_camera.GetCameraFront();
     glm::vec3 cameraUp = m_camera.GetCameraUp();
@@ -239,7 +239,7 @@ void Engine::ProcessInput(GLFWwindow* window)
     if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_Z))
     {
         // Decrement height scale
-        m_scene.SetHeightScale(m_scene.GetHeightScale() - 0.0005);
+        m_scene.SetHeightScale(m_scene.GetHeightScale() - 0.0005f);
         // Check for lower bounds
         if (m_scene.GetHeightScale() < 0.0f)
             m_scene.SetHeightScale(0.0f);
@@ -247,7 +247,7 @@ void Engine::ProcessInput(GLFWwindow* window)
     if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_X))
     {
         // Increment height scale
-        m_scene.SetHeightScale(m_scene.GetHeightScale() + 0.0005);
+        m_scene.SetHeightScale(m_scene.GetHeightScale() + 0.0005f);
         // Check for upper bounds
         if (m_scene.GetHeightScale() > 1.0f)
             m_scene.SetHeightScale(1.0f);
@@ -256,7 +256,7 @@ void Engine::ProcessInput(GLFWwindow* window)
     if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_C))
     {
         // Decrement the exposure
-        m_scene.SetExposure(m_scene.GetExposure() - 0.001f);
+        m_scene.SetExposure(m_scene.GetExposure() - 0.01f);
         // Check for lower bounds
         if (m_scene.GetExposure() < 0.0f)
             m_scene.SetExposure(0.0f);
@@ -264,10 +264,10 @@ void Engine::ProcessInput(GLFWwindow* window)
     if (m_inputManager.m_keyboard.GetKeyState(GLFW_KEY_V))
     {
         // Increment the exposure
-        m_scene.SetExposure(m_scene.GetExposure() + 0.001f);
+        m_scene.SetExposure(m_scene.GetExposure() + 0.01f);
         // Check for upper bounds
-        if (m_scene.GetExposure() > 2.0f)
-            m_scene.SetExposure(2.0f);
+        if (m_scene.GetExposure() > 5.0f)
+            m_scene.SetExposure(5.0f);
     }
 }
 
@@ -293,6 +293,10 @@ void Engine::FrameBufferSizeCallback(GLFWwindow* window, int width, int height)
 {
     // Resize the size of the viewport
     glViewport(0, 0, width, height);
+    // Set internal properties
+    CallbackObj* obj = (CallbackObj*)glfwGetWindowUserPointer(window);
+    obj->camera->SetWindowHeight(height);
+    obj->camera->SetWindowWidth(width);
 }
 
 void Engine::MouseCallback(GLFWwindow* window, double xPosIn, double yPosIn)

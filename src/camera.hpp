@@ -49,6 +49,11 @@ class Camera
         bool GetLock();
         void SetLock(bool locked);
         void FlipLock();
+        // Window width and height:
+        void SetWindowHeight(int windowHeight);
+        int GetWindowHeight();
+        void SetWindowWidth(int windowWidth);
+        int GetWindowWidth();
 
     private:
         // Camera attributes:
@@ -64,4 +69,6 @@ class Camera
         float m_fov;
         // Lock
         bool m_locked;
+        // Window attributes
+        int m_windowHeight, m_windowWidth;
 };

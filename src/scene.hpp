@@ -75,6 +75,7 @@ class Scene
 		void DrawLightbulbs(Camera& camera, InputManager& inputManager);
 		void RenderQuad();
 		void RenderText(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color);
+		void DrawHUD(Camera& camera, float deltaTime, bool turnOnNormalMap, bool turnOnHeightMap, int turnOnBloom);
 		// Private attributes:
 		// Shaders used in rendering:
 		Shader* m_lightingShader;
@@ -103,15 +104,15 @@ class Scene
 		float m_heightScale;
 		// buffers used in HDR:
 		unsigned int m_hdrFBO;
-		unsigned int m_colorBuffers[2];
+		unsigned int m_colorBuffers[2] = { NULL, NULL };
 		unsigned int m_rboDepth;
 		// quad buffers
 		unsigned int m_quadVAO, m_quadVBO;
 		// exposure used in hdr:
 		float m_exposure;
 		// buffers used in blur:
-		unsigned int m_pingpongFBO[2];
-		unsigned int m_pingpongColorbuffers[2];
+		unsigned int m_pingpongFBO[2] = { NULL, NULL };
+		unsigned int m_pingpongColorbuffers[2] = { NULL, NULL };
 		// buffers used in rendering text:
 		std::map<GLchar, Character> m_characters;
 		unsigned int m_textVAO, m_textVBO;

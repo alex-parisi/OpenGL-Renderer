@@ -4,13 +4,15 @@ Model::Model()
 {
     m_model = glm::mat4(1.0f);
     m_name = "";
+    m_useNormal = true;
 }
 
-Model::Model(std::string const& path, std::string name)
+Model::Model(std::string const& path, std::string name, bool flipSTBI)
 {
     m_model = glm::mat4(1.0f);
     m_name = name;
-    LoadModel(path);
+    m_useNormal = true;
+    LoadModel(path, flipSTBI);
 }
 
 Model::~Model()
@@ -22,7 +24,10 @@ void Model::Draw(Shader& shader, bool useNormalMap, bool useHeightMap)
 {
     shader.SetMat4("model", m_model);
     shader.SetFloat("texScaling", 1.0f);
-    shader.SetBool("useNormalMap", useNormalMap);
+    if (!m_useNormal)
+        shader.SetBool("useNormalMap", false);
+    else
+        shader.SetBool("useNormalMap", useNormalMap);
     shader.SetBool("useHeightMap", useHeightMap);
     for (unsigned int i = 0; i < meshes.size(); i++)
         meshes[i].Draw(shader);
@@ -43,7 +48,12 @@ std::string Model::GetName()
     return m_name;
 }
 
-void Model::LoadModel(std::string const& path)
+void Model::SetUseNormal(bool useNormal)
+{
+    m_useNormal = useNormal;
+}
+
+void Model::LoadModel(std::string const& path, bool flipSTBI)
 {
     // read file via ASSIMP
     Assimp::Importer importer;
@@ -58,10 +68,10 @@ void Model::LoadModel(std::string const& path)
     directory = path.substr(0, path.find_last_of('/'));
 
     // process ASSIMP's root node recursively
-    ProcessNode(scene->mRootNode, scene);
+    ProcessNode(scene->mRootNode, scene, flipSTBI);
 }
 
-void Model::ProcessNode(aiNode* node, const aiScene* scene)
+void Model::ProcessNode(aiNode* node, const aiScene* scene, bool flipSTBI)
 {
     // process each mesh located at the current node
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
@@ -69,16 +79,16 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
         // the node object only contains indices to index the actual objects in the scene. 
         // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(ProcessMesh(mesh, scene));
+        meshes.push_back(ProcessMesh(mesh, scene, flipSTBI));
     }
     // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
-        ProcessNode(node->mChildren[i], scene);
+        ProcessNode(node->mChildren[i], scene, flipSTBI);
     }
 }
 
-Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
+Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene, bool flipSTBI)
 {
     // data to fill
     std::vector<Vertex> vertices;
@@ -146,23 +156,23 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
     // normal: texture_normalN
 
     // 1. diffuse maps
-    std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuseTexture");
+    std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "diffuseTexture", flipSTBI);
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
     // 2. specular maps
-    std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "specularTexture");
+    std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "specularTexture", flipSTBI);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
     // 3. normal maps
-    std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "normalTexture");
+    std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "normalTexture", flipSTBI);
     textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
     // 4. height maps
-    std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "heightTexture");
+    std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "heightTexture", flipSTBI);
     textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
     // return a mesh object created from the extracted mesh data
     return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, bool flipSTBI)
 {
     std::vector<Texture> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -183,7 +193,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
         if (!skip)
         {   // if texture hasn't been loaded already, load it
             Texture texture;
-            texture.id = TextureFromFile(str.C_Str(), this->directory);
+            texture.id = TextureFromFile(str.C_Str(), this->directory, flipSTBI);
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);
@@ -193,8 +203,9 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
     return textures;
 }
 
-unsigned int TextureFromFile(const char* path, const std::string& directory)
+unsigned int TextureFromFile(const char* path, const std::string& directory, bool flipSTBI)
 {
+    stbi_set_flip_vertically_on_load(flipSTBI);
     std::string filename = std::string(path);
     filename = directory + '/' + filename;
 
@@ -220,6 +231,11 @@ unsigned int TextureFromFile(const char* path, const std::string& directory)
         {
             format = GL_RGBA;
             internalFormat = GL_SRGB_ALPHA;
+        }
+        else
+        {
+            format = NULL;
+            internalFormat = NULL;
         }
 
         glBindTexture(GL_TEXTURE_2D, textureID);

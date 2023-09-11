@@ -45,12 +45,14 @@ int main(int argc, char* argv[])
 
         // 3. Models:
         // Load the demo object:
-        Model testModel("../resources/models/backpack.obj", "testModel");
+        Model testModel("../resources/models/backpack/backpack.obj", "testModel", true);
+        // Model testModel("../resources/models/robot/robot.obj", "testModel", false);
         testModel.SetModel(glm::translate(testModel.GetModel(), glm::vec3(0.0f, 3.0f, 0.0f)));
+        testModel.SetUseNormal(true);
         engine.AddModelToScene(testModel);
 
         // 4. Point light(s):
-        PointLight pointLight0(0, 6);
+        PointLight pointLight0(0, 10);
         pointLight0.SetPosition(glm::vec3(10.0f, 10.0f, 0.0f));
         engine.AddPointLightToScene(pointLight0);
         // PointLight pointLight1(1, 5);
@@ -69,7 +71,7 @@ int main(int argc, char* argv[])
         };
         Skybox skybox;
         skybox.Load(facePaths, skyboxVertices, 108);
-        engine.SetSkybox(skybox);
+        // engine.SetSkybox(skybox);
 
         // Optional: turn off directional light source:
         engine.GetScene()->GetDirectionalLight()->TurnOff();

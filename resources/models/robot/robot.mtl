@@ -1,0 +1,47 @@
+# Blender 3.6.2 MTL File: 'None'
+# www.blender.org
+
+newmtl BODY___WIRE
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd BODY-WIRE_albedo.jpg
+map_Ns BODY-WIRE_roughness.jpg
+map_refl BODY-WIRE_metallic.jpg
+map_Bump -bm 1.000000 BODY-WIRE_normal.png
+map_Kn BODY-WIRE_normal.png
+
+newmtl CAMERA___OTHERS
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd CAMERA-OTHERS_albedo.jpg
+map_Ns CAMERA-OTHERS_roughness.jpg
+map_refl CAMERA-OTHERS_metallic.jpg
+map_Ke CAMERA-OTHERS_emissive.jpg
+map_Bump -bm 1.000000 CAMERA-OTHERS_normal.png
+map_Kn CAMERA-OTHERS_normal.png
+
+newmtl SHELL
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd SHELL_albedo.jpg
+map_Ns SHELL_roughness.jpg
+map_refl SHELL_metallic.jpg
+map_Bump -bm 1.000000 SHELL_normal.png
+map_Kn SHELL_normal.png

@@ -16,6 +16,8 @@ Camera::Camera()
     m_lastX = SCREEN_WIDTH / 2.0;
     m_lastY = SCREEN_HEIGHT / 2.0;
     m_fov = 45.0f;
+    m_windowHeight = SCREEN_HEIGHT;
+    m_windowWidth = SCREEN_WIDTH;
 }
 
 Camera::~Camera()
@@ -136,4 +138,24 @@ void Camera::SetLock(bool locked)
 void Camera::FlipLock()
 {
     m_locked = !m_locked;
+}
+
+void Camera::SetWindowHeight(int windowHeight)
+{
+    m_windowHeight = windowHeight;
+}
+
+int Camera::GetWindowHeight()
+{
+    return m_windowHeight;
+}
+
+void Camera::SetWindowWidth(int windowWidth)
+{
+    m_windowWidth = windowWidth;
+}
+
+int Camera::GetWindowWidth()
+{
+    return m_windowWidth;
 }

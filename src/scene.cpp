@@ -7,12 +7,14 @@
 // Constructor:
 Scene::Scene()
 {
-	m_lightingShader = nullptr;
-	m_shadowShader = nullptr;
+    m_lightingShader = nullptr;
+    m_shadowShader = nullptr;
     m_lightbulbShader = nullptr;
     m_pointShadowShader = nullptr;
     m_skyboxShader = nullptr;
     m_hdrShader = nullptr;
+    m_textShader = nullptr;
+    m_blurShader = nullptr;
     m_skybox = nullptr;
     m_depthMap = NULL;
     m_depthMapFBO = NULL;
@@ -24,6 +26,9 @@ Scene::Scene()
     m_quadVAO = NULL;
     m_quadVBO = NULL;
     m_exposure = 1.0f;
+    m_textVAO = NULL;
+    m_textVBO = NULL;
+    
 }
 // Destructor:
 Scene::~Scene()
@@ -147,36 +152,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
         if (m_skybox->loaded)
             m_skybox->Render(*m_skyboxShader, camera);
     // 6. Render the text:
-    // Title:
-    RenderText(*m_textShader, "OpenGL + GLFW Renderer", 25.0f, SCREEN_HEIGHT - 25.0f, 0.5f, glm::vec3(0.2f, 0.2f, 0.2f));
-    // FPS:
-    {
-        char strBuf[32];
-        sprintf_s(strBuf, "FPS = %d", static_cast<int>(1.0f / deltaTime));
-        std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 50.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
-    }
-    // Normal Mapping Toggle:
-    {
-        char strBuf[32];
-        sprintf_s(strBuf, "Normal Mapping = %s", turnOnNormalMap ? "ON" : "OFF");
-        std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 75.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
-    }
-    // Height Mapping Toggle:
-    {
-        char strBuf[32];
-        sprintf_s(strBuf, "Height Mapping = %s", turnOnHeightMap ? "ON" : "OFF");
-        std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 100.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
-    }
-    // Bloom Toggle:
-    {
-        char strBuf[32];
-        sprintf_s(strBuf, "HDR + Bloom = %s", turnOnBloom ? "ON" : "OFF");
-        std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, SCREEN_HEIGHT - 125.0f, 0.3f, glm::vec3(0.2f, 0.2f, 0.2f));
-    }
+    DrawHUD(camera, deltaTime, turnOnNormalMap, turnOnHeightMap, turnOnBloom);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Blur bright fragments:
@@ -646,6 +622,11 @@ unsigned int loadTexture(char const* path)
             format = GL_RGBA;
             internalFormat = GL_SRGB_ALPHA;
         }
+        else
+        {
+            format = NULL;
+            internalFormat = NULL;
+        }
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -710,4 +691,39 @@ void Scene::RenderText(Shader& shader, std::string text, float x, float y, float
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Scene::DrawHUD(Camera& camera, float deltaTime, bool turnOnNormalMap, bool turnOnHeightMap, int turnOnBloom)
+{
+
+    glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    // FPS:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "FPS = %d", static_cast<int>(1.0f / deltaTime));
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 25.0f, 0.5f, color);
+    }
+    // Normal Mapping Toggle:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "Normal Mapping = %s", turnOnNormalMap ? "ON" : "OFF");
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 50.0f, 0.5f, color);
+    }
+    // Height Mapping Toggle:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "Height Mapping = %s", turnOnHeightMap ? "ON" : "OFF");
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 75.0f, 0.5f, color);
+    }
+    // Bloom Toggle:
+    {
+        char strBuf[32];
+        sprintf_s(strBuf, "HDR + Bloom = %s", turnOnBloom ? "ON" : "OFF");
+        std::string s(strBuf);
+        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 100.0f, 0.5f, color);
+    }
 }

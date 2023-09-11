@@ -22,14 +22,14 @@
 #include <map>
 #include <vector>
 
-unsigned int TextureFromFile(const char* path, const std::string& directory);
+unsigned int TextureFromFile(const char* path, const std::string& directory, bool flipSTBI);
 
 class Model
 {
     public:
         // Constructor & Destructor:
         Model();
-        Model(std::string const& path, std::string name);
+        Model(std::string const& path, std::string name, bool flipSTBI);
         ~Model();
         // External functions:
         void Draw(Shader& shader, bool useNormalMap, bool useHeightMap);
@@ -37,6 +37,7 @@ class Model
         glm::mat4 GetModel();
         void SetModel(glm::mat4 model);
         std::string GetName();
+        void SetUseNormal(bool useNormal);
         // External attributes:
         std::vector<Texture> textures_loaded;
         std::vector<Mesh> meshes;
@@ -44,10 +45,11 @@ class Model
 
     private:
         // Private functions:
-        void LoadModel(std::string const& path);
-        void ProcessNode(aiNode* node, const aiScene* scene);
-        Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene);
-        std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+        void LoadModel(std::string const& path, bool flipSTBI);
+        void ProcessNode(aiNode* node, const aiScene* scene, bool flipSTBI);
+        Mesh ProcessMesh(aiMesh* mesh, const aiScene* scene, bool flipSTBI);
+        std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName, bool flipSTBI);
         glm::mat4 m_model;
         std::string m_name;
+        bool m_useNormal;
 };
