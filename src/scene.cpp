@@ -43,8 +43,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
     // Rotate the model object if the arrow keys are pressed:
     for (auto& m : m_models)
     {
-        // if (m->GetName() == "testModel")
-        if (1)
+        if (m->GetName() == "testModel1")
         {
             // if (inputManager.m_keyboard.GetKeyState(GLFW_KEY_UP))
             if (!inputManager.m_keyboard.GetKeyState(GLFW_KEY_SPACE))
