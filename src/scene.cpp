@@ -90,7 +90,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
 	// 2. Render Depth of Scene (directional light):
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
-    float near_plane = 1.0f, far_plane = 7.5f;
+    float near_plane = 1.0f, far_plane = 50.0f;
     lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
     lightView = glm::lookAt(m_directionalLight.GetPosition(), glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
@@ -111,7 +111,7 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
     glBindFramebuffer(GL_FRAMEBUFFER, m_hdrFBO);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_lightingShader->Use();
-    glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.GetFov()), (float)camera.GetWindowWidth() / (float)camera.GetWindowHeight(), 0.1f, 100.0f);
     glm::mat4 view = camera.GetViewMatrix();
     m_lightingShader->SetMat4("projection", projection);
     m_lightingShader->SetMat4("view", view);
@@ -150,8 +150,6 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
     if (m_skybox != nullptr)
         if (m_skybox->loaded)
             m_skybox->Render(*m_skyboxShader, camera);
-    // 6. Render the text:
-    DrawHUD(camera, deltaTime, turnOnNormalMap, turnOnHeightMap, turnOnBloom);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     // Blur bright fragments:
@@ -181,7 +179,8 @@ void Scene::Render(Camera& camera, InputManager& inputManager, float deltaTime)
     m_hdrShader->SetFloat("exposure", m_exposure);
     RenderQuad();
 
-    
+    // 6. Render the text:
+    DrawHUD(camera, deltaTime, turnOnNormalMap, turnOnHeightMap, turnOnBloom);
 }
 
 void Scene::AddObject(Object& object)
@@ -264,6 +263,9 @@ void Scene::ConfigureShaders()
     m_hdrShader->Use();
     m_hdrShader->SetInt("scene", 0);
     m_hdrShader->SetInt("bloomBlur", 1);
+    // Skybox:
+    m_skyboxShader->Use();
+    m_skyboxShader->SetInt("skybox", 0);
 }
 
 void Scene::ConfigureHDR()
@@ -595,58 +597,6 @@ void Scene::RenderQuad()
     glBindVertexArray(0);
 }
 
-// TO - DO: move this function to where it belongs, not sure where that would be though
-unsigned int loadTexture(char const* path)
-{
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-
-    int width, height, nrComponents;
-    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-    if (data)
-    {
-        GLenum format, internalFormat;
-        if (nrComponents == 1)
-        {
-            format = GL_RED;
-            internalFormat = GL_RED;
-        }   
-        else if (nrComponents == 3)
-        {
-            format = GL_RGB;
-            internalFormat = GL_SRGB;
-        }
-        else if (nrComponents == 4)
-        {
-            format = GL_RGBA;
-            internalFormat = GL_SRGB_ALPHA;
-        }
-        else
-        {
-            format = NULL;
-            internalFormat = NULL;
-        }
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
-}
-
 void Scene::RenderText(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color)
 {
     // activate corresponding render state	
@@ -694,35 +644,96 @@ void Scene::RenderText(Shader& shader, std::string text, float x, float y, float
 
 void Scene::DrawHUD(Camera& camera, float deltaTime, bool turnOnNormalMap, bool turnOnHeightMap, int turnOnBloom)
 {
-
+    glDisable(GL_DEPTH_TEST);
     glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    float y0 = static_cast<float>(camera.GetWindowHeight());
+    float baseTextSize = 0.2f;
+    float scaling = (static_cast<float>(camera.GetWindowWidth()) / 600.0f);
+
+    float x0 = 25.0f * scaling;
+    float offset = 10.0f * scaling;
 
     // FPS:
     {
         char strBuf[32];
         sprintf_s(strBuf, "FPS = %d", static_cast<int>(1.0f / deltaTime));
         std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 25.0f, 0.5f, color);
+        RenderText(*m_textShader, s, x0, y0 - (offset * 1.0f), baseTextSize * scaling, color);
     }
     // Normal Mapping Toggle:
     {
         char strBuf[32];
         sprintf_s(strBuf, "Normal Mapping = %s", turnOnNormalMap ? "ON" : "OFF");
         std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 50.0f, 0.5f, color);
+        RenderText(*m_textShader, s, x0, y0 - (offset * 2.0f), baseTextSize * scaling, color);
     }
     // Height Mapping Toggle:
     {
         char strBuf[32];
         sprintf_s(strBuf, "Height Mapping = %s", turnOnHeightMap ? "ON" : "OFF");
         std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 75.0f, 0.5f, color);
+        RenderText(*m_textShader, s, x0, y0 - (offset * 3.0f), baseTextSize * scaling, color);
     }
     // Bloom Toggle:
     {
         char strBuf[32];
         sprintf_s(strBuf, "HDR + Bloom = %s", turnOnBloom ? "ON" : "OFF");
         std::string s(strBuf);
-        RenderText(*m_textShader, s, 25.0f, camera.GetWindowHeight() - 100.0f, 0.5f, color);
+        RenderText(*m_textShader, s, x0, y0 - (offset * 4.0f), baseTextSize * scaling, color);
     }
+    
+    glEnable(GL_DEPTH_TEST);
+}
+
+// TO - DO: move this function to where it belongs, not sure where that would be though
+unsigned int loadTexture(char const* path)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format, internalFormat;
+        if (nrComponents == 1)
+        {
+            format = GL_RED;
+            internalFormat = GL_RED;
+        }
+        else if (nrComponents == 3)
+        {
+            format = GL_RGB;
+            internalFormat = GL_SRGB;
+        }
+        else if (nrComponents == 4)
+        {
+            format = GL_RGBA;
+            internalFormat = GL_SRGB_ALPHA;
+        }
+        else
+        {
+            format = NULL;
+            internalFormat = NULL;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
+
+    return textureID;
 }

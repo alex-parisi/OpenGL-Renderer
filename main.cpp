@@ -46,20 +46,20 @@ int main(int argc, char* argv[])
         // 3. Models:
         // Load the demo object:
         Model testModel1("../resources/models/backpack/backpack.obj", "testModel1", true);
-        Model testModel2("../resources/models/robot/robot.obj", "testModel2", false);
+        //Model testModel2("../resources/models/robot/robot.obj", "testModel2", false);
         testModel1.SetModel(glm::translate(testModel1.GetModel(), glm::vec3(0.0f, 4.0f, 0.0f)));
-        // testModel1.SetModel(glm::scale(testModel1.GetModel(), glm::vec3(0.25f)));
+        testModel1.SetModel(glm::scale(testModel1.GetModel(), glm::vec3(0.5f)));
         testModel1.SetUseNormal(true);
-        testModel2.SetModel(glm::translate(testModel2.GetModel(), glm::vec3(0.0f, 0.45f, 0.0f)));
-        testModel2.SetUseNormal(false);
+        //testModel2.SetModel(glm::translate(testModel2.GetModel(), glm::vec3(0.0f, 0.45f, 0.0f)));
+        //testModel2.SetUseNormal(false);
         engine.AddModelToScene(testModel1);
-        engine.AddModelToScene(testModel2);
+        //engine.AddModelToScene(testModel2);
 
         // 4. Point light(s):
-        PointLight pointLight0(0, 10);
+        PointLight pointLight0(0, 5);
         pointLight0.SetPosition(glm::vec3(10.0f, 10.0f, 0.0f));
         engine.AddPointLightToScene(pointLight0);
-        // PointLight pointLight1(1, 5);
+        // PointLight pointLight1(1, 4);
         // pointLight1.SetPosition(glm::vec3(-10.0f, 10.0f, 0.0f));
         // engine.AddPointLightToScene(pointLight1);
 

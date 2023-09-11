@@ -145,5 +145,11 @@
     <None Include="..\src\shaders\text.vs">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="..\src\shaders\skybox.fs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\src\shaders\skybox.vs">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

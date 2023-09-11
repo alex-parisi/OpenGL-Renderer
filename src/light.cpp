@@ -11,7 +11,7 @@
 DirectionalLight::DirectionalLight()
 {
 	// Default directional light:
-	m_position = glm::vec3(0.0f, 4.0f, 1.0f);
+	m_position = glm::vec3(0.0f, 8.0f, 1.0f);
 	m_direction = glm::normalize(-m_position);
 	m_ambient = glm::vec3(0.025f);
 	m_diffuse = glm::vec3(0.25f);
